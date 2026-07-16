@@ -361,3 +361,13 @@ def create_certification(request):
         Certification.objects.filter(date=date, profile=profile).update(date=date)
     Certification.objects.create(name=name, company=company, date=date, profile=profile).save()
     return redirect('profile', profile.user_id)
+
+@login_required(login_url='signin')
+def calendar(request):
+    profile = Profile.objects.filter(user=request.user).first()
+
+    return render(request, 'calendar.html',
+                  context={
+                      'profile': profile,
+                      'my_profile_id': my_profile_id(request)
+                  })

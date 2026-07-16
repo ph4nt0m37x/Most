@@ -49,5 +49,6 @@ urlpatterns = [
     path('tutorial/', tutorial, name='tutorial'),
     path('help/', help_page, name='help_page'),
     path('about/', about, name='about'),
+    path('calendar/', calendar, name='calendar'),
     path('create/certification/', create_certification, name='create_certification'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

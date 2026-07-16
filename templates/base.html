@@ -21,6 +21,9 @@
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         var calendarEl = document.getElementById("calendar");
+        calendarEl.addEventListener("click", function () {
+        window.location.href = "{% url 'calendar' %}";
+    });
         var calendar = new FullCalendar.Calendar(calendarEl, {
           initialView: "dayGridMonth",
         });
