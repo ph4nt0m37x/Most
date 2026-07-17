@@ -10,12 +10,17 @@ class ApplicationPostModelForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
     class Meta:
         model = ApplicationPost
-        exclude = ['profile', 'created', 'apply_form', 'deadline']
+        exclude = ['profile', 'created', 'apply_form']
         widgets = {'deadline': forms.DateTimeInput(attrs={'class': 'form-control', 'data-target': '#deadline'})}
 
 class ApplicationFormModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ApplicationFormModelForm, self).__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            for field_name, field in self.fields.items():
+                field.disabled = True
+
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
     class Meta:

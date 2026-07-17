@@ -119,11 +119,19 @@ class ProfileAppliedPost(models.Model):
     post = models.ForeignKey(ApplicationPost, on_delete=models.CASCADE)
     form = models.ForeignKey(ApplicationForm, on_delete=models.CASCADE)
 
-class Collaboration(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    collaborator = models.ForeignKey(Profile, on_delete=models.CASCADE)
+class CollaborationPost(models.Model):
+    sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sent_collaboration")
+    receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="received_collaboration")
     subject = models.CharField(max_length=100)
     body = models.TextField()
+    accepted = models.BooleanField(default=False)
 
     def __str__(self):
-        return f'{Profile.objects.filter(user=self.user).first()} sent collaboration to {self.collaborator.first_name}'
+        return f'{Profile.objects.filter(user=self.sender).first()} sent collaboration to {self.receiver.first_name}'
+
+class Collaboration(models.Model):
+    collaborator_1 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="collaboration_sender", null=True, blank=True)
+    collaborator_2 = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="collaboration_receiver", null=True, blank=True)
+
+    def __str__(self):
+        return f'{Profile.objects.filter(user=self.collaborator_1).first()} and {self.collaborator_2.first_name} collaborated'

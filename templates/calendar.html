@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filters %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <div class="row">
+        <div class="col-2 d-flex align-items-center justify-content-end">
+            <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                     viewBox="0 0 24 24" fill="none">
+                    <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                          stroke="black" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        </div>
+
+        <div class="col-8">
+            <h3 class="fw-semibold">Calendar</h3>
+            <hr/>
+        </div>
+
+        <div class="col-2"></div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-3"></div>
+
+        <div class="col-6 pt-3 pb-2">
+            <div class="border rounded-4 p-4 shadow-sm">
+                <div id="calendar"></div>
+            </div>
+        </div>
+
+        <div class="col-3"></div>
+    </div>
+
+</div>
+
+{% endblock %}
