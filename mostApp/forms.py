@@ -10,7 +10,7 @@ class ApplicationPostModelForm(forms.ModelForm):
             field.widget.attrs['class'] = 'form-control'
     class Meta:
         model = ApplicationPost
-        exclude = ['profile', 'created', 'apply_form', 'deadline']
+        exclude = ['profile', 'created', 'apply_form']
         widgets = {'deadline': forms.DateTimeInput(attrs={'class': 'form-control', 'data-target': '#deadline'})}
 
 class ApplicationFormModelForm(forms.ModelForm):
