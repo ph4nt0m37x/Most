@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load filters %}
+{% block content %}
+
+    <!--Main Content-->
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-2 d-flex align-items-center justify-content-end">
+                <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none">
+                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </a>
+            </div>
+            <div class="col-8"><h6 class="fw-semibold">{{ post.title }}</h6>
+                <hr/>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    {% if forms %}
+        {% for form in forms %}
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
+                <form>
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                </form>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="row">
+        <p>No forms.</p>
+    </div>
+    {% endif %}
+    </div>
+{% endblock %}

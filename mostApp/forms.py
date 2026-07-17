@@ -16,6 +16,11 @@ class ApplicationPostModelForm(forms.ModelForm):
 class ApplicationFormModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(ApplicationFormModelForm, self).__init__(*args, **kwargs)
+
+        if self.instance and self.instance.pk:
+            for field_name, field in self.fields.items():
+                field.disabled = True
+
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = 'form-control'
     class Meta:

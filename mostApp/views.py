@@ -77,30 +77,23 @@ def about(request):
 @login_required(login_url='signin')
 def index(request):
     posts = Post.objects.all().order_by('-created')
-    my_collaborations = Collaboration.objects.filter(user=request.user)
-    collaborations = (Collaboration.objects.filter(collaborator__in=my_collaborations.values_list('collaborator'))).values_list('collaborator')
-    mutual_collaborations = Profile.objects.filter(id__in=collaborations)
-    profiles = Profile.objects.exclude(user__in=mutual_collaborations.values_list('user')).exclude(user=request.user)[:3]
-    mutual = False
-    if mutual_collaborations.count() > 0:
-        mutual = True
+    profiles = None
+
     my_profile = Profile.objects.get(user=request.user)
     return render(request, 'index.html',
                   context={'posts': posts,
                            'my_profile': my_profile,
-                           'mutuals': mutual_collaborations[:3],
                            'profiles': profiles,
-                           'mutual': mutual,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
 def search(request):
     query = request.GET.get('query')
     profiles_search = Profile.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
-    my_collaborations = Collaboration.objects.filter(user=request.user)
+    my_collaborations = CollaborationPost.objects.filter(user=request.user)
     collaborations = (
-        Collaboration.objects.filter(collaborator__in=my_collaborations.values_list('collaborator'))).values_list(
-        'collaborator')
+        CollaborationPost.objects.filter(collaborator__in=my_collaborations.values_list('receiver'))).values_list(
+        'receiver')
     mutual_collaborations = Profile.objects.filter(id__in=collaborations)
     profiles = Profile.objects.exclude(user__in=mutual_collaborations.values_list('user')).exclude(user=request.user)[
                :3]
@@ -245,23 +238,13 @@ def profile(request, user_id):
         profile = Profile.objects.filter(user=user).first()
     posts = Post.objects.filter(profile=profile).order_by('-created')
     certifications = Certification.objects.filter(profile=profile).order_by('-date')
-    my_collaborations = Collaboration.objects.filter(user=request.user)
-    collaborations = (
-        Collaboration.objects.filter(collaborator__in=my_collaborations.values_list('collaborator'))).values_list(
-        'collaborator')
-    mutual_collaborations = Profile.objects.filter(id__in=collaborations)
-    profiles = Profile.objects.exclude(user__in=mutual_collaborations.values_list('user')).exclude(user=request.user)[:3]
-    mutual = False
-    if mutual_collaborations.count() > 0:
-        mutual = True
+    profiles = None
     return render(request, 'profile.html',
                   context={'profile': profile,
                            'profiles': profiles,
                            'posts': posts,
                            'certifications': certifications,
                            'edit': edit,
-                           'mutuals': mutual_collaborations[:3],
-                           'mutual': mutual,
                            'successful': successful,
                            'my_profile_id': my_profile_id(request)})
 
@@ -313,16 +296,27 @@ def bookmarks(request):
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
-def collaborations(request, user_id):
-    user = User.objects.filter(id=user_id).first()
-    collaborations_sent = Collaboration.objects.filter(user=user)
-    collaborations_received = Collaboration.objects.filter(collaborator=Profile.objects.filter(user=user).first())
-    collaborations_user = Collaboration.objects.filter(user=request.user)
-    mutual = collaborations_received.intersection(collaborations_user)
-    return render(request, 'collaborations.html',
-                  context={'collaborations_sent': collaborations_sent,
-                           'collaborations_received': collaborations_received,
-                           'mutual': mutual,
+def profile_collaborations(request, user_id):
+    user_profile = Profile.objects.get(user_id=user_id)
+    request_user_profile = Profile.objects.get(user=request.user)
+
+    collab1_ids = Collaboration.objects.filter(collaborator_1=user_profile).values_list('collaborator_2_id', flat=True).distinct()
+    collab2_ids = Collaboration.objects.filter(collaborator_2=user_profile).values_list('collaborator_1_id', flat=True).distinct()
+
+    all_collaborations = Profile.objects.filter(id__in=collab1_ids.union(collab2_ids))
+
+    mutual_collaborations = None
+
+    if request.user.id != user_id:
+        user_collaborations = Profile.objects.filter(
+            id__in=Collaboration.objects.filter(collaborator_1=request_user_profile).values_list('collaborator_2_id', flat=True).distinct().
+            union(Collaboration.objects.filter(collaborator_2=request_user_profile).values_list('collaborator_1_id', flat=True).distinct()))
+
+        mutual_collaborations = all_collaborations.intersection(user_collaborations)
+
+    return render(request, 'profile_collabs.html',
+                  context={'all_collaborations': all_collaborations,
+                           'mutual_collaborations': mutual_collaborations,
                            'user_id': user_id,
                            'my_profile_id': my_profile_id(request)})
 
@@ -330,21 +324,67 @@ def collaborations(request, user_id):
 def collaborate(request, user_id):
     subject = request.POST['subject']
     body = request.POST['body']
-    collaboration = Collaboration.objects.filter(user=request.user,
-                                                 collaborator=Profile.objects.filter(user_id=user_id).first())
+    collaboration = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first(),
+                                                     receiver=Profile.objects.filter(user_id=user_id).first())
     if collaboration.exists():
         collaboration.update(subject=subject, body=body)
     else:
-        Collaboration.objects.create(user=request.user,
-                                     collaborator=Profile.objects.filter(user_id=user_id).first(),
-                                     subject=subject, body=body)
+        CollaborationPost.objects.create(sender=Profile.objects.filter(user=request.user).first(),
+                                         receiver=Profile.objects.filter(user_id=user_id).first(),
+                                         subject=subject, body=body)
     return redirect(profile, user_id)
 
 @login_required(login_url='signin')
-def applied(request):
-    posts = ApplicationForm.objects.filter(user=request.user)
-    return render(request, 'applied.html',
-                  context={'posts': posts,
+def accept(request, user_id, post_id):
+    collaboration = CollaborationPost.objects.filter(id=post_id)
+    collaboration.update(accepted=True)
+    Collaboration.objects.create(collaborator_1=Profile.objects.filter(user=request.user).first(),collaborator_2=Profile.objects.filter(user_id=user_id).first())
+    return redirect(profile, user_id)
+
+@login_required(login_url='signin')
+def applications(request):
+    posts = ApplicationPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
+    applied = ApplicationForm.objects.filter(user=request.user).distinct()
+    return render(request, 'applications.html',
+                  context={'received': posts,
+                           'applied': applied,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def application(request, post_id):
+    all_forms = ApplicationForm.objects.filter(app_post_id=post_id)
+    forms = []
+    for form in all_forms:
+        forms.append(ApplicationFormModelForm(instance=form))
+    post = ApplicationPost.objects.get(id=post_id)
+    return render(request, 'applications.html',
+                  context={'forms': forms,
+                           'post': post,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def form(request, post_id):
+    post = ApplicationPost.objects.get(id=post_id)
+    app_form = ApplicationForm.objects.filter(app_post_id=post_id, user=request.user).first()
+    form = ApplicationFormModelForm(instance=app_form)
+    return render(request, 'applications.html',
+                  context={'form': form,
+                           'post': post,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def collaborations(request):
+    all_sent = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first())
+    all_received = CollaborationPost.objects.filter(receiver=Profile.objects.filter(user=request.user).first())
+    accepted = all_sent.filter(accepted=True).union(all_received.filter(accepted=True))
+
+    sent = all_sent.filter(accepted=False)
+    received = all_received.filter(accepted=False)
+
+    return render(request, 'collaborations.html',
+                  context={'sent': sent,
+                           'received': received,
+                           'accepted': accepted,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+{% load filters %}
+
+    <!-- Main Content -->
+
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-2 d-flex align-items-center justify-content-end">
+                <a href="{% url 'profile' user_id %}" class="pb-4 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none">
+                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </a>
+            </div>
+            <div class="col-8"><h3 class="fw-semibold">Collaborators</h3>
+                <hr/>
+            </div>
+            <div class="col-2"></div>
+        </div>
+        <nav class="row">
+            <div class="col-2"></div>
+            <div class="col-8 nav d-flex justify-content-around align-items-center " id="nav-tab" role="tablist">
+                <div class="col-4 d-flex justify-content-center">
+                    <button class="btn text-center active shadow-sm btn-outline-success rounded-pill" id="nav-all-tab"
+                            data-bs-toggle="tab" data-bs-target="#nav-all"
+                            type="button" role="tab" aria-controls="nav-all" aria-selected="false" tabindex="-1">All
+                        Collaborations
+                    </button>
+                </div>
+                {% if request.user != object.user %}
+                <div class="col-4 d-flex justify-content-center">
+                    <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-mutual-tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#nav-mutual" type="button" role="tab" aria-controls="nav-mutual"
+                            aria-selected="true">Mutual Collaborations
+                    </button>
+                </div>
+                {% endif %}
+            </div>
+            <div class="col-2">
+            </div>
+        </nav>
+
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade active show" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
+            {% for collab in all_collaborations %}
+                <div class="row d-flex justify-content-start">
+                    <div class="col-2"></div>
+                    <div class="col-3 pt-3 pb-2 mx-5">
+                        <div class="border rounded-4 mb-2 row">
+                            <div class="col-2 d-flex align-items-center">
+                                <a href="{% url 'profile' collab.user_id %}" class="">
+                                    <img src="{% if collab.user_id|get_profile_pic_url %} {{ collab.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt="">
+                                </a>
+                            </div>
+                            <div class="col-10 px-4">
+                                <p class="mb-0 mt-3">
+                                    <a href="{% url 'profile' collab.user_id %}" class="text-decoration-none text-body-emphasis">
+                                        {{ collab.first_name }} {{ collab.last_name }}
+                                    </a>
+                                </p>
+                                <p class="mb-3 small">
+{#                                    <a href="{% url 'collaborations' collab.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">#}
+{#                                        3 mutual collaborators#}
+{#                                    </a>#}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-7"></div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="tab-pane fade" id="nav-mutual" role="tabpanel" aria-labelledby="nav-mutual-tab">
+            {% if mutual_collaborations %}
+            {% for collab in mutual_collaborations %}
+                <div class="row d-flex justify-content-start"><div class="col-2"></div>
+                    <div class="col-3 pt-3 pb-2 mx-5">
+                        <div class="border rounded-4 mb-2 row">
+                            <div class="col-2 d-flex align-items-center">
+                                <a href="{% url 'profile' collab.user_id %}" class="">
+                                    <img src="{% if collab.user_id|get_profile_pic_url %} {{ collab.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt="">
+                                </a>
+                            </div>
+                            <div class="col-10 px-4">
+                                <p class="mb-0 mt-3">
+                                    <a href="{% url 'profile' collab.user_id %}" class="text-decoration-none text-body-emphasis">
+                                        {{ collab.user_id|get_profile_name }}
+                                    </a>
+                                </p>
+                                <p class="mb-3 small">
+                                    <a href="" class="text-decoration-none text-secondary link-body-emphasis">
+                                        3 mutual collaborators
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            {% endfor %}
+            {% else %}
+                <div class="row text-center">
+                    <p>No mutual collaborations.</p>
+                </div>
+            {% endif %}
+        </div>
+        </div>
+    </div>
+
+{% endblock %}

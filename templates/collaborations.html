@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block content %}
 {% load filters %}
+{% block content %}
 
-    <!-- Main Content -->
+    <!--Main Content-->
 
     <div class="container mt-5">
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
-                <a href="{% url 'profile' user_id %}" class="pb-4 mb-1">
+                <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                          fill="none">
                         <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
@@ -16,125 +16,212 @@
                     </svg>
                 </a>
             </div>
-            <div class="col-8"><h3 class="fw-semibold">Collaborators</h3>
+            <div class="col-8"><h3 class="fw-semibold">Collaborations</h3>
                 <hr/>
             </div>
             <div class="col-2"></div>
         </div>
-        <nav class="row">
+        <nav class="row py-2">
             <div class="col-2"></div>
-            <div class="col-8 nav d-flex justify-content-around align-items-center " id="nav-tab" role="tablist">
-                <div class="col-4 d-flex justify-content-center">
-                    <button class="btn text-center active shadow-sm btn-outline-success rounded-pill" id="nav-all-tab"
-                            data-bs-toggle="tab" data-bs-target="#nav-all"
-                            type="button" role="tab" aria-controls="nav-all" aria-selected="false" tabindex="-1">All
-                        Collaborations
-                    </button>
-                </div>
-                <div class="col-4 d-flex justify-content-center">
-                    <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-mutual-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#nav-mutual" type="button" role="tab" aria-controls="nav-mutual"
-                            aria-selected="true">Mutual Collaborators
-                    </button>
-                </div>
+            <div class="col-8 nav d-flex justify-content-around align-items-center" id="nav-tab" role="tablist">
+                <button class="btn text-center active shadow-sm btn-outline-success rounded-pill" id="nav-sent-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-sent"
+                        type="button" role="tab" aria-controls="nav-sent" aria-selected="false" tabindex="-1">
+                    Sent
+                </button>
+                <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-received-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-received" type="button" role="tab" aria-controls="nav-received"
+                        aria-selected="true">Requests
+                </button>
+                <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-accepted-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-accepted" type="button" role="tab" aria-controls="nav-accepted"
+                        aria-selected="true">Completed
+                </button>
             </div>
             <div class="col-2">
             </div>
         </nav>
 
         <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade active show" id="nav-all" role="tabpanel" aria-labelledby="nav-all-tab">
-            {% for collab in collaborations_sent %}
-                <div class="row d-flex justify-content-start">
-                    <div class="col-2"></div>
-                    <div class="col-3 pt-3 pb-2 mx-5">
-                        <div class="border rounded-4 mb-2 row">
-                            <div class="col-2 d-flex align-items-center">
-                                <a href="{% url 'profile' collab.collaborator.user_id %}" class="">
-                                    <img src="{% if collab.collaborator.user_id|get_profile_pic_url %} {{ collab.collaborator.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt="">
-                                </a>
-                            </div>
-                            <div class="col-10 px-4">
-                                <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' collab.collaborator.user_id %}" class="text-decoration-none text-body-emphasis">
-                                        {{ collab.collaborator.first_name }} {{ collab.collaborator.last_name }}
-                                    </a>
-                                </p>
-                                <p class="mb-3 small">
-                                    <a href="{% url 'collaborations' collab.collaborator.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">
-                                        3 mutual collaborators
-                                    </a>
-                                </p>
+            <!-- SENT -->
+            <div class="tab-pane fade active show" id="nav-sent" role="tabpanel" aria-labelledby="nav-sent-tab">
+                {% if sent %}
+                {% for post in sent %}
+                    <div class="row d-flex align-items-left">
+                        <div class="col-3"></div>
+                        <div class="col-6 pt-3 pb-2">
+                            <div class="border rounded-4 p-1">
+                                <div class="row pt-3">
+                                    <div class="col-10 d-flex align-items-center ps-3">
+                                        <div class="ps-4 pe-3">
+                                            <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                                <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
+                                            </a>
+                                        </div>
+                                        <div class="text-start">
+                                            <p class="mb-0 mt-3">
+                                                <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                                     {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                 </a>
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2 text-end pe-4">
+                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                                             fill="#000000">
+                                            <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <p class="text-start px-5 py-2">
+                                        {{ post.subject}}}
+                                    </p>
+                                    <p class="text-start px-5 py-2">
+                                        {{ post.body}}
+                                    </p>
+                                </div>
                             </div>
                         </div>
+                        <div class="col-3"></div>
                     </div>
-                    <div class="col-7"></div>
+                {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No collaborations sent.</p>
+                            </div>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                {% endif %}
                 </div>
-            {% endfor %}
-            {% for collab in collaborations_received %}
-                <div class="row d-flex justify-content-start">
-                    <div class="col-2"></div>
-                    <div class="col-3 pt-3 pb-2 mx-5">
-                        <div class="border rounded-4 mb-2 row">
-                            <div class="col-2 d-flex align-items-center">
-                                <a href="{% url 'profile' collab.user.id %}" class="">
-                                    <img src="{% if collab.user.id|get_profile_pic_url %} {{ collab.user.id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt="">
-                                </a>
+            <!-- RECEIVED -->
+            <div class="tab-pane fade active show" id="nav-received" role="tabpanel" aria-labelledby="nav-received-tab">
+            {% if received %}
+            {% for post in received %}
+                <div class="row d-flex align-items-left">
+                    <div class="col-3"></div>
+                    <div class="col-6 pt-3 pb-2">
+                        <div class="border rounded-4 p-1">
+                            <div class="row pt-3">
+                                <div class="col-10 d-flex align-items-center ps-3">
+                                    <div class="ps-4 pe-3">
+                                        <a href="{% url 'profile' post.sender.user_id %}" class="">
+                                            <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="text-start">
+                                        <p class="mb-0 mt-3">
+                                            <a href="{% url 'profile' post.sender.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                                 {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                             </a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-2 text-end pe-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                                         fill="#000000">
+                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
+                                    </svg>
+                                </div>
                             </div>
-                            <div class="col-10 px-4">
-                                <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' collab.user.id %}" class="text-decoration-none text-body-emphasis">
-                                        {{ collab.user.id|get_profile_name }}
-                                    </a>
+
+                            <div class="row">
+                                <p class="text-start px-5 py-2">
+                                    {{ post.subject}}}
                                 </p>
-                                <p class="mb-3 small">
-                                    <a href="{% url 'collaborations' collab.user.id %}" class="text-decoration-none text-secondary link-body-emphasis">
-                                        3 mutual collaborators
-                                    </a>
+                                <p class="text-start px-5 py-2">
+                                    {{ post.body}}
                                 </p>
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-7"></div>
-                </div>
-            {% endfor %}
-        </div>
-        <div class="tab-pane fade" id="nav-mutual" role="tabpanel" aria-labelledby="nav-mutual-tab">
-            {% if mutual %}
-            {% for collab in mutual %}
-                <div class="row d-flex justify-content-start"><div class="col-2"></div>
-                    <div class="col-3 pt-3 pb-2 mx-5">
-                        <div class="border rounded-4 mb-2 row">
-                            <div class="col-2 d-flex align-items-center">
-                                <a href="{% url 'profile' collab.user.id %}" class="">
-                                    <img src="{% if collab.user.id|get_profile_pic_url %} {{ collab.user.id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt="">
-                                </a>
-                            </div>
-                            <div class="col-10 px-4">
-                                <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' collab.user.id %}" class="text-decoration-none text-body-emphasis">
-                                        {{ collab.user.id|get_profile_name }}
-                                    </a>
-                                </p>
-                                <p class="mb-3 small">
-                                    <a href="" class="text-decoration-none text-secondary link-body-emphasis">
-                                        3 mutual collaborators
-                                    </a>
-                                </p>
+                            <div class="row d-flex">
+                                <div class="col-10 pb-3 ps-5 text-start">
+                                    <a href="{% url 'accept' post.sender.user_id post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">Accept</button></a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-2"></div>
+                    <div class="col-3"></div>
                 </div>
             {% endfor %}
             {% else %}
-                <div class="row text-center">
-                    <p>No mutual collaborations.</p>
+                <div class="row d-flex align-items-center">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                            <p class="text-center opacity-75 p-5">No collaboration requests.</p>
+                        </div>
+                    </div>
+                    <div class="col-2"></div>
                 </div>
             {% endif %}
-        </div>
+            </div>
+            <!-- ACCEPTED -->
+            <div class="tab-pane fade active show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
+            {% if accepted %}
+            {% for post in accepted %}
+                <div class="row d-flex align-items-left">
+                    <div class="col-3"></div>
+                    <div class="col-6 pt-3 pb-2">
+                        <div class="border rounded-4 p-1">
+                            <div class="row pt-3">
+                                <div class="col-10 d-flex align-items-center ps-3">
+                                    <div class="ps-4 pe-3">
+                                        <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                            <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
+                                        </a>
+                                    </div>
+                                    <div class="text-start">
+                                        <p class="mb-0 mt-3">
+                                            <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                                 {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                             </a>
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="col-2 text-end pe-4">
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
+                                         fill="#000000">
+                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <p class="text-start px-5 py-2">
+                                    {{ post.subject}}}
+                                </p>
+                                <p class="text-start px-5 py-2">
+                                    {{ post.body}}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3"></div>
+                </div>
+            {% endfor %}
+            {% else %}
+                <div class="row d-flex align-items-center">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                            <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
+                        </div>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            {% endif %}
+            </div>
         </div>
     </div>
-
 {% endblock %}

@@ -33,7 +33,7 @@
                         {{ profile.bio }}
                     </p>
                     <p class="mb-0 mt-2">
-                        <a href="{% url 'collaborations' profile.user_id %}" class="text-decoration-none small text-body-emphasis">3 collaborations</a>
+                        <a href="{% url 'profile_collaborations' profile.user_id %}" class="text-decoration-none small text-body-emphasis">3 collaborations</a>
                     </p>
                 </div>
                 <div class="col-3 d-flex align-items-center justify-content-end">
@@ -524,31 +524,31 @@
 
             <div class="col-3 text-start">
                 <div class="row position-sticky" style="top: 6.5rem;" id="recommendations">
-                    {% if mutual %}
-                        <h5 class="py-2">Mutual collaborators</h5>
-                        {% for collab in mutuals %}
-                        <br>
-                        <div class="border rounded-4 mb-2 row">
-                            <div class="col-2 d-flex align-items-center">
-                                <a href="{% url 'profile' collab.user_id %}" class="">
-                                    <img src="{% if collab.user_id|get_profile_pic_url %} {{ collab.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                </a>
-                            </div>
-                            <div class="col-10 px-4 gap-0">
-                                <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' collab.user_id %}" class="text-decoration-none text-body-emphasis">
-                                        {{ collab.first_name }} {{ collab.last_name }}
-                                    </a>
-                                </p>
-                                <p class="mb-3 small">
-                                    <a href="{% url 'collaborations' collab.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">
-                                        3 mutual collaborators
-                                    </a>
-                                </p>
-                            </div>
-                        </div>
-                        {% endfor %}
-                    {% else %}
+{#                    {% if mutual %}#}
+{#                        <h5 class="py-2">Mutual collaborators</h5>#}
+{#                        {% for collab in mutuals %}#}
+{#                        <br>#}
+{#                        <div class="border rounded-4 mb-2 row">#}
+{#                            <div class="col-2 d-flex align-items-center">#}
+{#                                <a href="{% url 'profile' collab.user_id %}" class="">#}
+{#                                    <img src="{% if collab.user_id|get_profile_pic_url %} {{ collab.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>#}
+{#                                </a>#}
+{#                            </div>#}
+{#                            <div class="col-10 px-4 gap-0">#}
+{#                                <p class="mb-0 mt-3">#}
+{#                                    <a href="{% url 'profile' collab.user_id %}" class="text-decoration-none text-body-emphasis">#}
+{#                                        {{ collab.first_name }} {{ collab.last_name }}#}
+{#                                    </a>#}
+{#                                </p>#}
+{#                                <p class="mb-3 small">#}
+{#                                    <a href="{% url 'collaborations' collab.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">#}
+{#                                        3 mutual collaborators#}
+{#                                    </a>#}
+{#                                </p>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                        {% endfor %}#}
+{#                    {% else %}#}
                         <h5 class="py-2">People you may know</h5>
                         {% for profile in profiles %}
                         <br>
@@ -565,14 +565,13 @@
                                     </a>
                                 </p>
                                 <p class="mb-3 small">
-                                    <a href="{% url 'collaborations' profile.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">
+                                    <a href="" class="text-decoration-none text-secondary link-body-emphasis">
                                         0 mutual collaborators
                                     </a>
                                 </p>
                             </div>
                         </div>
                         {% endfor %}
-                    {% endif %}
                 <div class="row py-3" id="calendar">
                         <h5>My calendar</h5>
                         <div class="d-flex justify-content-center mt-3">
