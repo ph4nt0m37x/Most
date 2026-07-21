@@ -2,6 +2,7 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.api import success
 from django.db.models import Q
+import json
 from django.shortcuts import render, redirect
 from django.contrib import messages, auth
 from django.urls import reverse
@@ -80,11 +81,31 @@ def index(request):
     profiles = None
 
     my_profile = Profile.objects.get(user=request.user)
-    return render(request, 'index.html',
-                  context={'posts': posts,
-                           'my_profile': my_profile,
-                           'profiles': profiles,
-                           'my_profile_id': my_profile_id(request)})
+
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "index.html",
+        context={
+            "posts": posts,
+            "my_profile": my_profile,
+            "profiles": profiles,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )
 
 @login_required(login_url='signin')
 def search(request):
@@ -172,16 +193,26 @@ def create_post(request):
 def create_app_post(request):
     if request.method == 'POST':
         form = ApplicationPostModelForm(request.POST, request.FILES)
+
         if form.is_valid():
             post = form.save(commit=False)
             post.profile = Profile.objects.filter(user=request.user).first()
             post.save()
-        return redirect('index')
+            return redirect('index')
 
-    form = ApplicationPostModelForm()
-    return render(request, 'create.html',
-                  context={'form': form,
-                           'my_profile_id': my_profile_id(request)})
+        print(form.errors)   # Temporary for debugging
+
+    else:
+        form = ApplicationPostModelForm()
+
+    return render(
+        request,
+        'create.html',
+        {
+            'form': form,
+            'my_profile_id': my_profile_id(request),
+        }
+    )
 
 @login_required(login_url='signin')
 def post(request, post_id):
@@ -202,51 +233,98 @@ def post(request, post_id):
 
 @login_required(login_url='signin')
 def apply(request, post_id):
-    apply_post = True # if the user tries to apply to their own post
+    apply_post = True  # if the user tries to apply to their own post
     profile = Profile.objects.filter(user=request.user).first()
+
     if ApplicationPost.objects.filter(id=post_id).first().profile == profile:
         apply_post = False
-    if request.method == 'POST':
-        form = ApplicationFormModelForm(request.POST, request.FILES)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.app_post = ApplicationPost.objects.filter(id=post_id).first()
-            form.user = request.user
-            form.save()
-            return render(request, 'apply.html',
-                  context={'form': ApplicationFormModelForm(),
-                           'post_id': post_id,
-                           'apply': apply_post,
-                           'my_profile_id': my_profile_id(request),
-                           'successful': True})
-    form = ApplicationFormModelForm()
-    return render(request, 'apply.html',
-                  context={'form': form,
-                           'post_id': post_id,
-                           'apply': apply_post,
-                           'my_profile_id': my_profile_id(request)})
 
+    initial_data = {
+        "first_name": profile.first_name,
+        "last_name": profile.last_name,
+        "email": request.user.email,
+    }
+
+    if request.method == 'POST':
+        form = ApplicationFormModelForm(
+            request.POST,
+            request.FILES,
+            initial=initial_data
+        )
+
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.app_post = ApplicationPost.objects.filter(id=post_id).first()
+            application.user = request.user
+            application.save()
+
+            return render(
+                request,
+                'apply.html',
+                context={
+                    'form': ApplicationFormModelForm(initial=initial_data),
+                    'post_id': post_id,
+                    'apply': apply_post,
+                    'my_profile_id': my_profile_id(request),
+                    'successful': True
+                }
+            )
+
+    form = ApplicationFormModelForm(initial=initial_data)
+
+    return render(
+        request,
+        'apply.html',
+        context={
+            'form': form,
+            'post_id': post_id,
+            'apply': apply_post,
+            'my_profile_id': my_profile_id(request)
+        }
+    )
 @login_required(login_url='signin')
 def profile(request, user_id):
     successful = False
     edit = False
+
     user = User.objects.filter(id=user_id).first()
-    if request.user == user:  # currently signed-in user
+
+    if request.user == user:
         profile = Profile.objects.filter(user=request.user).first()
         edit = True
     else:
         profile = Profile.objects.filter(user=user).first()
+
+    # logged-in user's profile (for calendar)
+    my_profile = Profile.objects.get(user=request.user)
+
     posts = Post.objects.filter(profile=profile).order_by('-created')
     certifications = Certification.objects.filter(profile=profile).order_by('-date')
-    profiles = None
+
+    events = []
+
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
     return render(request, 'profile.html',
-                  context={'profile': profile,
-                           'profiles': profiles,
-                           'posts': posts,
-                           'certifications': certifications,
-                           'edit': edit,
-                           'successful': successful,
-                           'my_profile_id': my_profile_id(request)})
+                  context={
+                      'profile': profile,          # profile being viewed
+                      'profiles': None,
+                      'posts': posts,
+                      'certifications': certifications,
+                      'edit': edit,
+                      'successful': successful,
+                      'my_profile_id': my_profile_id(request),
+                      'events': json.dumps(events),
+                  })
 
 @login_required(login_url='signin')
 def edit_profile(request):
@@ -402,12 +480,39 @@ def create_certification(request):
     Certification.objects.create(name=name, company=company, date=date, profile=profile).save()
     return redirect('profile', profile.user_id)
 
+# @login_required(login_url='signin')
+# def calendar(request):
+#     profile = Profile.objects.filter(user=request.user).first()
+#
+#     return render(request, 'calendar.html',
+#                   context={
+#                       'profile': profile,
+#                       'my_profile_id': my_profile_id(request)
+#                   })
+
 @login_required(login_url='signin')
 def calendar(request):
     profile = Profile.objects.filter(user=request.user).first()
 
-    return render(request, 'calendar.html',
-                  context={
-                      'profile': profile,
-                      'my_profile_id': my_profile_id(request)
-                  })
+    bookmarks = BookmarkAppPost.objects.filter(profile=profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "calendar.html",
+        {
+            "profile": profile,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )
