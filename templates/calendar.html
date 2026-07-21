@@ -3,7 +3,24 @@
 {% load filters %}
 
 {% block content %}
+<script>
+console.log('{{ events|escapejs }}');
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
 
+    const calendarEl = document.getElementById("calendar");
+
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: "dayGridMonth",
+        events: JSON.parse('{{ events|escapejs }}'),
+
+    });
+
+    calendar.render();
+
+});
+</script>
 <div class="container mt-5">
 
     <div class="row">
