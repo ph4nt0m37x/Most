@@ -5,7 +5,7 @@
 
     <!--Main Content-->
 
-    <div class="container mt-5">
+    <div class="container mt-5" style="min-height: 50vh;">
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
                 <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
@@ -38,7 +38,7 @@
                 <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-accepted-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#nav-accepted" type="button" role="tab" aria-controls="nav-accepted"
-                        aria-selected="true">Completed
+                        aria-selected="false">Completed
                 </button>
             </div>
             <div class="col-2">
@@ -104,7 +104,7 @@
                 {% endif %}
                 </div>
             <!-- RECEIVED -->
-            <div class="tab-pane fade active show" id="nav-received" role="tabpanel" aria-labelledby="nav-received-tab">
+            <div class="tab-pane fade show" id="nav-received" role="tabpanel" aria-labelledby="nav-received-tab">
             {% if received %}
             {% for post in received %}
                 <div class="row d-flex align-items-left">
@@ -166,7 +166,7 @@
             {% endif %}
             </div>
             <!-- ACCEPTED -->
-            <div class="tab-pane fade active show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
+            <div class="tab-pane fade show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
             {% if accepted %}
             {% for post in accepted %}
                 <div class="row d-flex align-items-left">
