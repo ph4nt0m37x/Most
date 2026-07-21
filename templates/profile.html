@@ -60,7 +60,7 @@
                         {{ profile.bio }}
                     </p>
                     <p class="mb-0 mt-2">
-                        <a href="{% url 'profile_collaborations' profile.user_id %}" class="text-decoration-none small text-body-emphasis">3 collaborations</a>
+                        <a href="{% url 'profile_collaborations' profile.user_id %}" class="text-decoration-none small text-body-emphasis">{{ collaboration_count }} collaborations</a>
                     </p>
                 </div>
                 <div class="col-3 d-flex align-items-center justify-content-end">

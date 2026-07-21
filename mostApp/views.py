@@ -301,6 +301,10 @@ def profile(request, user_id):
     posts = Post.objects.filter(profile=profile).order_by('-created')
     certifications = Certification.objects.filter(profile=profile).order_by('-date')
 
+    collaboration_count = Collaboration.objects.filter(
+        Q(collaborator_1=profile) | Q(collaborator_2=profile)
+    ).count()
+
     events = []
 
     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
@@ -316,16 +320,16 @@ def profile(request, user_id):
 
     return render(request, 'profile.html',
                   context={
-                      'profile': profile,          # profile being viewed
+                      'profile': profile,
                       'profiles': None,
                       'posts': posts,
                       'certifications': certifications,
+                      'collaboration_count': collaboration_count,
                       'edit': edit,
                       'successful': successful,
                       'my_profile_id': my_profile_id(request),
                       'events': json.dumps(events),
                   })
-
 @login_required(login_url='signin')
 def edit_profile(request):
     if request.method == 'POST':
@@ -378,26 +382,69 @@ def profile_collaborations(request, user_id):
     user_profile = Profile.objects.get(user_id=user_id)
     request_user_profile = Profile.objects.get(user=request.user)
 
-    collab1_ids = Collaboration.objects.filter(collaborator_1=user_profile).values_list('collaborator_2_id', flat=True).distinct()
-    collab2_ids = Collaboration.objects.filter(collaborator_2=user_profile).values_list('collaborator_1_id', flat=True).distinct()
+    def get_collaborator_ids(profile):
+        return set(
+            Collaboration.objects.filter(collaborator_1=profile)
+            .values_list('collaborator_2_id', flat=True)
+        ).union(
+            Collaboration.objects.filter(collaborator_2=profile)
+            .values_list('collaborator_1_id', flat=True)
+        )
 
-    all_collaborations = Profile.objects.filter(id__in=collab1_ids.union(collab2_ids))
+    # Get profile's collaborators
+    collab1_ids = Collaboration.objects.filter(
+        collaborator_1=user_profile
+    ).values_list('collaborator_2_id', flat=True).distinct()
+
+    collab2_ids = Collaboration.objects.filter(
+        collaborator_2=user_profile
+    ).values_list('collaborator_1_id', flat=True).distinct()
+
+    all_collaborations = Profile.objects.filter(
+        id__in=collab1_ids.union(collab2_ids)
+    )
+
+    # Calculate mutual collaborators with logged-in user
+    my_collaborators = get_collaborator_ids(request_user_profile)
+
+    for collab in all_collaborations:
+        collab.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(collab))
+        )
 
     mutual_collaborations = None
 
     if request.user.id != user_id:
         user_collaborations = Profile.objects.filter(
-            id__in=Collaboration.objects.filter(collaborator_1=request_user_profile).values_list('collaborator_2_id', flat=True).distinct().
-            union(Collaboration.objects.filter(collaborator_2=request_user_profile).values_list('collaborator_1_id', flat=True).distinct()))
+            id__in=
+            Collaboration.objects.filter(
+                collaborator_1=request_user_profile
+            ).values_list('collaborator_2_id', flat=True).distinct()
+            .union(
+                Collaboration.objects.filter(
+                    collaborator_2=request_user_profile
+                ).values_list('collaborator_1_id', flat=True).distinct()
+            )
+        )
 
         mutual_collaborations = all_collaborations.intersection(user_collaborations)
 
-    return render(request, 'profile_collabs.html',
-                  context={'all_collaborations': all_collaborations,
-                           'mutual_collaborations': mutual_collaborations,
-                           'user_id': user_id,
-                           'my_profile_id': my_profile_id(request)})
+        # Add mutual count here too
+        for collab in mutual_collaborations:
+            collab.mutual_count = len(
+                my_collaborators.intersection(get_collaborator_ids(collab))
+            )
 
+    return render(
+        request,
+        'profile_collabs.html',
+        context={
+            'all_collaborations': all_collaborations,
+            'mutual_collaborations': mutual_collaborations,
+            'user_id': user_id,
+            'my_profile_id': my_profile_id(request)
+        }
+    )
 @login_required(login_url='signin')
 def collaborate(request, user_id):
     subject = request.POST['subject']
