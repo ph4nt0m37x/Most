@@ -3,36 +3,40 @@
 {% load filters %}
 {% block content %}
 
-    <div class="container mt-5" style="min-height: 50vh;">
+<div class="container mt-5" style="min-height: 50vh;">
 
     <div class="row m-3">
         <div class="col-8">
-            <form action="{% url 'browse_search' %}" class="col-12 col-lg-auto me-lg-auto mb-3 mb-lg-0 me-lg-3" style="width: 400px" role="search">
+            <form action="{% url 'browse_search' %}" class="col-12 col-lg-auto me-lg-auto mb-3 mb-lg-0 me-lg-3"
+                  style="width: 400px" role="search">
                 <input name="query" type="search" class="form-control" placeholder="Search..." aria-label="Search">
             </form>
         </div>
         <div class="col-4">
             <form action="{% url 'browse_filter' %}">
-            <div class="row justify-content-between">
-                <div class="col-5">
-                    <select name="filter" class="form-select">
-                    <option value="all">---</option>
-                    {% for tag in tags %}
-                    <option value="{{ tag.name }}" {% if filter == tag.name %} selected {% endif %}>{{ tag.name }}</option>
-                    {% endfor %}
-                </select>
+                <div class="row justify-content-between">
+                    <div class="col-5">
+                        <select name="filter" class="form-select">
+                            <option value="all">---</option>
+                            {% for tag in tags %}
+                            <option value="{{ tag.name }}" {% if filter == tag.name %} selected {% endif %}>{{ tag.name
+                                }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <input class="form-control" type="date" name="date_filter" value="{{ date_filter }}">
+                    </div>
+                    <div class="col-1">
+                        <button type="submit" class="btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                 class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
-                <div class="col-6">
-                    <input class="form-control" type="date" name="date_filter" value="{{ date_filter }}">
-                </div>
-                <div class="col-1">
-                    <button type="submit" class="btn">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
-                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
             </form>
         </div>
     </div>
@@ -40,7 +44,7 @@
     <div class="row">
         {% if not posts %}
         <div class="text-center py-5">
-        <p>No posts found.</p>
+            <p>No posts found.</p>
         </div>
         {% endif %}
         {% for post in posts %}
@@ -50,7 +54,8 @@
                     <div class="col-10 d-flex align-items-center ps-3">
                         <div class="ps-4 pe-3">
                             <a href="{% url 'profile' post.profile.user_id %}" class="">
-                                <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
+                                <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}"
+                                     class="rounded-circle" width="48" height="48" alt=""/>
                             </a>
                         </div>
                         <div class="text-start">
@@ -60,12 +65,15 @@
                                 </a>
                             </p>
                             <p class="mb-3 small text-dark">{{ post.created.date }}
-                                <svg xmlns="http://www.w3.org/2000/svg" width="3" height="3" viewBox="0 0 3 3" fill="none">
-                                    <path d="M1.30437 2.26518C1.05876 2.26518 0.823208 2.16762 0.649536 1.99394C0.475864 1.82027 0.378296 1.58472 0.378296 1.33911C0.378296 1.0935 0.475864 0.857953 0.649536 0.68428C0.823208 0.510608 1.05876 0.41304 1.30437 0.41304C1.54998 0.41304 1.78553 0.510608 1.9592 0.68428C2.13287 0.857953 2.23044 1.0935 2.23044 1.33911C2.23044 1.58472 2.13287 1.82027 1.9592 1.99394C1.78553 2.16762 1.54998 2.26518 1.30437 2.26518Z" fill="#222222"></path>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="3" height="3" viewBox="0 0 3 3"
+                                     fill="none">
+                                    <path d="M1.30437 2.26518C1.05876 2.26518 0.823208 2.16762 0.649536 1.99394C0.475864 1.82027 0.378296 1.58472 0.378296 1.33911C0.378296 1.0935 0.475864 0.857953 0.649536 0.68428C0.823208 0.510608 1.05876 0.41304 1.30437 0.41304C1.54998 0.41304 1.78553 0.510608 1.9592 0.68428C2.13287 0.857953 2.23044 1.0935 2.23044 1.33911C2.23044 1.58472 2.13287 1.82027 1.9592 1.99394C1.78553 2.16762 1.54998 2.26518 1.30437 2.26518Z"
+                                          fill="#222222"></path>
                                 </svg>
-                                 <a href="{% url 'profile' post.profile.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                     {{ post.profile.first_name }} {{ post.profile.last_name }}
-                                 </a>
+                                <a href="{% url 'profile' post.profile.user_id %}"
+                                   class="text-decoration-none text-dark link-body-emphasis small">
+                                    {{ post.profile.first_name }} {{ post.profile.last_name }}
+                                </a>
                             </p>
                         </div>
                     </div>
@@ -84,8 +92,19 @@
                     </p>
                 </div>
                 <div class="row d-flex">
+                    {% if post.deadline %}
+                    <p class="text-start px-5 small text-secondary mb-3">
+                        Deadline: {{ post.deadline }}
+                    </p>
+                    {% endif %}
                     <div class="col-10 pb-3 ps-5 text-start">
-                        <a href="{% url 'post' post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">See more</button></a>
+
+                        <a href="{% url 'post' post.id %}">
+                            <button type="button" class="btn border rounded-pill btn-light link-body-emphasis">See
+                                more
+                            </button>
+                        </a>
+
                     </div>
                     <div class="col-1 pe-0 d-flex align-items-center justify-content-end">
                         <a onclick="" class="text-decoration-none pe-1">
