@@ -522,11 +522,86 @@
                                                             Issued {{ cert.date.year }}</p>
                                                     </div>
                                                     <div class="col-2 text-end pe-0">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px"
-                                                             viewBox="0 -960 960 960" width="24px"
-                                                             fill="#000000">
-                                                            <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                                        </svg>
+                                                        <div class="dropdown">
+                                                            <button class="btn p-0 border-0 bg-transparent shadow-none"
+                                                                    type="button" data-bs-toggle="dropdown"
+                                                                    aria-expanded="false">
+                                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                                     height="24px"
+                                                                     viewBox="0 -960 960 960" width="24px"
+                                                                     fill="#000000">
+                                                                    <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
+                                                                </svg>
+                                                            </button>
+                                                            <ul class="dropdown-menu">
+                                                                {% if edit %}
+                                                                    <li><a class="dropdown-item" data-bs-toggle="modal"
+                                                                           data-bs-target="#editCertModal"
+                                                                           href="">Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <hr class="dropdown-divider">
+                                                                    </li>
+                                                                    <li><a class="dropdown-item text-danger"
+                                                                           href="{% url 'delete_certification' cert.id %}">Delete</a>
+                                                                    </li>
+                                                                {% else %}
+                                                                    <li><a class="dropdown-item"
+                                                                           href="#">Report</a>
+                                                                    </li>
+                                                                {% endif %}
+                                                            </ul>
+                                                        </div>
+                                                        <div class="modal fade" id="editCertModal" tabindex="-1"
+                                                             aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered">
+                                                                <div class="row pt-3 pb-2 px-5 mb-2">
+                                                                    <div class="bg-white">
+                                                                        <div class="p-3 ">
+                                                                            <form method="post"
+                                                                                  action="{% url 'edit_certification' cert.id %}">
+                                                                                {% csrf_token %}
+                                                                                <div class="modal-content">
+                                                                                    <div class="modal-body">
+                                                                                        <div class="row p-3">
+                                                                                            <input required name="name"
+                                                                                                   type="text"
+                                                                                                   class="form-control rounded-3"
+                                                                                                   id="name"
+                                                                                                   aria-describedby="emailHelp"
+                                                                                                   placeholder="Certification Name..."
+                                                                                                   value="{{ cert.name }}">
+
+                                                                                        </div>
+                                                                                        <div class="row px-3 pb-3">
+                                                                                            <input required type="text"
+                                                                                                   name="company"
+                                                                                                   id="company"
+                                                                                                   class="form-control rounded-3"
+                                                                                                   placeholder="Company Name..."
+                                                                                                   value="{{ cert.company }}">
+                                                                                        </div>
+                                                                                        <div class="row px-3 pb-3">
+                                                                                            <input required type="date"
+                                                                                                   name="date" id="date"
+                                                                                                   class="form-control rounded-3"
+                                                                                                   value="{{ cert.date|date:"Y-m-d" }}">
+                                                                                        </div>
+                                                                                        <div class="row px-3 pb-3">
+                                                                                            <button class="btn text-light rounded-pill"
+                                                                                                    style="background-color: #436850"
+                                                                                                    type="submit">
+                                                                                                Save
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
                                             </div>

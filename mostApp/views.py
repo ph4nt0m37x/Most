@@ -203,6 +203,32 @@ def create_app_post(request):
     )
 
 @login_required(login_url='signin')
+def edit_post(request, post_id):
+    if request.method == 'POST':
+        post = PostEditModelForm(request.POST, request.FILES, instance=Post.objects.filter(id=post_id).first())
+        if post.is_valid():
+            post.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    post = PostEditModelForm(instance=Post.objects.filter(id=post_id).first())
+    return render(request, 'edit.html',
+                  context={'post': post,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def edit_certification(request, certification_id):
+    if request.method == 'POST':
+        certification = CertificationEditModelForm(request.POST, request.FILES, instance=Certification.objects.filter(id=certification_id).first())
+        if certification.is_valid():
+            certification.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def delete_certification(request, certification_id):
+    Certification.objects.get(id=certification_id, profile__user=request.user).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='signin')
 def post(request, post_id):
     exists  = False
     deadline = False  # if the deadline has passed
@@ -461,7 +487,7 @@ def accept(request, user_id, post_id):
     collaboration = CollaborationPost.objects.filter(id=post_id)
     collaboration.update(accepted=True)
     Collaboration.objects.create(collaborator_1=Profile.objects.filter(user=request.user).first(),collaborator_2=Profile.objects.filter(user_id=user_id).first())
-    return redirect(profile, user_id)
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def applications(request):
