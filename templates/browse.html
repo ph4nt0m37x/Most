@@ -19,8 +19,8 @@
                         <select name="filter" class="form-select">
                             <option value="all">---</option>
                             {% for tag in tags %}
-                            <option value="{{ tag.name }}" {% if filter == tag.name %} selected {% endif %}>{{ tag.name
-                                }}
+                            <option value="{{ tag.name }}" {% if filter == tag.name %} selected {% endif %}>
+                                {{ tag.name }}
                             </option>
                             {% endfor %}
                         </select>
