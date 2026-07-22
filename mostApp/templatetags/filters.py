@@ -1,5 +1,5 @@
 from django import template
-from mostApp.models import Profile, Post, ApplicationPost
+from mostApp.models import Profile, Post, ApplicationPost, Collaboration, CollaborationPost
 
 register = template.Library()
 
@@ -21,3 +21,7 @@ def get_profile_pic_url(user_id):
         return Profile.objects.filter(user_id=user_id).first().profile_pic.url
     else:
         return False
+
+@register.filter
+def get_collaborations(user_id):
+    return CollaborationPost.objects.filter(receiver__user_id=user_id, accepted=False).exists()
