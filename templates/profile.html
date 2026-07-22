@@ -4,12 +4,14 @@
 {% block content %}
 
 <script>
-    window.onload=function(){
-        var form=document.getElementById("collaborationForm");
-        form.onsubmit=()=>{
-            alert("Successfully sent a collaboration!");
-        };
-    };
+document.addEventListener("DOMContentLoaded", function () {
+    const successModal = document.getElementById("successModal");
+
+    if (successModal) {
+        const modal = new bootstrap.Modal(successModal);
+        modal.show();
+    }
+});
 </script>
     <script>
       document.addEventListener("DOMContentLoaded", function () {
@@ -128,34 +130,6 @@
                         </div>
                     </div>
                 </div>
-                {% if successful %}
-                <!-- Success Modal -->
-                <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successLabel"
-                     aria-hidden="true">
-                    <div class="modal-dialog modal-dialog-centered w-25">
-                        <div class="modal-content py-4 mx-0">
-                            <div class="row">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45" viewBox="0 0 45 45"
-                                     fill="none">
-                                    <circle cx="22.5" cy="22.5" r="16.875" stroke="#436850" stroke-width="3"></circle>
-                                    <path d="M15 22.5L20.625 28.125L30 16.875" stroke="#436850" stroke-width="3"></path>
-                                </svg>
-                            </div>
-                            <div class="row">
-                                <h2 class="text-center fw-semibold" style="color: #436850">Success!</h2>
-                            </div>
-                            <div class="row">
-                                <p class="text-center text-secondary">Your collaboration request has been sent.</p>
-                            </div>
-                            <div class="row d-flex align-items-center justify-content-center">
-                                <button type="submit" class="btn text-light text-center w-25" data-bs-dismiss="modal"
-                                        style="background-color: #436850">OK
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                {% endif %}
                 <!-- Tabs -->
                 <div class="bd-example-snippet bd-code-snippet ">
                     <div class="bd-example m-0 pt-4 border-0">
@@ -448,7 +422,7 @@
                                 <div class="row pt-3 pb-2 px-5 mb-2">
                                     <div class="border rounded-4">
                                         <div class="p-3 ">
-                                            <form method="post" action="{% url 'create_certification' %}" id="collaborationForm" class="form boarder rounded-5">
+                                            <form method="post" action="{% url 'create_certification' %}" id="certificationForm" class="form boarder rounded-5">
                                                 {% csrf_token %}
                                                 <div class="row p-3">
                                                     <input required name="name" type="text" class="form-control rounded-3" id="name"
@@ -606,7 +580,42 @@
                     </div>
                 </div>
             </div>
+            <!-- Success Modal -->
+            {% if messages %}
+{% for message in messages %}
+{% if message.tags == "success" %}
+            <div class="modal fade" data-bs-backdrop='static' id="successModal" tabindex="-1"
+                 aria-labelledby="successModalLabel"
+                 aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered w-25">
+                    <div class="modal-content py-4 mx-0">
+                        <div class="row">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45"
+                                 viewBox="0 0 45 45" fill="none">
+                                <circle cx="22.5" cy="22.5" r="16.875" stroke="#436850"
+                                        stroke-width="3"></circle>
+                                <path d="M15 22.5L20.625 28.125L30 16.875" stroke="#436850"
+                                      stroke-width="3"></path>
+                            </svg>
+                        </div>
+                        <div class="row">
+                            <h2 class="text-center fw-semibold" style="color: #436850">Success!</h2>
+                        </div>
+                        <div class="row">
+                            <p class="text-center text-secondary">Your collaboration request has been sent.</p>
+                        </div>
+                        <div class="row d-flex align-items-center justify-content-center">
+                            <button type="button" class="btn text-light text-center w-25"
+                                    data-bs-dismiss="modal"
+                                    style="background-color: #436850">OK
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
             </div>
         </div>
-
+{% endif %}
+{% endfor %}
+{% endif %}
 {% endblock %}

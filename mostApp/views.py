@@ -447,17 +447,30 @@ def profile_collaborations(request, user_id):
     )
 @login_required(login_url='signin')
 def collaborate(request, user_id):
+    sender = Profile.objects.filter(user=request.user).first()
+    receiver = Profile.objects.filter(user_id=user_id).first()
+
     subject = request.POST['subject']
     body = request.POST['body']
-    collaboration = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first(),
-                                                     receiver=Profile.objects.filter(user_id=user_id).first())
+
+    collaboration = CollaborationPost.objects.filter(
+        sender=sender,
+        receiver=receiver
+    )
+
     if collaboration.exists():
         collaboration.update(subject=subject, body=body)
     else:
-        CollaborationPost.objects.create(sender=Profile.objects.filter(user=request.user).first(),
-                                         receiver=Profile.objects.filter(user_id=user_id).first(),
-                                         subject=subject, body=body)
-    return redirect(profile, user_id)
+        CollaborationPost.objects.create(
+            sender=sender,
+            receiver=receiver,
+            subject=subject,
+            body=body
+        )
+
+    messages.success(request, "Your application has been sent.")
+
+    return redirect('profile', user_id)
 
 @login_required(login_url='signin')
 def accept(request, user_id, post_id):
