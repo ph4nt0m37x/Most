@@ -2,78 +2,87 @@
 {% load static %}
 {% block content %}
 
-<!--Main Content-->
+    <!--Main Content-->
 
-<div class="container m-auto" style="min-height: 50vh;">
-    <div class="row">
-        <div class="col-2">
-        </div>
-        <div class="col-8">
-            <div class="row pt-3 pb-2 px-5">
-                <div class="border rounded-4">
-                    <div class="row pt-3">
-                        <div class="col-1 d-flex align-items-center">
-                            <a href="{% url 'browse' %}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                 fill="none">
-                                <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                                      stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                            </svg>
-                            </a>
-                        </div>
-                        <div class="col-11 d-flex flex-column mt-3">
-                            <h2 class="text-start mb-2 fw-semibold">{{ post.title }}</h2>
-                            <p class="small text-start mb-0"><a href="{% url 'profile' post.profile.user_id %}"
-                                                                class="text-decoration-none text-secondary link-body-emphasis">{{ post.profile.first_name }} {{ post.profile.last_name }}</a>
-                            </p>
-                        </div>
-                        <div class="px-5">
-                            <hr/>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-1"></div>
-                        <div class="col-10">
-                            <p class="text-start">
-                            {{ post.long_description }}
-                            </p>
-                        </div>
-                        <div class="col-1"></div>
-                    </div>
-                    <div class="row d-flex justify-content-between px-5 mx-5 my-4 text-center">
-                        {% if exists %}
-                            <p>You have already applied to this post.</p>
-                        {% elif deadline %}
-                            <p>Deadline expired: {{ post.deadline.date }}</p>
-                        <div class="col-2 d-flex align-items-center justify-content-center">
-                            <a href="{% url 'browse' %}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">Cancel</p>
-                            </a>
-                        </div>
-                        <div class="col-2 text-end">
-                        {% else %}
-                            <div class="row d-flex justify-content-between px-5 mx-5 my-4">
-                                <div class="col-2 d-flex align-items-center justify-content-center">
-                                    <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">
-                                        Cancel</p>
-                                    </a>
-                                </div>
-                                <div class="col-2 d-flex align-items-center justify-content-center">
-                                    <a href="{% url 'apply' post.id %}">
-                                        <button type="submit" class="btn text-light" style="background-color: #436850">
-                                            Apply
-                                        </button>
-                                    </a>
-                                </div>
+    <div class="container m-auto" style="min-height: 50vh;">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <div class="row pt-3 pb-2 px-5">
+                    <div class="border rounded-4">
+                        <div class="row pt-3">
+                            <div class="col-1 d-flex align-items-center">
+                                <a href="{% url 'browse' %}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                         fill="none">
+                                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </a>
                             </div>
-                        {% endif %}
+                            <div class="col-11 d-flex flex-column mt-3">
+                                <h2 class="text-start mb-2 fw-semibold">{{ post.title }}</h2>
+                                <p class="small text-start mb-0"><a href="{% url 'profile' post.profile.user_id %}"
+                                                                    class="text-decoration-none text-secondary link-body-emphasis">{{ post.profile.first_name }} {{ post.profile.last_name }}</a>
+                                </p>
+                            </div>
+                            <div class="px-5">
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-10">
+                                <p class="text-start">
+                                    {{ post.long_description }}
+                                </p>
+                            </div>
+                            <div class="col-1"></div>
+                        </div>
+                        <div class="row d-flex justify-content-between px-5 mx-5 my-4 text-center">
+                            {% if exists %}
+                                <p>You have already applied to this post.</p>
+                            {% elif deadline %}
+                                <p>Deadline expired: {{ post.deadline.date }}</p>
+                                <div class="col-2 d-flex align-items-center justify-content-center">
+                                    <a href="{% url 'browse' %}" class="text-decoration-none mb-0"
+                                       style="color: #436850"><p class="mb-0">Cancel</p>
+                                    </a>
+                                </div>
+                                <div class="col-2 text-end">
+                            {% else %}
+                                <div class="row d-flex justify-content-between px-5 mx-5 my-4">
+                                    <div class="col-2 d-flex align-items-center justify-content-center">
+                                        <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0"
+                                           style="color: #436850"><p class="mb-0">
+                                            Cancel</p>
+                                        </a>
+                                    </div>
+                                    <div class="col-2 d-flex align-items-center justify-content-center">
+                                        {% if apply %}
+                                            <a href="{% url 'apply' post.id %}">
+                                                <button class="btn text-light" style="background-color: #436850">Apply
+                                                </button>
+                                            </a>
+                                        {% else %}
+                                            <button disabled="disabled" class="btn text-light"
+                                                    style="background-color: #436850">Apply
+                                            </button>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            {% endif %}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-2">
+                    <div class="col-2">
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+    </div>
 
 {% endblock %}

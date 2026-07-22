@@ -218,8 +218,12 @@ def create_app_post(request):
 def post(request, post_id):
     exists  = False
     deadline = False  # if the deadline has passed
+    apply = True
     post = ApplicationPost.objects.filter(id=post_id).first()
     post_deadline = post.deadline
+
+    if post.profile == Profile.objects.get(user=request.user):
+        apply = False
     if post_deadline is not None:
         if post_deadline.date().__lt__(datetime.today().date()):
             deadline = True
@@ -229,15 +233,12 @@ def post(request, post_id):
                   context={'post': post,
                            'exists': exists,
                            'deadline': deadline,
+                           'apply': apply,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
 def apply(request, post_id):
-    apply_post = True  # if the user tries to apply to their own post
     profile = Profile.objects.filter(user=request.user).first()
-
-    if ApplicationPost.objects.filter(id=post_id).first().profile == profile:
-        apply_post = False
 
     initial_data = {
         "first_name": profile.first_name,
@@ -264,7 +265,6 @@ def apply(request, post_id):
                 context={
                     'form': ApplicationFormModelForm(initial=initial_data),
                     'post_id': post_id,
-                    'apply': apply_post,
                     'my_profile_id': my_profile_id(request),
                     'successful': True
                 }
@@ -278,7 +278,6 @@ def apply(request, post_id):
         context={
             'form': form,
             'post_id': post_id,
-            'apply': apply_post,
             'my_profile_id': my_profile_id(request)
         }
     )
@@ -286,6 +285,7 @@ def apply(request, post_id):
 def profile(request, user_id):
     successful = False
     edit = False
+    collaborated = False
 
     user = User.objects.filter(id=user_id).first()
 
@@ -294,6 +294,9 @@ def profile(request, user_id):
         edit = True
     else:
         profile = Profile.objects.filter(user=user).first()
+
+    if CollaborationPost.objects.filter(sender__user=request.user, receiver__user_id=user_id, accepted=False).exists():
+        collaborated = True
 
     # logged-in user's profile (for calendar)
     my_profile = Profile.objects.get(user=request.user)
@@ -326,6 +329,7 @@ def profile(request, user_id):
                       'certifications': certifications,
                       'collaboration_count': collaboration_count,
                       'edit': edit,
+                      'collaborated': collaborated,
                       'successful': successful,
                       'my_profile_id': my_profile_id(request),
                       'events': json.dumps(events),
@@ -453,20 +457,12 @@ def collaborate(request, user_id):
     subject = request.POST['subject']
     body = request.POST['body']
 
-    collaboration = CollaborationPost.objects.filter(
+    CollaborationPost.objects.create(
         sender=sender,
-        receiver=receiver
+        receiver=receiver,
+        subject=subject,
+        body=body
     )
-
-    if collaboration.exists():
-        collaboration.update(subject=subject, body=body)
-    else:
-        CollaborationPost.objects.create(
-            sender=sender,
-            receiver=receiver,
-            subject=subject,
-            body=body
-        )
 
     messages.success(request, "Your application has been sent.")
 
@@ -489,14 +485,15 @@ def applications(request):
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
-def application(request, post_id):
+def forms(request, post_id):
     all_forms = ApplicationForm.objects.filter(app_post_id=post_id)
     forms = []
     for form in all_forms:
         forms.append(ApplicationFormModelForm(instance=form))
     post = ApplicationPost.objects.get(id=post_id)
-    return render(request, 'applications.html',
+    return render(request, 'forms.html',
                   context={'forms': forms,
+                           'form': None,
                            'post': post,
                            'my_profile_id': my_profile_id(request)})
 
@@ -505,10 +502,11 @@ def form(request, post_id):
     post = ApplicationPost.objects.get(id=post_id)
     app_form = ApplicationForm.objects.filter(app_post_id=post_id, user=request.user).first()
     form = ApplicationFormModelForm(instance=app_form)
-    return render(request, 'applications.html',
-                  context={'form': form,
-                           'post': post,
-                           'my_profile_id': my_profile_id(request)})
+    return render(request, 'forms.html',
+           context={'forms': None,
+                    'form': form,
+                    'post': post,
+                    'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
 def collaborations(request):

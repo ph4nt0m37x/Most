@@ -21,23 +21,34 @@
             </div>
             <div class="col-2"></div>
         </div>
-    {% if forms %}
-        {% for form in forms %}
-        <div class="row">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <form>
-                    {% csrf_token %}
-                    {{ form.as_p }}
-                </form>
+        {% if forms %}
+            {% for form in forms %}
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <form>
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                        </form>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+            {% endfor %}
+        {% elif form %}
+            <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-8">
+                        <form>
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                        </form>
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+        {% else %}
+            <div class="row">
+                <p>No forms.</p>
             </div>
-            <div class="col-2"></div>
-        </div>
-        {% endfor %}
-    {% else %}
-    <div class="row">
-        <p>No forms.</p>
-    </div>
-    {% endif %}
+        {% endif %}
     </div>
 {% endblock %}
