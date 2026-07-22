@@ -481,8 +481,13 @@ document.addEventListener("DOMContentLoaded", function () {
                                             </svg>
                                         </div>
                                         <div class="col-11">
+                                            {% if profile.contact %}
+                                            <p class="mt-3 mb-3"><a href="{{ profile.contact }}" class="text-decoration-none text-dark link-body-emphasis">{{ profile.contact }}</a>
+                                            </p>
+                                             {% else %}
                                             <p class="mt-3 mb-3"><a href="" class="text-decoration-none text-dark link-body-emphasis">{{ profile.contact }}</a>
                                             </p>
+                                            {% endif %}
                                         </div>
                                         <hr class="mb-0">
                                         <div class="col-1 d-flex align-items-center mt-3 mb-3">
@@ -492,7 +497,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                             </svg>
                                         </div>
                                         <div class="col-11">
+                                            {% if profile.website %}
+                                            <span class="mt-3 mb-3 d-flex align-items-center"><a href="{{ profile.website }}" class="text-decoration-none text-dark link-body-emphasis">{{ profile.website }}</a></span>
+                                            {% else %}
                                             <span class="mt-3 mb-3 d-flex align-items-center"><a href="" class="text-decoration-none text-dark link-body-emphasis">{{ profile.website }}</a></span>
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>
