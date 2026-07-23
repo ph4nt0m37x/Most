@@ -45,11 +45,7 @@
                                 <p>You have already applied to this post.</p>
                             {% elif deadline %}
                                 <p>Deadline expired: {{ post.deadline.date }}</p>
-                                <div class="col-2 d-flex align-items-center justify-content-center">
-                                    <a href="{% url 'browse' %}" class="text-decoration-none mb-0"
-                                       style="color: #436850"><p class="mb-0">Cancel</p>
-                                    </a>
-                                </div>
+
                                 <div class="col-2 text-end">
                             {% else %}
                                 <div class="row d-flex justify-content-between px-5 mx-5 my-4">

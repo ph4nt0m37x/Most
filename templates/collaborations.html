@@ -56,32 +56,27 @@
                             <div class="border rounded-4 p-1">
                                 <div class="row pt-3">
                                     <div class="col-10 d-flex align-items-center ps-3">
-                                        <div class="ps-4 pe-3">
+                                        <div class="px-3">
                                             <a href="{% url 'profile' post.receiver.user_id %}" class="">
                                                 <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
                                             </a>
                                         </div>
                                         <div class="text-start">
-                                            <p class="mb-0 mt-3">
-                                                <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                            <h6 class="mb-0 mt-3">
+                                                {{ post.subject }}
+                                            </h6>
+                                            <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
                                                      {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                                 </a>
-                                            </p>
+                                                 </a></p>
                                         </div>
                                     </div>
 
                                     <div class="col-2 text-end pe-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                             fill="#000000">
-                                            <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                        </svg>
+                                        <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
                                     </div>
                                 </div>
 
                                 <div class="row">
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.subject }}
-                                    </p>
                                     <p class="text-start px-5 py-2">
                                         {{ post.body }}
                                     </p>
@@ -113,36 +108,29 @@
                         <div class="border rounded-4 p-1">
                             <div class="row pt-3">
                                 <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="ps-4 pe-3">
+                                    <div class="px-3">
                                         <a href="{% url 'profile' post.sender.user_id %}" class="">
                                             <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
                                         </a>
                                     </div>
                                     <div class="text-start">
-                                        <p class="mb-0 mt-3">
-                                            <a href="{% url 'profile' post.sender.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                 {{ post.sender.first_name }} {{ post.sender.last_name }}
-                                             </a>
-                                        </p>
+                                        <h6 class="mb-0 mt-3">
+                                                {{ post.subject }}
+                                        </h6>
+                                        <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.sender.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                                     {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                                 </a></p>
                                     </div>
                                 </div>
-
                                 <div class="col-2 text-end pe-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                         fill="#000000">
-                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                    </svg>
+                                    <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
                                 </div>
                             </div>
-
                             <div class="row">
-                                <p class="text-start px-5 py-2">
-                                    {{ post.subject}}}
-                                </p>
-                                <p class="text-start px-5 py-2">
-                                    {{ post.body}}
-                                </p>
-                            </div>
+                                    <p class="text-start px-5 py-2">
+                                        {{ post.body }}
+                                    </p>
+                                </div>
                             <div class="row d-flex">
                                 <div class="col-10 pb-3 ps-5 text-start">
                                     <a href="{% url 'accept' post.sender.user_id post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">Accept</button></a>
@@ -175,36 +163,32 @@
                         <div class="border rounded-4 p-1">
                             <div class="row pt-3">
                                 <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="ps-4 pe-3">
+                                    <div class="px-3">
                                         <a href="{% url 'profile' post.receiver.user_id %}" class="">
                                             <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
                                         </a>
                                     </div>
                                     <div class="text-start">
-                                        <p class="mb-0 mt-3">
-                                            <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                 {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                             </a>
-                                        </p>
+                                        <h6 class="mb-0 mt-3">
+                                            {{ post.subject }}
+
+                                        </h6>
+                                        <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
+                                                     {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                 </a></p>
                                     </div>
                                 </div>
 
                                 <div class="col-2 text-end pe-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                         fill="#000000">
-                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                    </svg>
+                                     <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
                                 </div>
                             </div>
 
                             <div class="row">
-                                <p class="text-start px-5 py-2">
-                                    {{ post.subject}}}
-                                </p>
-                                <p class="text-start px-5 py-2">
-                                    {{ post.body}}
-                                </p>
-                            </div>
+                                    <p class="text-start px-5 py-2">
+                                        {{ post.body }}
+                                    </p>
+                                </div>
                         </div>
                     </div>
                     <div class="col-3"></div>
