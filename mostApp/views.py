@@ -109,14 +109,39 @@ def index(request):
 
 @login_required(login_url='signin')
 def search(request):
-    query = request.GET.get('query')
-    profiles_search = Profile.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
+    query = request.GET.get("query")
 
-    return render(request, 'search.html',
-                  context={'profiles_search': profiles_search,
-                           'query': query,
-                           'my_profile_id': my_profile_id(request)})
+    profiles_search = Profile.objects.filter(
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query)
+    )
 
+    my_profile = Profile.objects.get(user=request.user)
+
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "search.html",
+        context={
+            "profiles_search": profiles_search,
+            "query": query,
+            "my_profile": my_profile,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )
 @login_required(login_url='signin')
 def browse(request):
     posts = ApplicationPost.objects.all().order_by('-created')
