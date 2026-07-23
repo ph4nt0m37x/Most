@@ -49,43 +49,60 @@
             <!-- SENT -->
             <div class="tab-pane fade active show" id="nav-sent" role="tabpanel" aria-labelledby="nav-sent-tab">
                 {% if sent %}
-                {% for post in sent %}
-                    <div class="row d-flex align-items-left">
-                        <div class="col-3"></div>
-                        <div class="col-6 pt-3 pb-2">
-                            <div class="border rounded-4 p-1">
-                                <div class="row pt-3">
-                                    <div class="col-10 d-flex align-items-center ps-3">
-                                        <div class="px-3">
-                                            <a href="{% url 'profile' post.receiver.user_id %}" class="">
-                                                <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                            </a>
+                    {% for post in sent %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                                    <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.receiver.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                </a></p>
+                                            </div>
                                         </div>
-                                        <div class="text-start">
-                                            <h6 class="mb-0 mt-3">
-                                                {{ post.subject }}
-                                            </h6>
-                                            <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                     {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                                 </a></p>
+
+                                        <div class="col-2 text-end pe-4">
+                                            {% if post.sender.user == request.user %}
+                                                <div class="dropdown">
+                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                            type="button" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="bi bi-three-dots"
+                                                           style="font-size: 20px; color: black;"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item text-danger"
+                                                               href="{% url 'delete_collaboration' post.id %}">Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
 
-                                    <div class="col-2 text-end pe-4">
-                                        <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
                                     </div>
-                                </div>
-
-                                <div class="row">
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.body }}
-                                    </p>
                                 </div>
                             </div>
+                            <div class="col-3"></div>
                         </div>
-                        <div class="col-3"></div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
                 {% else %}
                     <div class="row d-flex align-items-center">
                         <div class="col-2"></div>
@@ -97,114 +114,123 @@
                         <div class="col-2"></div>
                     </div>
                 {% endif %}
-                </div>
+            </div>
             <!-- RECEIVED -->
             <div class="tab-pane fade show" id="nav-received" role="tabpanel" aria-labelledby="nav-received-tab">
-            {% if received %}
-            {% for post in received %}
-                <div class="row d-flex align-items-left">
-                    <div class="col-3"></div>
-                    <div class="col-6 pt-3 pb-2">
-                        <div class="border rounded-4 p-1">
-                            <div class="row pt-3">
-                                <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="px-3">
-                                        <a href="{% url 'profile' post.sender.user_id %}" class="">
-                                            <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                        </a>
+                {% if received %}
+                    {% for post in received %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.sender.user_id %}" class="">
+                                                    <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.sender.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
                                     </div>
-                                    <div class="text-start">
-                                        <h6 class="mb-0 mt-3">
-                                                {{ post.subject }}
-                                        </h6>
-                                        <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.sender.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                     {{ post.sender.first_name }} {{ post.sender.last_name }}
-                                                 </a></p>
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
                                     </div>
-                                </div>
-                                <div class="col-2 text-end pe-4">
-                                    <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                                    <div class="row d-flex">
+                                        <div class="col-10 pb-3 ps-5 text-start">
+                                            <a href="{% url 'accept' post.sender.user_id post.id %}">
+                                                <button type="button"
+                                                        class="btn border rounded-pill btn-light link-body-emphasis">
+                                                    Accept
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="row">
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.body }}
-                                    </p>
-                                </div>
-                            <div class="row d-flex">
-                                <div class="col-10 pb-3 ps-5 text-start">
-                                    <a href="{% url 'accept' post.sender.user_id post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">Accept</button></a>
-                                </div>
+                            <div class="col-3"></div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No collaboration requests.</p>
                             </div>
                         </div>
+                        <div class="col-2"></div>
                     </div>
-                    <div class="col-3"></div>
-                </div>
-            {% endfor %}
-            {% else %}
-                <div class="row d-flex align-items-center">
-                    <div class="col-2"></div>
-                    <div class="col-8">
-                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                            <p class="text-center opacity-75 p-5">No collaboration requests.</p>
-                        </div>
-                    </div>
-                    <div class="col-2"></div>
-                </div>
-            {% endif %}
+                {% endif %}
             </div>
             <!-- ACCEPTED -->
             <div class="tab-pane fade show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
-            {% if accepted %}
-            {% for post in accepted %}
-                <div class="row d-flex align-items-left">
-                    <div class="col-3"></div>
-                    <div class="col-6 pt-3 pb-2">
-                        <div class="border rounded-4 p-1">
-                            <div class="row pt-3">
-                                <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="px-3">
-                                        <a href="{% url 'profile' post.receiver.user_id %}" class="">
-                                            <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                        </a>
-                                    </div>
-                                    <div class="text-start">
-                                        <h6 class="mb-0 mt-3">
-                                            {{ post.subject }}
+                {% if accepted %}
+                    {% for post in accepted %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                                    <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
 
-                                        </h6>
-                                        <p class="mb-3 small text-secondary"><a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                     {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                                 </a></p>
-                                    </div>
-                                </div>
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.receiver.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
 
-                                <div class="col-2 text-end pe-4">
-                                     <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.body }}
-                                    </p>
-                                </div>
+                            <div class="col-3"></div>
                         </div>
-                    </div>
-                    <div class="col-3"></div>
-                </div>
-            {% endfor %}
-            {% else %}
-                <div class="row d-flex align-items-center">
-                    <div class="col-2"></div>
-                    <div class="col-8">
-                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                            <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
+                    {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
+                            </div>
                         </div>
+                        <div class="col-2"></div>
                     </div>
-                    <div class="col-2"></div>
-                </div>
-            {% endif %}
+                {% endif %}
             </div>
         </div>
     </div>

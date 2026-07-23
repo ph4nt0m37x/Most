@@ -5,179 +5,287 @@
 
     <!--Main Content-->
 
-<div class="container mt-5" style="min-height: 50vh;">
-    <div class="row">
-        <div class="col-2 d-flex align-items-center justify-content-end">
-            <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                     fill="none">
-                    <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                          stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                </svg>
-            </a>
+    <div class="container mt-5" style="min-height: 50vh;">
+        <div class="row">
+            <div class="col-2 d-flex align-items-center justify-content-end">
+                <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                         fill="none">
+                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                    </svg>
+                </a>
+            </div>
+            <div class="col-8"><h3 class="fw-semibold">Bookmarks</h3>
+                <hr/>
+            </div>
+            <div class="col-2"></div>
         </div>
-        <div class="col-8"><h3 class="fw-semibold">Bookmarks</h3><hr/></div>
-        <div class="col-2"></div>
-    </div>
-    <nav class="row py-2">
-        <div class="col-2"></div>
-        <div class="col-8 nav d-flex justify-content-around align-items-center" id="nav-tab" role="tablist">
-            <button class="btn text-center active shadow-sm btn-outline-success rounded-pill" id="nav-collaborations-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-collaborations"
-                    type="button" role="tab" aria-controls="nav-collaborations" aria-selected="false" tabindex="-1">
-                Collaborations
-            </button>
-            <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-posts-tab" data-bs-toggle="tab"
-                    data-bs-target="#nav-posts" type="button" role="tab" aria-controls="nav-posts"
-                    aria-selected="true">Posts
-            </button>
-        </div>
-        <div class="col-2">
-        </div>
-    </nav>
+        <nav class="row py-2">
+            <div class="col-2"></div>
+            <div class="col-8 nav d-flex justify-content-around align-items-center" id="nav-tab" role="tablist">
+                <button class="btn text-center active shadow-sm btn-outline-success rounded-pill"
+                        id="nav-collaborations-tab" data-bs-toggle="tab"
+                        data-bs-target="#nav-collaborations"
+                        type="button" role="tab" aria-controls="nav-collaborations" aria-selected="false" tabindex="-1">
+                    Collaborations
+                </button>
+                <button class="btn text-center shadow-sm btn-outline-success rounded-pill" id="nav-posts-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav-posts" type="button" role="tab" aria-controls="nav-posts"
+                        aria-selected="true">Posts
+                </button>
+            </div>
+            <div class="col-2">
+            </div>
+        </nav>
 
-    <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade active show" id="nav-collaborations" role="tabpanel" aria-labelledby="nav-collaborations-tab">
-        {% if bookmarks_app_post %}
-            {% for post in bookmarks_app_post %}
-            <div class="row d-flex align-items-left">
-                <div class="col-3"></div>
-                <div class="col-6 pt-3 pb-2">
-                    <div class="border rounded-4 p-1">
-                        <div class="row pt-3">
-                            <div class="col-10 d-flex align-items-center ps-3">
-                                <div class="ps-4 pe-3">
-                                    <a href="{% url 'profile' post.app_post.profile.user_id %}" class="">
-                                        <img src="{% if post.app_post.profile.user_id|get_profile_pic_url %} {{ post.app_post.profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                    </a>
+        <div class="tab-content" id="nav-tabContent">
+            <div class="tab-pane fade active show" id="nav-collaborations" role="tabpanel"
+                 aria-labelledby="nav-collaborations-tab">
+                {% if bookmarks_app_post %}
+                    {% for post in bookmarks_app_post %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="ps-4 pe-3">
+                                                <a href="{% url 'profile' post.app_post.profile.user_id %}" class="">
+                                                    <img src="{% if post.app_post.profile.user_id|get_profile_pic_url %} {{ post.app_post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <p class="mb-0 mt-3">
+                                                    <a href="{% url 'post' post.app_post.id %}"
+                                                       class="text-decoration-none text-body-emphasis">
+                                                        {{ post.app_post.title }}
+                                                    </a>
+                                                </p>
+                                                <p class="mb-3 small text-dark">{{ post.app_post.created.date }}
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="3" height="3"
+                                                         viewBox="0 0 3 3" fill="none">
+                                                        <path d="M1.30437 2.26518C1.05876 2.26518 0.823208 2.16762 0.649536 1.99394C0.475864 1.82027 0.378296 1.58472 0.378296 1.33911C0.378296 1.0935 0.475864 0.857953 0.649536 0.68428C0.823208 0.510608 1.05876 0.41304 1.30437 0.41304C1.54998 0.41304 1.78553 0.510608 1.9592 0.68428C2.13287 0.857953 2.23044 1.0935 2.23044 1.33911C2.23044 1.58472 2.13287 1.82027 1.9592 1.99394C1.78553 2.16762 1.54998 2.26518 1.30437 2.26518Z"
+                                                              fill="#222222"></path>
+                                                    </svg>
+                                                    <a href="{% url 'profile' post.app_post.profile.user_id %}"
+                                                       class="text-decoration-none text-dark link-body-emphasis small">
+                                                        {{ post.app_post.profile.first_name }} {{ post.app_post.profile.last_name }}
+                                                    </a>
+                                                </p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2 text-end pe-4">
+                                            {% if post.app_post.profile.user == request.user %}
+                                                <div class="dropdown">
+                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                            type="button" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="bi bi-three-dots"
+                                                           style="font-size: 20px; color: black;"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item"
+                                                               href="{% url 'edit_app_post' post.app_post.id %}">Edit</a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                        <li><a class="dropdown-item text-danger"
+                                                               href="{% url 'delete_app_post' post.app_post.id %}">Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.app_post.short_description }}
+                                        </p>
+                                    </div>
+                                    <div class="row d-flex text-end pb-3">
+                                        <div class="col-10 pb-3 ps-5 text-start">
+                                            <a href="{% url 'post' post.app_post.id %}">
+                                                <button type="button"
+                                                        class="btn border rounded-pill btn-light link-body-emphasis">See
+                                                    more
+                                                </button>
+                                            </a>
+                                        </div>
+                                        <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
+                                            <a onclick="" class="text-decoration-none">
+                                                <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
+                                            </a>
+                                        </div>
+                                        <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
+                                            <a href="{% url 'bookmark_app_post' post.app_post.id %}" onclick=""
+                                               class="text-decoration-none">
+                                                <i class="bi bi-bookmark-fill"
+                                                   style="font-size: 15px; color: black;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-start">
-                                    <p class="mb-0 mt-3">
-                                        <a href="{% url 'post' post.app_post.id %}" class="text-decoration-none text-body-emphasis">
-                                            {{ post.app_post.title}}
-                                        </a>
-                                    </p>
-                                    <p class="mb-3 small text-dark">{{ post.app_post.created.date }}
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="3" height="3" viewBox="0 0 3 3" fill="none">
-                                            <path d="M1.30437 2.26518C1.05876 2.26518 0.823208 2.16762 0.649536 1.99394C0.475864 1.82027 0.378296 1.58472 0.378296 1.33911C0.378296 1.0935 0.475864 0.857953 0.649536 0.68428C0.823208 0.510608 1.05876 0.41304 1.30437 0.41304C1.54998 0.41304 1.78553 0.510608 1.9592 0.68428C2.13287 0.857953 2.23044 1.0935 2.23044 1.33911C2.23044 1.58472 2.13287 1.82027 1.9592 1.99394C1.78553 2.16762 1.54998 2.26518 1.30437 2.26518Z" fill="#222222"></path>
-                                        </svg>
-                                         <a href="{% url 'profile' post.app_post.profile.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                             {{ post.app_post.profile.first_name }} {{ post.app_post.profile.last_name }}
-                                         </a>
-                                    </p>
-                                </div>
                             </div>
-
-                            <div class="col-2 text-end pe-4">
-                                 <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                            <div class="col-3"></div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No bookmarks found.</p>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <p class="text-start px-5 py-2">
-                                {{ post.app_post.short_description }}
-                            </p>
-                        </div>
-                        <div class="row d-flex text-end pb-3">
-                            <div class="col-10 pb-3 ps-5 text-start">
-                                <a href="{% url 'post' post.app_post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">See more</button></a>
-                            </div>
-                            <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
-                                <a onclick="" class="text-decoration-none">
-                                    <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                                </a>
-                            </div>
-                            <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
-                                <a href="{% url 'bookmark_app_post' post.app_post.id %}" onclick="" class="text-decoration-none">
-                                   <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
-                                </a>
-                            </div>
-                        </div>
+                        <div class="col-2"></div>
                     </div>
-                </div>
-                <div class="col-3"></div>
+                {% endif %}
             </div>
-            {% endfor %}
-        {% else %}
-        <div class="row d-flex align-items-center">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                    <p class="text-center opacity-75 p-5">No bookmarks found.</p>
-                </div>
-            </div>
-            <div class="col-2"></div>
-        </div>
-        {% endif %}
-        </div>
-        <div class="tab-pane fade" id="nav-posts" role="tabpanel" aria-labelledby="nav-posts-tab">
-        {% if bookmarks_post %}
-            {% for post in bookmarks_post %}
-            <div class="row d-flex align-items-center">
-                <div class="col-3"></div>
-                <div class="col-6 pt-3 pb-2">
-                    <div class="border rounded-4 p-1">
-                        <div class="row pt-3">
-                            <div class="col-10 d-flex align-items-center ps-3">
-                                <div class="px-3">
-                                    <a href="{% url 'profile' post.post.profile.user_id %}" class="">
-                                        <img src="{% if post.post.profile.user_id|get_profile_pic_url %} {{ post.post.profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                    </a>
+            <div class="tab-pane fade" id="nav-posts" role="tabpanel" aria-labelledby="nav-posts-tab">
+                {% if bookmarks_post %}
+                    {% for post in bookmarks_post %}
+                        <div class="row d-flex align-items-center">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.post.profile.user_id %}" class="">
+                                                    <img src="{% if post.post.profile.user_id|get_profile_pic_url %} {{ post.post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <p class="mb-0 mt-3">
+                                                    <a href="{% url 'profile' post.post.profile.user_id %}"
+                                                       class="text-decoration-none text-body-emphasis">
+                                                        {{ post.post.profile.first_name }} {{ post.post.profile.last_name }}
+                                                    </a>
+                                                </p>
+                                                <p class="mb-3 small text-secondary">{{ post.post.created.date }}</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2 text-end pe-4">
+                                            {% if post.post.profile.user == request.user %}
+                                                <div class="dropdown">
+                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                            type="button" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="bi bi-three-dots"
+                                                           style="font-size: 20px; color: black;"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" data-bs-toggle="modal"
+                                                               data-bs-target="#editPostModal"
+                                                               href="">Edit</a>
+                                                        </li>
+                                                        <li>
+                                                            <hr class="dropdown-divider">
+                                                        </li>
+                                                        <li><a class="dropdown-item text-danger"
+                                                               href="{% url 'delete_post' post.post.id %}">Delete</a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="modal fade" id="editPostModal" tabindex="-1"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered">
+                                                        <div class="modal-content p-2">
+                                                            <div class="modal-header pt-3 pb-3">
+                                                                <div class="d-flex align-items-center">
+                                                                    <div class="px-3">
+                                                                        <img src="{% if post.post.profile.user_id|get_profile_pic_url %} {{ post.post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                                             class="rounded-circle" width="48"
+                                                                             height="48"
+                                                                             alt=""/>
+                                                                    </div>
+                                                                    <div class="text-start">
+                                                                        <p class="mb-0">
+                                                                            <a href="#" disabled="disabled"
+                                                                               class="text-decoration-none text-body-emphasis d-flex align-items-center">
+                                                                                {{ post.post.profile.first_name }} {{ post.post.profile.last_name }}
+                                                                            </a>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"></button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <form method="post"
+                                                                      action="{% url 'edit_post' post.post.id %}">
+                                                                    {% csrf_token %}
+                                                                    <div class="row px-3 pb-3">
+                                                                        <input class="textbox form-control rounded-3"
+                                                                               id="content" name="content"
+                                                                               value="{{ post.post.content }}">
+
+                                                                    </div>
+                                                                    <div class="row px-3 pb-3">
+                                                                        <button class="btn text-light rounded-pill"
+                                                                                style="background-color: #436850"
+                                                                                type="submit">
+                                                                            Save
+                                                                        </button>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.post.content }}
+                                        </p>
+                                    </div>
+                                    <div class="row d-flex text-end pb-3">
+                                        <div class="col-10">
+
+                                        </div>
+                                        <div class="col-1 pe-1">
+                                            <a onclick="" class="text-decoration-none">
+                                                <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
+                                            </a>
+                                        </div>
+                                        <div class="col-1 pe-4">
+                                            <a href="{% url 'bookmark_post' post.post.id %}" onclick=""
+                                               class="text-decoration-none">
+                                                <i class="bi bi-bookmark-fill"
+                                                   style="font-size: 15px; color: black;"></i>
+                                            </a>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="text-start">
-                                    <p class="mb-0 mt-3">
-                                        <a href="{% url 'profile' post.post.profile.user_id %}" class="text-decoration-none text-body-emphasis">
-                                        {{ post.post.profile.first_name }} {{ post.post.profile.last_name }}
-                                        </a>
-                                    </p>
-                                    <p class="mb-3 small text-secondary">{{ post.post.created.date}}</p>
-                                </div>
                             </div>
-
-                            <div class="col-2 text-end pe-4">
-                                 <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                            <div class="col-3"></div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No bookmarks found.</p>
                             </div>
                         </div>
-
-                        <div class="row">
-                            <p class="text-start px-5 py-2">
-                                {{ post.post.content }}
-                            </p>
-                        </div>
-                        <div class="row d-flex text-end pb-3">
-                            <div class="col-10">
-
-                            </div>
-                            <div class="col-1 pe-1">
-                                <a onclick="" class="text-decoration-none">
-                                    <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                                </a>
-                            </div>
-                            <div class="col-1 pe-4">
-                                <a href="{% url 'bookmark_post' post.post.id %}" onclick="" class="text-decoration-none">
-                                    <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
-                                </a>
-                            </div>
-                        </div>
+                        <div class="col-2"></div>
                     </div>
-                </div>
-                <div class="col-3"></div>
+                {% endif %}
             </div>
-            {% endfor %}
-        {% else %}
-        <div class="row d-flex align-items-center">
-            <div class="col-2"></div>
-            <div class="col-8">
-                <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                    <p class="text-center opacity-75 p-5">No bookmarks found.</p>
-                </div>
-            </div>
-            <div class="col-2"></div>
-        </div>
-        {% endif %}
         </div>
     </div>
-</div>
 
 
 

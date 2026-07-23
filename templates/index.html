@@ -1,317 +1,397 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-{% load filters %}
+    {% load filters %}
 
     <script>
-      document.addEventListener("DOMContentLoaded", function () {
-    const calendarEl = document.getElementById("calendar");
+        document.addEventListener("DOMContentLoaded", function () {
+            const calendarEl = document.getElementById("calendar");
 
-    if (!calendarEl) return;
+            if (!calendarEl) return;
 
-    calendarEl.addEventListener("click", function () {
-        window.location.href = "{% url 'calendar' %}";
-    });
+            calendarEl.addEventListener("click", function () {
+                window.location.href = "{% url 'calendar' %}";
+            });
 
-     const calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: "dayGridMonth",
-        headerToolbar: false,
-        events: JSON.parse('{{ events|escapejs }}'),
-        displayEventTime: false,
-        eventDisplay: "list-item",
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: "dayGridMonth",
+                headerToolbar: false,
+                events: JSON.parse('{{ events|escapejs }}'),
+                displayEventTime: false,
+                eventDisplay: "list-item",
 
-        eventContent: function() {
-            return {
-                html: '<span class="fc-daygrid-event-dot"></span>'
-            };
-        }
-    });
+                eventContent: function () {
+                    return {
+                        html: '<span class="fc-daygrid-event-dot"></span>'
+                    };
+                }
+            });
 
-    calendar.render();
-});
+            calendar.render();
+        });
     </script>
 
-<!-- Main Content -->
+    <!-- Main Content -->
 
-<div class="container m-auto">
-    <div class="row">
-        <div class="col-2 text-start">
-        </div>
-        <div class="col-7 text-center">
-            <!-- Create Post -->
-            <div class="row pt-3 pb-2 px-5 mb-2">
-                <div class="border rounded-4">
-                    <div class="row pt-3">
-                        <div class="col-12 d-flex align-items-center ps-3">
-                            <div class="px-3">
-                                <a href="#" class="">
-                                    <img src="{% if my_profile_id|get_profile_pic_url %} {{ my_profile_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48"
-                                         height="48" alt=""/>
+    <div class="container m-auto">
+        <div class="row">
+            <div class="col-2 text-start">
+            </div>
+            <div class="col-7 text-center">
+                <!-- Create Post -->
+                <div class="row pt-3 pb-2 px-5 mb-2">
+                    <div class="border rounded-4">
+                        <div class="row pt-3">
+                            <div class="col-12 d-flex align-items-center ps-3">
+                                <div class="px-3">
+                                    <a href="#" class="">
+                                        <img src="{% if my_profile_id|get_profile_pic_url %} {{ my_profile_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                             class="rounded-circle" width="48"
+                                             height="48" alt=""/>
+                                    </a>
+                                </div>
+                                <a data-bs-toggle="modal" data-bs-target="#writePostModal"
+                                   class="text-secondary text-decoration-none border rounded-5 bg-body-tertiary d-flex align-items-center col-10 py-2">
+                                    <p class="mb-0 px-3">Write something...</p>
                                 </a>
                             </div>
-                            <a data-bs-toggle="modal" data-bs-target="#writePostModal"
-                               class="text-secondary text-decoration-none border rounded-5 bg-body-tertiary d-flex align-items-center col-10 py-2">
-                                <p class="mb-0 px-3">Write something...</p>
-                            </a>
                         </div>
-                    </div>
-                    <div class="row py-2">
-                        <div class="col-8"></div>
-                        <div class="col-4 d-flex align-items-center justify-content-center">
-                            <div class="p-1">
-                                <a href="{% url 'create_app_post' %}" class="">
-                                    <button type="button"
-                                            class="btn border rounded-5 btn-light link-body-emphasis btn-sm">
-                                        <i class="bi bi-plus-circle" style="font-size: 15px; color: black; font-weight: bold"></i>
-                                        Collaboration
-                                    </button>
-                                </a>
+                        <div class="row py-2">
+                            <div class="col-8"></div>
+                            <div class="col-4 d-flex align-items-center justify-content-center">
+                                <div class="p-1">
+                                    <a href="{% url 'create_app_post' %}" class="">
+                                        <button type="button"
+                                                class="btn border rounded-5 btn-light link-body-emphasis btn-sm">
+                                            <i class="bi bi-plus-circle"
+                                               style="font-size: 15px; color: black; font-weight: bold"></i>
+                                            Collaboration
+                                        </button>
+                                    </a>
+                                </div>
+                                <!--                            <div class="d-flex align-items-center flex-row p-1">-->
+                                <!--                                <a href="" data-bs-toggle="modal"-->
+                                <!--                                   data-bs-target="#writePostModal"-->
+                                <!--                                   class="d-flex align-items-center text-decoration-none px-1">-->
+                                <!--                                    <svg xmlns="http://www.w3.org/2000/svg" width="20"-->
+                                <!--                                         height="20" viewBox="0 0 20 20"-->
+                                <!--                                         fill="none">-->
+                                <!--                                        <path d="M3.08395 15.7402C2.88868 15.9355 2.88868 16.252 3.08395 16.4473C3.27921 16.6426 3.59579 16.6426 3.79105 16.4473L3.08395 15.7402ZM7.1875 12.3438L7.54105 11.9902C7.34579 11.7949 7.02921 11.7949 6.83395 11.9902L7.1875 12.3438ZM9.0625 14.2188L8.70895 14.5723C8.90421 14.7676 9.22079 14.7676 9.41605 14.5723L9.0625 14.2188ZM13.2812 10L13.6348 9.64645C13.4395 9.45118 13.123 9.45118 12.9277 9.64645L13.2812 10ZM16.6777 14.1036C16.873 14.2988 17.1895 14.2988 17.3848 14.1036C17.5801 13.9083 17.5801 13.5917 17.3848 13.3964L16.6777 14.1036ZM3.4375 16.0938L3.79105 16.4473L7.54105 12.6973L7.1875 12.3438L6.83395 11.9902L3.08395 15.7402L3.4375 16.0938ZM7.1875 12.3438L6.83395 12.6973L8.70895 14.5723L9.0625 14.2188L9.41605 13.8652L7.54105 11.9902L7.1875 12.3438ZM9.0625 14.2188L9.41605 14.5723L13.6348 10.3536L13.2812 10L12.9277 9.64645L8.70895 13.8652L9.0625 14.2188ZM13.2812 10L12.9277 10.3536L16.6777 14.1036L17.0312 13.75L17.3848 13.3964L13.6348 9.64645L13.2812 10ZM5.3125 2.5V3H14.6875V2.5V2H5.3125V2.5ZM17.5 5.3125H17V14.6875H17.5H18V5.3125H17.5ZM14.6875 17.5V17H5.3125V17.5V18H14.6875V17.5ZM2.5 14.6875H3V5.3125H2.5H2V14.6875H2.5ZM5.3125 17.5V17C4.03534 17 3 15.9647 3 14.6875H2.5H2C2 16.5169 3.48306 18 5.3125 18V17.5ZM17.5 14.6875H17C17 15.9647 15.9647 17 14.6875 17V17.5V18C16.5169 18 18 16.5169 18 14.6875H17.5ZM14.6875 2.5V3C15.9647 3 17 4.03534 17 5.3125H17.5H18C18 3.48306 16.5169 2 14.6875 2V2.5ZM5.3125 2.5V2C3.48306 2 2 3.48306 2 5.3125H2.5H3C3 4.03534 4.03534 3 5.3125 3V2.5ZM8.125 6.71875H7.625C7.625 7.21926 7.21926 7.625 6.71875 7.625V8.125V8.625C7.77154 8.625 8.625 7.77154 8.625 6.71875H8.125ZM6.71875 8.125V7.625C6.21824 7.625 5.8125 7.21926 5.8125 6.71875H5.3125H4.8125C4.8125 7.77154 5.66596 8.625 6.71875 8.625V8.125ZM5.3125 6.71875H5.8125C5.8125 6.21824 6.21824 5.8125 6.71875 5.8125V5.3125V4.8125C5.66596 4.8125 4.8125 5.66596 4.8125 6.71875H5.3125ZM6.71875 5.3125V5.8125C7.21926 5.8125 7.625 6.21824 7.625 6.71875H8.125H8.625C8.625 5.66596 7.77154 4.8125 6.71875 4.8125V5.3125Z"-->
+                                <!--                                              fill="black"></path>-->
+                                <!--                                    </svg>-->
+                                <!--                                </a>-->
+                                <!--                                <a href="" data-bs-toggle="modal"-->
+                                <!--                                   data-bs-target="#writePostModal"-->
+                                <!--                                   class="d-flex align-items-center text-decoration-none px-1">-->
+                                <!--                                    <svg width="20" height="20" viewBox="0 0 20 20"-->
+                                <!--                                         fill="none"-->
+                                <!--                                         xmlns="http://www.w3.org/2000/svg">-->
+                                <!--                                        <path d="M10.0879 7.36109H7.79625M13.2294 11.9889L17.1043 13.8976C17.506 14.1421 17.9275 13.998 17.9167 13.488L17.8895 6.74251C17.8552 6.18887 17.5285 6.0378 17.0474 6.29366L13.2185 8.03379M4.375 15.4166H11.3379C12.3735 15.4166 13.2129 14.5875 13.2129 13.5648L13.2294 11.1896L13.2129 6.43517C13.2129 5.41242 12.3735 4.58331 11.3379 4.58331H4.375C3.33947 4.58331 2.5 5.41242 2.5 6.43517V13.5648C2.5 14.5875 3.33947 15.4166 4.375 15.4166Z"-->
+                                <!--                                              stroke="black" stroke-linecap="round"-->
+                                <!--                                              stroke-linejoin="round"></path>-->
+                                <!--                                    </svg>-->
+                                <!--                                </a>-->
+                                <!--                            </div>-->
                             </div>
-<!--                            <div class="d-flex align-items-center flex-row p-1">-->
-<!--                                <a href="" data-bs-toggle="modal"-->
-<!--                                   data-bs-target="#writePostModal"-->
-<!--                                   class="d-flex align-items-center text-decoration-none px-1">-->
-<!--                                    <svg xmlns="http://www.w3.org/2000/svg" width="20"-->
-<!--                                         height="20" viewBox="0 0 20 20"-->
-<!--                                         fill="none">-->
-<!--                                        <path d="M3.08395 15.7402C2.88868 15.9355 2.88868 16.252 3.08395 16.4473C3.27921 16.6426 3.59579 16.6426 3.79105 16.4473L3.08395 15.7402ZM7.1875 12.3438L7.54105 11.9902C7.34579 11.7949 7.02921 11.7949 6.83395 11.9902L7.1875 12.3438ZM9.0625 14.2188L8.70895 14.5723C8.90421 14.7676 9.22079 14.7676 9.41605 14.5723L9.0625 14.2188ZM13.2812 10L13.6348 9.64645C13.4395 9.45118 13.123 9.45118 12.9277 9.64645L13.2812 10ZM16.6777 14.1036C16.873 14.2988 17.1895 14.2988 17.3848 14.1036C17.5801 13.9083 17.5801 13.5917 17.3848 13.3964L16.6777 14.1036ZM3.4375 16.0938L3.79105 16.4473L7.54105 12.6973L7.1875 12.3438L6.83395 11.9902L3.08395 15.7402L3.4375 16.0938ZM7.1875 12.3438L6.83395 12.6973L8.70895 14.5723L9.0625 14.2188L9.41605 13.8652L7.54105 11.9902L7.1875 12.3438ZM9.0625 14.2188L9.41605 14.5723L13.6348 10.3536L13.2812 10L12.9277 9.64645L8.70895 13.8652L9.0625 14.2188ZM13.2812 10L12.9277 10.3536L16.6777 14.1036L17.0312 13.75L17.3848 13.3964L13.6348 9.64645L13.2812 10ZM5.3125 2.5V3H14.6875V2.5V2H5.3125V2.5ZM17.5 5.3125H17V14.6875H17.5H18V5.3125H17.5ZM14.6875 17.5V17H5.3125V17.5V18H14.6875V17.5ZM2.5 14.6875H3V5.3125H2.5H2V14.6875H2.5ZM5.3125 17.5V17C4.03534 17 3 15.9647 3 14.6875H2.5H2C2 16.5169 3.48306 18 5.3125 18V17.5ZM17.5 14.6875H17C17 15.9647 15.9647 17 14.6875 17V17.5V18C16.5169 18 18 16.5169 18 14.6875H17.5ZM14.6875 2.5V3C15.9647 3 17 4.03534 17 5.3125H17.5H18C18 3.48306 16.5169 2 14.6875 2V2.5ZM5.3125 2.5V2C3.48306 2 2 3.48306 2 5.3125H2.5H3C3 4.03534 4.03534 3 5.3125 3V2.5ZM8.125 6.71875H7.625C7.625 7.21926 7.21926 7.625 6.71875 7.625V8.125V8.625C7.77154 8.625 8.625 7.77154 8.625 6.71875H8.125ZM6.71875 8.125V7.625C6.21824 7.625 5.8125 7.21926 5.8125 6.71875H5.3125H4.8125C4.8125 7.77154 5.66596 8.625 6.71875 8.625V8.125ZM5.3125 6.71875H5.8125C5.8125 6.21824 6.21824 5.8125 6.71875 5.8125V5.3125V4.8125C5.66596 4.8125 4.8125 5.66596 4.8125 6.71875H5.3125ZM6.71875 5.3125V5.8125C7.21926 5.8125 7.625 6.21824 7.625 6.71875H8.125H8.625C8.625 5.66596 7.77154 4.8125 6.71875 4.8125V5.3125Z"-->
-<!--                                              fill="black"></path>-->
-<!--                                    </svg>-->
-<!--                                </a>-->
-<!--                                <a href="" data-bs-toggle="modal"-->
-<!--                                   data-bs-target="#writePostModal"-->
-<!--                                   class="d-flex align-items-center text-decoration-none px-1">-->
-<!--                                    <svg width="20" height="20" viewBox="0 0 20 20"-->
-<!--                                         fill="none"-->
-<!--                                         xmlns="http://www.w3.org/2000/svg">-->
-<!--                                        <path d="M10.0879 7.36109H7.79625M13.2294 11.9889L17.1043 13.8976C17.506 14.1421 17.9275 13.998 17.9167 13.488L17.8895 6.74251C17.8552 6.18887 17.5285 6.0378 17.0474 6.29366L13.2185 8.03379M4.375 15.4166H11.3379C12.3735 15.4166 13.2129 14.5875 13.2129 13.5648L13.2294 11.1896L13.2129 6.43517C13.2129 5.41242 12.3735 4.58331 11.3379 4.58331H4.375C3.33947 4.58331 2.5 5.41242 2.5 6.43517V13.5648C2.5 14.5875 3.33947 15.4166 4.375 15.4166Z"-->
-<!--                                              stroke="black" stroke-linecap="round"-->
-<!--                                              stroke-linejoin="round"></path>-->
-<!--                                    </svg>-->
-<!--                                </a>-->
-<!--                            </div>-->
                         </div>
                     </div>
                 </div>
-            </div>
-            <!-- Write a post modal -->
-            <div class="modal fade" id="writePostModal" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered">
-                    <form action="{% url 'create_post' %}" method="POST">
-                        {% csrf_token %}
-                        <div class="modal-content px-3">
-                            <div class="modal-header pt-3 pb-3">
-                                <div class="d-flex align-items-center">
+                <!-- Write a post modal -->
+                <div class="modal fade" id="writePostModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <form action="{% url 'create_post' %}" method="POST">
+                            {% csrf_token %}
+                            <div class="modal-content px-3">
+                                <div class="modal-header pt-3 pb-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="px-3">
+                                            <a href="{% url 'profile' my_profile_id %}" class="">
+                                                <img src="{% if my_profile_id|get_profile_pic_url %} {{ my_profile_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                     class="rounded-circle"
+                                                     width="48" height="48" alt=""/>
+                                            </a>
+                                        </div>
+                                        <div class="text-start">
+                                            <p class="mb-0">
+                                                <a href="#"
+                                                   class="text-decoration-none text-body-emphasis d-flex align-items-center">
+                                                    {{ my_profile.first_name }} {{ my_profile.last_name }}
+                                                </a>
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-close"
+                                            data-bs-dismiss="modal"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row p-3">
+                                        <input required name="content" type="text" class="form-control rounded-4"
+                                               id="post"
+                                               placeholder="Write something...">
+                                    </div>
+                                    <div class="row p-3">
+                                        <div class="rounded-3 border-2"
+                                             style="border: dashed lightgray;" onclick="">
+
+                                            <div class="row py-3">
+                                                <input type="file" id="fileElem" name="file" class="d-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="45"
+                                                     height="45"
+                                                     viewBox="0 0 45 45" fill="none">
+                                                    <rect width="45" height="45" rx="22.5"
+                                                          fill="#436850" fill-opacity="0.2"></rect>
+                                                    <path d="M24.6523 15.5645V21.1113C24.6523 21.3145 24.4883 21.4785 24.293 21.4785H20.7148C20.5117 21.4785 20.3477 21.3145 20.3477 21.1113V15.5645C20.3477 15.4473 20.2539 15.3457 20.1289 15.3457H19.3633C18.8789 15.3457 18.6211 14.7676 18.9492 14.4082L22.0898 10.9629C22.3164 10.7207 22.6992 10.7207 22.918 10.9629L26.0508 14.4082C26.3789 14.7676 26.1211 15.3457 25.6367 15.3457H24.8711C24.7539 15.3457 24.6523 15.4395 24.6523 15.5645Z"
+                                                          fill="#436850"></path>
+                                                    <path d="M16.4141 14.791H18.0191C18.027 15.4778 18.5689 16.127 19.3633 16.127H19.5664V16.3535H16.4141C15.0312 16.3535 13.9062 17.4785 13.9062 18.8613V26.9316C13.9062 28.3144 15.0313 29.4394 16.4141 29.4394H19.0313C19.2266 29.4394 19.4141 29.5332 19.5234 29.6894C20.2109 30.6738 21.3516 31.3223 22.6484 31.3223C23.9453 31.3223 25.0859 30.6738 25.7734 29.6894C25.8828 29.5332 26.0703 29.4394 26.2656 29.4394H28.8828C30.2647 29.4394 31.3891 28.3159 31.3906 26.9344V18.8613C31.375 17.4785 30.2578 16.3535 28.8672 16.3535H25.4336V16.127H25.6367C26.4311 16.127 26.973 15.4778 26.9809 14.791H28.8672C31.1272 14.791 32.9279 16.6183 32.953 18.8436L32.9531 18.8525V30.1034C32.9531 32.3498 31.1274 34.1737 28.8817 34.1737H16.4152C14.1695 34.1737 12.3438 32.3498 12.3438 30.1034V18.8613C12.3438 16.6155 14.1683 14.791 16.4141 14.791Z"
+                                                          fill="#436850"></path>
+                                                    <path d="M17.8438 18.3457H19.5664V19.1269H17.8438C17.2127 19.1269 16.6953 19.6444 16.6953 20.2754V25.5957C16.6953 26.2267 17.2127 26.7441 17.8438 26.7441H20.25C20.9142 26.7441 21.439 27.2067 21.592 27.7972C21.7164 28.27 22.1415 28.6113 22.6406 28.6113C23.1454 28.6113 23.5711 28.2652 23.6878 27.8029L23.6887 27.7996C23.8408 27.208 24.3662 26.7441 25.0313 26.7441H27.4375C28.0685 26.7441 28.5859 26.2267 28.5859 25.5957V20.2754C28.5859 19.6423 28.0743 19.1269 27.4375 19.1269H25.4336V18.3457H27.4375C28.5078 18.3457 29.3672 19.2129 29.3672 20.2754V25.5957C29.3672 26.6582 28.5 27.5254 27.4375 27.5254H25.0313C24.75 27.5254 24.5156 27.7207 24.4453 27.9941C24.2422 28.7988 23.5078 29.3926 22.6406 29.3926C21.7734 29.3926 21.0469 28.7988 20.8359 27.9941C20.7656 27.7207 20.5313 27.5254 20.25 27.5254H17.8438C16.7813 27.5254 15.9141 26.6582 15.9141 25.5957V20.2754C15.9141 19.2129 16.7813 18.3457 17.8438 18.3457Z"
+                                                          fill="#436850"></path>
+                                                </svg>
+                                            </div>
+                                            <p class="h6 text-center">Drop your images/videos here or <a href=""
+                                                                                                         class="fw-semibold text-decoration-none"
+                                                                                                         style="color: #436850">Click
+                                                to
+                                                upload</a></p>
+                                            <p class="opacity-50 small text-center">SVG, PNG, JPG, or GIF (max.
+                                                800x400px)</p>
+                                        </div>
+                                    </div>
+                                    <div class="row p-3">
+                                        <div class="form-control rounded-4 d-flex align-items-center flex-row p-1">
+                                            <p class="text-start mb-0 opacity-75 ms-2 col-8">Add to
+                                                your post</p>
+                                            <div class="col-4 d-flex justify-content-end pe-3 py-1">
+                                                <div
+                                                        class="d-flex align-items-center text-decoration-none px-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="20" height="20"
+                                                         viewBox="0 0 20 20"
+                                                         fill="none">
+                                                        <path d="M3.08395 15.7402C2.88868 15.9355 2.88868 16.252 3.08395 16.4473C3.27921 16.6426 3.59579 16.6426 3.79105 16.4473L3.08395 15.7402ZM7.1875 12.3438L7.54105 11.9902C7.34579 11.7949 7.02921 11.7949 6.83395 11.9902L7.1875 12.3438ZM9.0625 14.2188L8.70895 14.5723C8.90421 14.7676 9.22079 14.7676 9.41605 14.5723L9.0625 14.2188ZM13.2812 10L13.6348 9.64645C13.4395 9.45118 13.123 9.45118 12.9277 9.64645L13.2812 10ZM16.6777 14.1036C16.873 14.2988 17.1895 14.2988 17.3848 14.1036C17.5801 13.9083 17.5801 13.5917 17.3848 13.3964L16.6777 14.1036ZM3.4375 16.0938L3.79105 16.4473L7.54105 12.6973L7.1875 12.3438L6.83395 11.9902L3.08395 15.7402L3.4375 16.0938ZM7.1875 12.3438L6.83395 12.6973L8.70895 14.5723L9.0625 14.2188L9.41605 13.8652L7.54105 11.9902L7.1875 12.3438ZM9.0625 14.2188L9.41605 14.5723L13.6348 10.3536L13.2812 10L12.9277 9.64645L8.70895 13.8652L9.0625 14.2188ZM13.2812 10L12.9277 10.3536L16.6777 14.1036L17.0312 13.75L17.3848 13.3964L13.6348 9.64645L13.2812 10ZM5.3125 2.5V3H14.6875V2.5V2H5.3125V2.5ZM17.5 5.3125H17V14.6875H17.5H18V5.3125H17.5ZM14.6875 17.5V17H5.3125V17.5V18H14.6875V17.5ZM2.5 14.6875H3V5.3125H2.5H2V14.6875H2.5ZM5.3125 17.5V17C4.03534 17 3 15.9647 3 14.6875H2.5H2C2 16.5169 3.48306 18 5.3125 18V17.5ZM17.5 14.6875H17C17 15.9647 15.9647 17 14.6875 17V17.5V18C16.5169 18 18 16.5169 18 14.6875H17.5ZM14.6875 2.5V3C15.9647 3 17 4.03534 17 5.3125H17.5H18C18 3.48306 16.5169 2 14.6875 2V2.5ZM5.3125 2.5V2C3.48306 2 2 3.48306 2 5.3125H2.5H3C3 4.03534 4.03534 3 5.3125 3V2.5ZM8.125 6.71875H7.625C7.625 7.21926 7.21926 7.625 6.71875 7.625V8.125V8.625C7.77154 8.625 8.625 7.77154 8.625 6.71875H8.125ZM6.71875 8.125V7.625C6.21824 7.625 5.8125 7.21926 5.8125 6.71875H5.3125H4.8125C4.8125 7.77154 5.66596 8.625 6.71875 8.625V8.125ZM5.3125 6.71875H5.8125C5.8125 6.21824 6.21824 5.8125 6.71875 5.8125V5.3125V4.8125C5.66596 4.8125 4.8125 5.66596 4.8125 6.71875H5.3125ZM6.71875 5.3125V5.8125C7.21926 5.8125 7.625 6.21824 7.625 6.71875H8.125H8.625C8.625 5.66596 7.77154 4.8125 6.71875 4.8125V5.3125Z"
+                                                              fill="black"></path>
+                                                    </svg>
+                                                </div>
+                                                <div
+                                                        class="d-flex align-items-center text-decoration-none px-1">
+                                                    <svg width="20" height="20" viewBox="0 0 20 20"
+                                                         fill="none"
+                                                         xmlns="http://www.w3.org/2000/svg">
+                                                        <path d="M10.0879 7.36109H7.79625M13.2294 11.9889L17.1043 13.8976C17.506 14.1421 17.9275 13.998 17.9167 13.488L17.8895 6.74251C17.8552 6.18887 17.5285 6.0378 17.0474 6.29366L13.2185 8.03379M4.375 15.4166H11.3379C12.3735 15.4166 13.2129 14.5875 13.2129 13.5648L13.2294 11.1896L13.2129 6.43517C13.2129 5.41242 12.3735 4.58331 11.3379 4.58331H4.375C3.33947 4.58331 2.5 5.41242 2.5 6.43517V13.5648C2.5 14.5875 3.33947 15.4166 4.375 15.4166Z"
+                                                              stroke="black" stroke-linecap="round"
+                                                              stroke-linejoin="round"></path>
+                                                    </svg>
+                                                </div>
+                                                <div
+                                                        class="d-flex align-items-center text-decoration-none px-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="15" height="16"
+                                                         viewBox="0 0 15 16" fill="none">
+                                                        <path d="M7.49997 14C7.49997 14 12.1956 9.82609 12.1956 6.69565C12.1956 4.10231 10.0933 2 7.49997 2C4.90664 2 2.80432 4.10231 2.80432 6.69565C2.80432 9.82609 7.49997 14 7.49997 14Z"
+                                                              stroke="black"></path>
+                                                        <path d="M9.00017 6.50009C9.00017 7.32852 8.32859 8.00009 7.50017 8.00009C6.67174 8.00009 6.00017 7.32852 6.00017 6.50009C6.00017 5.67167 6.67174 5.0001 7.50017 5.0001C8.32859 5.0001 9.00017 5.67167 9.00017 6.50009Z"
+                                                              stroke="black"></path>
+                                                    </svg>
+                                                </div>
+                                                <div
+                                                        class="d-flex align-items-center text-decoration-none px-1">
+                                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                                         width="15" height="16"
+                                                         viewBox="0 0 15 16" fill="none">
+                                                        <g clip-path="url(#clip0_103_3334)">
+                                                            <path d="M9.95124 13.535V12.3093C9.95124 11.6591 9.69297 11.0356 9.23323 10.5758C8.77349 10.1161 8.14996 9.85782 7.49979 9.85782H3.20975C2.55959 9.85782 1.93605 10.1161 1.47631 10.5758C1.01658 11.0356 0.758301 11.6591 0.758301 12.3093V13.535M12.4027 5.56778V9.24496M14.2413 7.40637H10.5641M7.80622 4.95492C7.80622 6.30881 6.70867 7.40637 5.35477 7.40637C4.00087 7.40637 2.90332 6.30881 2.90332 4.95492C2.90332 3.60102 4.00087 2.50346 5.35477 2.50346C6.70867 2.50346 7.80622 3.60102 7.80622 4.95492Z"
+                                                                  stroke="black"
+                                                                  stroke-linecap="round"
+                                                                  stroke-linejoin="round"></path>
+                                                        </g>
+                                                        <defs>
+                                                            <clipPath id="clip0_103_3334">
+                                                                <rect width="14.7087"
+                                                                      height="14.7087" fill="white"
+                                                                      transform="translate(0.145508 0.664875)"></rect>
+                                                            </clipPath>
+                                                        </defs>
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row pt-1 pb-4">
+                                    <div class="d-flex align-items-center justify-content-center">
+                                        <button type="submit"
+                                                class="btn text-light rounded-5 w-100 py-1"
+                                                style="background-color: #436850">Post
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Other Posts -->
+                {% for post in posts %}
+                    <div class="row pt-3 pb-2 px-5">
+                        <div class="border rounded-4">
+                            <div class="row pt-3">
+                                <div class="col-10 d-flex align-items-center ps-3">
                                     <div class="px-3">
-                                        <a href="{% url 'profile' my_profile_id %}" class="">
-                                            <img src="{% if my_profile_id|get_profile_pic_url %} {{ my_profile_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle"
-                                                 width="48" height="48" alt=""/>
+                                        <a href="{% url 'profile' post.profile.user_id %}" class="">
+                                            <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                 class="rounded-circle" width="48" height="48" alt=""/>
                                         </a>
                                     </div>
                                     <div class="text-start">
-                                        <p class="mb-0">
-                                            <a href="#" class="text-decoration-none text-body-emphasis d-flex align-items-center">
-                                                {{ my_profile.first_name }} {{ my_profile.last_name }}
+                                        <p class="mb-0 mt-3">
+                                            <a href="{% url 'profile' post.profile.user_id %}"
+                                               class="text-decoration-none text-body-emphasis">
+                                                {{ post.profile.first_name }} {{ post.profile.last_name }}
                                             </a>
                                         </p>
+                                        <p class="mb-3 small text-secondary">{{ post.created.date }}</p>
                                     </div>
                                 </div>
-                                <button type="button" class="btn-close"
-                                        data-bs-dismiss="modal"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="row p-3">
-                                    <input required name="content" type="text" class="form-control rounded-4" id="post"
-                                           placeholder="Write something...">
-                                </div>
-                                <div class="row p-3">
-                                    <div class="rounded-3 border-2"
-                                         style="border: dashed lightgray;" onclick="">
 
-                                        <div class="row py-3">
-                                            <input type="file" id="fileElem" name="file" class="d-none">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="45"
-                                                 height="45"
-                                                 viewBox="0 0 45 45" fill="none">
-                                                <rect width="45" height="45" rx="22.5"
-                                                      fill="#436850" fill-opacity="0.2"></rect>
-                                                <path d="M24.6523 15.5645V21.1113C24.6523 21.3145 24.4883 21.4785 24.293 21.4785H20.7148C20.5117 21.4785 20.3477 21.3145 20.3477 21.1113V15.5645C20.3477 15.4473 20.2539 15.3457 20.1289 15.3457H19.3633C18.8789 15.3457 18.6211 14.7676 18.9492 14.4082L22.0898 10.9629C22.3164 10.7207 22.6992 10.7207 22.918 10.9629L26.0508 14.4082C26.3789 14.7676 26.1211 15.3457 25.6367 15.3457H24.8711C24.7539 15.3457 24.6523 15.4395 24.6523 15.5645Z"
-                                                      fill="#436850"></path>
-                                                <path d="M16.4141 14.791H18.0191C18.027 15.4778 18.5689 16.127 19.3633 16.127H19.5664V16.3535H16.4141C15.0312 16.3535 13.9062 17.4785 13.9062 18.8613V26.9316C13.9062 28.3144 15.0313 29.4394 16.4141 29.4394H19.0313C19.2266 29.4394 19.4141 29.5332 19.5234 29.6894C20.2109 30.6738 21.3516 31.3223 22.6484 31.3223C23.9453 31.3223 25.0859 30.6738 25.7734 29.6894C25.8828 29.5332 26.0703 29.4394 26.2656 29.4394H28.8828C30.2647 29.4394 31.3891 28.3159 31.3906 26.9344V18.8613C31.375 17.4785 30.2578 16.3535 28.8672 16.3535H25.4336V16.127H25.6367C26.4311 16.127 26.973 15.4778 26.9809 14.791H28.8672C31.1272 14.791 32.9279 16.6183 32.953 18.8436L32.9531 18.8525V30.1034C32.9531 32.3498 31.1274 34.1737 28.8817 34.1737H16.4152C14.1695 34.1737 12.3438 32.3498 12.3438 30.1034V18.8613C12.3438 16.6155 14.1683 14.791 16.4141 14.791Z"
-                                                      fill="#436850"></path>
-                                                <path d="M17.8438 18.3457H19.5664V19.1269H17.8438C17.2127 19.1269 16.6953 19.6444 16.6953 20.2754V25.5957C16.6953 26.2267 17.2127 26.7441 17.8438 26.7441H20.25C20.9142 26.7441 21.439 27.2067 21.592 27.7972C21.7164 28.27 22.1415 28.6113 22.6406 28.6113C23.1454 28.6113 23.5711 28.2652 23.6878 27.8029L23.6887 27.7996C23.8408 27.208 24.3662 26.7441 25.0313 26.7441H27.4375C28.0685 26.7441 28.5859 26.2267 28.5859 25.5957V20.2754C28.5859 19.6423 28.0743 19.1269 27.4375 19.1269H25.4336V18.3457H27.4375C28.5078 18.3457 29.3672 19.2129 29.3672 20.2754V25.5957C29.3672 26.6582 28.5 27.5254 27.4375 27.5254H25.0313C24.75 27.5254 24.5156 27.7207 24.4453 27.9941C24.2422 28.7988 23.5078 29.3926 22.6406 29.3926C21.7734 29.3926 21.0469 28.7988 20.8359 27.9941C20.7656 27.7207 20.5313 27.5254 20.25 27.5254H17.8438C16.7813 27.5254 15.9141 26.6582 15.9141 25.5957V20.2754C15.9141 19.2129 16.7813 18.3457 17.8438 18.3457Z"
-                                                      fill="#436850"></path>
-                                            </svg>
+                                <div class="col-2 text-end pe-4">
+                                    {% if post.profile.user == request.user %}
+                                        <div class="dropdown">
+                                            <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                    type="button" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <i class="bi bi-three-dots"
+                                                   style="font-size: 20px; color: black;"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" data-bs-toggle="modal"
+                                                       data-bs-target="#editPostModal"
+                                                       href="">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item text-danger"
+                                                       href="{% url 'delete_post' post.id %}">Delete</a>
+                                                </li>
+                                            </ul>
                                         </div>
-                                        <p class="h6 text-center">Drop your images/videos here or <a href=""
-                                                                                                     class="fw-semibold text-decoration-none"
-                                                                                                     style="color: #436850">Click
-                                            to
-                                            upload</a></p>
-                                        <p class="opacity-50 small text-center">SVG, PNG, JPG, or GIF (max. 800x400px)</p>
-                                    </div>
-                                </div>
-                                <div class="row p-3">
-                                    <div class="form-control rounded-4 d-flex align-items-center flex-row p-1">
-                                        <p class="text-start mb-0 opacity-75 ms-2 col-8">Add to
-                                            your post</p>
-                                        <div class="col-4 d-flex justify-content-end pe-3 py-1">
-                                            <div
-                                               class="d-flex align-items-center text-decoration-none px-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                     width="20" height="20"
-                                                     viewBox="0 0 20 20"
-                                                     fill="none">
-                                                    <path d="M3.08395 15.7402C2.88868 15.9355 2.88868 16.252 3.08395 16.4473C3.27921 16.6426 3.59579 16.6426 3.79105 16.4473L3.08395 15.7402ZM7.1875 12.3438L7.54105 11.9902C7.34579 11.7949 7.02921 11.7949 6.83395 11.9902L7.1875 12.3438ZM9.0625 14.2188L8.70895 14.5723C8.90421 14.7676 9.22079 14.7676 9.41605 14.5723L9.0625 14.2188ZM13.2812 10L13.6348 9.64645C13.4395 9.45118 13.123 9.45118 12.9277 9.64645L13.2812 10ZM16.6777 14.1036C16.873 14.2988 17.1895 14.2988 17.3848 14.1036C17.5801 13.9083 17.5801 13.5917 17.3848 13.3964L16.6777 14.1036ZM3.4375 16.0938L3.79105 16.4473L7.54105 12.6973L7.1875 12.3438L6.83395 11.9902L3.08395 15.7402L3.4375 16.0938ZM7.1875 12.3438L6.83395 12.6973L8.70895 14.5723L9.0625 14.2188L9.41605 13.8652L7.54105 11.9902L7.1875 12.3438ZM9.0625 14.2188L9.41605 14.5723L13.6348 10.3536L13.2812 10L12.9277 9.64645L8.70895 13.8652L9.0625 14.2188ZM13.2812 10L12.9277 10.3536L16.6777 14.1036L17.0312 13.75L17.3848 13.3964L13.6348 9.64645L13.2812 10ZM5.3125 2.5V3H14.6875V2.5V2H5.3125V2.5ZM17.5 5.3125H17V14.6875H17.5H18V5.3125H17.5ZM14.6875 17.5V17H5.3125V17.5V18H14.6875V17.5ZM2.5 14.6875H3V5.3125H2.5H2V14.6875H2.5ZM5.3125 17.5V17C4.03534 17 3 15.9647 3 14.6875H2.5H2C2 16.5169 3.48306 18 5.3125 18V17.5ZM17.5 14.6875H17C17 15.9647 15.9647 17 14.6875 17V17.5V18C16.5169 18 18 16.5169 18 14.6875H17.5ZM14.6875 2.5V3C15.9647 3 17 4.03534 17 5.3125H17.5H18C18 3.48306 16.5169 2 14.6875 2V2.5ZM5.3125 2.5V2C3.48306 2 2 3.48306 2 5.3125H2.5H3C3 4.03534 4.03534 3 5.3125 3V2.5ZM8.125 6.71875H7.625C7.625 7.21926 7.21926 7.625 6.71875 7.625V8.125V8.625C7.77154 8.625 8.625 7.77154 8.625 6.71875H8.125ZM6.71875 8.125V7.625C6.21824 7.625 5.8125 7.21926 5.8125 6.71875H5.3125H4.8125C4.8125 7.77154 5.66596 8.625 6.71875 8.625V8.125ZM5.3125 6.71875H5.8125C5.8125 6.21824 6.21824 5.8125 6.71875 5.8125V5.3125V4.8125C5.66596 4.8125 4.8125 5.66596 4.8125 6.71875H5.3125ZM6.71875 5.3125V5.8125C7.21926 5.8125 7.625 6.21824 7.625 6.71875H8.125H8.625C8.625 5.66596 7.77154 4.8125 6.71875 4.8125V5.3125Z"
-                                                          fill="black"></path>
-                                                </svg>
-                                            </div>
-                                            <div
-                                               class="d-flex align-items-center text-decoration-none px-1">
-                                                <svg width="20" height="20" viewBox="0 0 20 20"
-                                                     fill="none"
-                                                     xmlns="http://www.w3.org/2000/svg">
-                                                    <path d="M10.0879 7.36109H7.79625M13.2294 11.9889L17.1043 13.8976C17.506 14.1421 17.9275 13.998 17.9167 13.488L17.8895 6.74251C17.8552 6.18887 17.5285 6.0378 17.0474 6.29366L13.2185 8.03379M4.375 15.4166H11.3379C12.3735 15.4166 13.2129 14.5875 13.2129 13.5648L13.2294 11.1896L13.2129 6.43517C13.2129 5.41242 12.3735 4.58331 11.3379 4.58331H4.375C3.33947 4.58331 2.5 5.41242 2.5 6.43517V13.5648C2.5 14.5875 3.33947 15.4166 4.375 15.4166Z"
-                                                          stroke="black" stroke-linecap="round"
-                                                          stroke-linejoin="round"></path>
-                                                </svg>
-                                            </div>
-                                            <div
-                                               class="d-flex align-items-center text-decoration-none px-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                     width="15" height="16"
-                                                     viewBox="0 0 15 16" fill="none">
-                                                    <path d="M7.49997 14C7.49997 14 12.1956 9.82609 12.1956 6.69565C12.1956 4.10231 10.0933 2 7.49997 2C4.90664 2 2.80432 4.10231 2.80432 6.69565C2.80432 9.82609 7.49997 14 7.49997 14Z"
-                                                          stroke="black"></path>
-                                                    <path d="M9.00017 6.50009C9.00017 7.32852 8.32859 8.00009 7.50017 8.00009C6.67174 8.00009 6.00017 7.32852 6.00017 6.50009C6.00017 5.67167 6.67174 5.0001 7.50017 5.0001C8.32859 5.0001 9.00017 5.67167 9.00017 6.50009Z"
-                                                          stroke="black"></path>
-                                                </svg>
-                                            </div>
-                                            <div
-                                               class="d-flex align-items-center text-decoration-none px-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg"
-                                                     width="15" height="16"
-                                                     viewBox="0 0 15 16" fill="none">
-                                                    <g clip-path="url(#clip0_103_3334)">
-                                                        <path d="M9.95124 13.535V12.3093C9.95124 11.6591 9.69297 11.0356 9.23323 10.5758C8.77349 10.1161 8.14996 9.85782 7.49979 9.85782H3.20975C2.55959 9.85782 1.93605 10.1161 1.47631 10.5758C1.01658 11.0356 0.758301 11.6591 0.758301 12.3093V13.535M12.4027 5.56778V9.24496M14.2413 7.40637H10.5641M7.80622 4.95492C7.80622 6.30881 6.70867 7.40637 5.35477 7.40637C4.00087 7.40637 2.90332 6.30881 2.90332 4.95492C2.90332 3.60102 4.00087 2.50346 5.35477 2.50346C6.70867 2.50346 7.80622 3.60102 7.80622 4.95492Z"
-                                                              stroke="black"
-                                                              stroke-linecap="round"
-                                                              stroke-linejoin="round"></path>
-                                                    </g>
-                                                    <defs>
-                                                        <clipPath id="clip0_103_3334">
-                                                            <rect width="14.7087"
-                                                                  height="14.7087" fill="white"
-                                                                  transform="translate(0.145508 0.664875)"></rect>
-                                                        </clipPath>
-                                                    </defs>
-                                                </svg>
+                                        <div class="modal fade" id="editPostModal" tabindex="-1"
+                                             aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content p-2">
+                                                    <div class="modal-header pt-3 pb-3">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="px-3">
+                                                                <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                                     class="rounded-circle" width="48" height="48"
+                                                                     alt=""/>
+                                                            </div>
+                                                            <div class="text-start">
+                                                                <p class="mb-0">
+                                                                    <a href="#" disabled="disabled"
+                                                                       class="text-decoration-none text-body-emphasis d-flex align-items-center">
+                                                                        {{ post.profile.first_name }} {{ post.profile.last_name }}
+                                                                    </a>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post"
+                                                              action="{% url 'edit_post' post.id %}">
+                                                            {% csrf_token %}
+                                                            <div class="row px-3 pb-3">
+                                                                <input class="textbox form-control rounded-3"
+                                                                       id="content" name="content"
+                                                                       value="{{ post.content }}">
+
+                                                            </div>
+                                                            <div class="row px-3 pb-3">
+                                                                <button class="btn text-light rounded-pill"
+                                                                        style="background-color: #436850"
+                                                                        type="submit">
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    {% endif %}
                                 </div>
                             </div>
-                            <div class="row pt-1 pb-4">
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <button type="submit"
-                                            class="btn text-light rounded-5 w-100 py-1"
-                                            style="background-color: #436850">Post
-                                    </button>
+
+                            <div class="row">
+                                <p class="text-start px-5 py-2">
+                                    {{ post.content }}
+                                </p>
+                            </div>
+                            <div class="row d-flex text-end pb-3">
+                                <div class="col-10">
+
+                                </div>
+                                <div class="col-1 pe-1">
+                                    <a href="" onclick="" class="text-decoration-none">
+                                        <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
+                                    </a>
+
+                                </div>
+                                <div class="col-1 pe-4">
+                                    <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">
+                                        {% if post.id|is_bookmarked_post:request.user %}
+                                            <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
+                                        {% else %}
+                                            <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
+                                        {% endif %}
+                                    </a>
                                 </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                {% endfor %}
             </div>
-            <!-- Other Posts -->
-            {% for post in posts %}
-            <div class="row pt-3 pb-2 px-5">
-                <div class="border rounded-4">
-                    <div class="row pt-3">
-                        <div class="col-10 d-flex align-items-center ps-3">
-                            <div class="px-3">
-                                <a href="{% url 'profile' post.profile.user_id %}" class="">
-                                    <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
+
+            <!-- Sidebar -->
+
+            <div class="col-3 text-start">
+                <div class="row position-sticky" style="top: 6.5rem;" id="recommendations">
+
+                    <h5 class="py-2">People you may know</h5>
+                    {% for profile in profiles %}
+                        <br>
+                        <div class="border rounded-4 mb-2 row">
+                            <div class="col-2 d-flex align-items-center">
+                                <a href="{% url 'profile' profile.user_id %}" class="">
+                                    <img src="{% if profile.user_id|get_profile_pic_url %} {{ profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                         class="rounded-circle" width="48" height="48" alt=""/>
                                 </a>
                             </div>
-                            <div class="text-start">
+                            <div class="col-10 px-4 gap-0">
                                 <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' post.profile.user_id %}" class="text-decoration-none text-body-emphasis">
-                                    {{ post.profile.first_name }} {{ post.profile.last_name }}
+                                    <a href="{% url 'profile' profile.user_id %}"
+                                       class="text-decoration-none text-body-emphasis">
+                                        {{ profile.first_name }} {{ profile.last_name }}
                                     </a>
                                 </p>
-                                <p class="mb-3 small text-secondary">{{ post.created.date}}</p>
+                                <p class="mb-3 small">
+                                    <a href="{% url 'collaborations' profile.user_id %}"
+                                       class="text-decoration-none text-secondary link-body-emphasis">
+                                        0 mutual collaborators
+                                    </a>
+                                </p>
                             </div>
                         </div>
-
-                        <div class="col-2 text-end pe-4">
-                             <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <p class="text-start px-5 py-2">
-                            {{ post.content }}
-                        </p>
-                    </div>
-                    <div class="row d-flex text-end pb-3">
-                        <div class="col-10">
+                    {% endfor %}
+                    <div class="row py-3">
+                        <h5>My calendar</h5>
+                        <div class="d-flex justify-content-center mt-3" id="calendar">
 
                         </div>
-                        <div class="col-1 pe-1">
-                            <a href="" onclick="" class="text-decoration-none">
-                                <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                            </a>
-
-                        </div>
-                        <div class="col-1 pe-4">
-                            <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">
-                                <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            {% endfor %}
-        </div>
-
-        <!-- Sidebar -->
-
-        <div class="col-3 text-start">
-            <div class="row position-sticky" style="top: 6.5rem;" id="recommendations">
-
-                <h5 class="py-2">People you may know</h5>
-                {% for profile in profiles %}
-                <br>
-                <div class="border rounded-4 mb-2 row">
-                    <div class="col-2 d-flex align-items-center">
-                        <a href="{% url 'profile' profile.user_id %}" class="">
-                            <img src="{% if profile.user_id|get_profile_pic_url %} {{ profile.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                        </a>
-                    </div>
-                    <div class="col-10 px-4 gap-0">
-                        <p class="mb-0 mt-3">
-                            <a href="{% url 'profile' profile.user_id %}" class="text-decoration-none text-body-emphasis">
-                                {{ profile.first_name }} {{ profile.last_name }}
-                            </a>
-                        </p>
-                        <p class="mb-3 small">
-                            <a href="{% url 'collaborations' profile.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">
-                                0 mutual collaborators
-                            </a>
-                        </p>
-                    </div>
-                </div>
-                {% endfor %}
-                <div class="row py-3" >
-                    <h5>My calendar</h5>
-                    <div class="d-flex justify-content-center mt-3" id="calendar">
-
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-
 {% endblock %}

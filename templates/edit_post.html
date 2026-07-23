@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <div class="container m-auto">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <div class="row pt-3 pb-2 px-5">
+                    <div class="border rounded-4">
+                        <div class="row pt-3">
+                            <div class="col-1 d-flex align-items-center">
+                                <a href="{{ request.META.HTTP_REFERER }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                         fill="none">
+                                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                                    </svg>
+                                </a>
+                            </div>
+                            <div class="col-11 d-flex flex-column mt-3">
+                                <h2 class="text-start mb-0 fw-semibold">Edit Collaboration Post</h2>
+                            </div>
+                            <div class="px-5">
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-10">
+                                <form method="post" action="{% url 'edit_app_post' post_id %}">
+                                    {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <div class="row d-flex justify-content-between px-5 mx-5 my-4">
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0"
+                                               style="color: #436850"><p class="mb-0">
+                                                Cancel</p>
+                                            </a>
+                                        </div>
+                                        <div class="col-2 text-end">
+                                            <button type="submit" class="btn text-light" data-bs-toggle="modal"
+                                                    data-bs-target="#successModal" style="background-color: #436850">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-1"></div>
+                        </div>
+                        {% if successful %}
+                            <!-- Success Modal -->
+                            <div class="modal show" data-bs-backdrop='static' id="successModal" tabindex="-1"
+                                 aria-labelledby="successModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered w-25">
+                                    <div class="modal-content py-4 mx-0">
+                                        <div class="row">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45"
+                                                 viewBox="0 0 45 45" fill="none">
+                                                <circle cx="22.5" cy="22.5" r="16.875" stroke="#436850"
+                                                        stroke-width="3"></circle>
+                                                <path d="M15 22.5L20.625 28.125L30 16.875" stroke="#436850"
+                                                      stroke-width="3"></path>
+                                            </svg>
+                                        </div>
+                                        <div class="row">
+                                            <h2 class="text-center fw-semibold" style="color: #436850">Success!</h2>
+                                        </div>
+                                        <div class="row">
+                                            <p class="text-center text-secondary">Your application has been updated.</p>
+                                        </div>
+                                        <div class="row d-flex align-items-center justify-content-center">
+                                            <button type="submit" class="btn text-light text-center w-25"
+                                                    onclick="window.location.href='/browse/'"
+                                                    style="background-color: #436850">OK
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

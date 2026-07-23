@@ -234,10 +234,30 @@ def edit_post(request, post_id):
         if post.is_valid():
             post.save()
         return redirect(request.META.get('HTTP_REFERER'))
-    post = PostEditModelForm(instance=Post.objects.filter(id=post_id).first())
-    return render(request, 'edit.html',
-                  context={'post': post,
+
+@login_required(login_url='signin')
+def edit_app_post(request, post_id):
+    if request.method == 'POST':
+        post = AppPostEditModelForm(request.POST, request.FILES, instance=ApplicationPost.objects.filter(id=post_id).first())
+        if post.is_valid():
+            post.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+    post = AppPostEditModelForm(instance=ApplicationPost.objects.filter(id=post_id).first())
+    return render(request, 'edit_post.html',
+                  context={'form': post,
+                           'post_id': post_id,
                            'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def delete_post(request, post_id):
+    Post.objects.get(id=post_id, profile__user=request.user).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def delete_app_post(request, post_id):
+    ApplicationPost.objects.filter(id=post_id, profile__user=request.user).first().delete()
+    ApplicationForm.objects.filter(post_id=post_id).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def edit_certification(request, certification_id):
@@ -488,6 +508,7 @@ def profile_collaborations(request, user_id):
             'my_profile_id': my_profile_id(request)
         }
     )
+
 @login_required(login_url='signin')
 def collaborate(request, user_id):
     sender = Profile.objects.filter(user=request.user).first()
@@ -561,6 +582,11 @@ def collaborations(request):
                            'received': received,
                            'accepted': accepted,
                            'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def delete_collaboration(request, post_id):
+    CollaborationPost.objects.filter(id=post_id).first().delete()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def create_certification(request):

@@ -104,6 +104,15 @@ class PostEditModelForm(forms.ModelForm):
         model = Post
         fields = ['content']
 
+class AppPostEditModelForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(AppPostEditModelForm, self).__init__(*args, **kwargs)
+        for field_name, field in self.fields.items():
+            field.widget.attrs['class'] = 'form-control'
+    class Meta:
+        model = ApplicationPost
+        exclude = ['profile', 'created']
+
 class CertificationEditModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(CertificationEditModelForm, self).__init__(*args, **kwargs)

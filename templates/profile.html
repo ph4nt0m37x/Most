@@ -12,6 +12,8 @@
                 modal.show();
             }
         });
+
+
     </script>
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -412,10 +414,75 @@
                                                     </div>
 
                                                     <div class="col-2 text-end pe-4">
-                                                         <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                                                        {% if post.profile.user == request.user %}
+                                                            <div class="dropdown">
+                                                                <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                                        type="button" data-bs-toggle="dropdown"
+                                                                        aria-expanded="false">
+                                                                    <i class="bi bi-three-dots"
+                                                                       style="font-size: 20px; color: black;"></i>
+                                                                </button>
+                                                                <ul class="dropdown-menu">
+                                                                    <li><a class="dropdown-item" data-bs-toggle="modal"
+                                                                           data-bs-target="#editPostModal"
+                                                                           href="">Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <hr class="dropdown-divider">
+                                                                    </li>
+                                                                    <li><a class="dropdown-item text-danger"
+                                                                           href="{% url 'delete_post' post.id %}">Delete</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                            <div class="modal fade" id="editPostModal" tabindex="-1"
+                                                                 aria-hidden="true">
+                                                                <div class="modal-dialog modal-dialog-centered">
+                                                                    <div class="modal-content p-2">
+                                                                        <div class="modal-header pt-3 pb-3">
+                                                                            <div class="d-flex align-items-center">
+                                                                                <div class="px-3">
+                                                                                    <img src="{% if profile.user_id|get_profile_pic_url %} {{ profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                                                         class="rounded-circle"
+                                                                                         width="48" height="48" alt=""/>
+                                                                                </div>
+                                                                                <div class="text-start">
+                                                                                    <p class="mb-0">
+                                                                                        <a href="#" disabled="disabled"
+                                                                                           class="text-decoration-none text-body-emphasis d-flex align-items-center">
+                                                                                            {{ profile.first_name }} {{ profile.last_name }}
+                                                                                        </a>
+                                                                                    </p>
+                                                                                </div>
+                                                                            </div>
+                                                                            <button type="button" class="btn-close"
+                                                                                    data-bs-dismiss="modal"></button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+                                                                            <form method="post"
+                                                                                  action="{% url 'edit_post' post.id %}">
+                                                                                {% csrf_token %}
+                                                                                <div class="row px-3 pb-3">
+                                                                                    <input class="textbox form-control rounded-3"
+                                                                                           id="content" name="content"
+                                                                                           value="{{ post.content }}">
+
+                                                                                </div>
+                                                                                <div class="row px-3 pb-3">
+                                                                                    <button class="btn text-light rounded-pill"
+                                                                                            style="background-color: #436850"
+                                                                                            type="submit">
+                                                                                        Save
+                                                                                    </button>
+                                                                                </div>
+                                                                            </form>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        {% endif %}
                                                     </div>
                                                 </div>
-
                                                 <div class="row ">
                                                     <p class="text-start px-5 py-2">
                                                         {{ post.content }}
@@ -427,13 +494,15 @@
                                                     </div>
                                                     <div class="col-1 pe-1">
                                                         <a onclick="" class="text-decoration-none">
-                                                            <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
+                                                            <i class="bi bi-share"
+                                                               style="font-size: 15px; color: black;"></i>
                                                         </a>
                                                     </div>
                                                     <div class="col-1 pe-4">
                                                         <a href="{% url 'bookmark_post' post.id %}" onclick=""
                                                            class="text-decoration-none">
-                                                            <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
+                                                            <i class="bi bi-bookmark"
+                                                               style="font-size: 15px; color: black;"></i>
                                                         </a>
                                                     </div>
                                                 </div>
@@ -457,7 +526,6 @@
                                                                    class="form-control rounded-3" id="name"
                                                                    aria-describedby="emailHelp"
                                                                    placeholder="Certification Name...">
-
                                                         </div>
                                                         <div class="row px-3 pb-3">
                                                             <input required type="text" name="company" id="company"
@@ -476,6 +544,10 @@
                                                     </form>
                                                 </div>
                                             </div>
+                                        </div>
+                                        {% else %}
+                                        <div class="row py-3 align-center">
+                                            <p class="text-center px-5 py-2">No certifications.</p>
                                         </div>
                                     {% endif %}
                                     {% for cert in certifications %}
@@ -497,7 +569,8 @@
                                                             <button class="btn pe-3 border-0 bg-transparent shadow-none"
                                                                     type="button" data-bs-toggle="dropdown"
                                                                     aria-expanded="false">
-                                                                 <i class="bi bi-three-dots" style="font-size: 20px; color: black;"></i>
+                                                                <i class="bi bi-three-dots"
+                                                                   style="font-size: 20px; color: black;"></i>
                                                             </button>
                                                             <ul class="dropdown-menu">
                                                                 {% if edit %}
@@ -521,49 +594,55 @@
                                                         <div class="modal fade" id="editCertModal" tabindex="-1"
                                                              aria-hidden="true">
                                                             <div class="modal-dialog modal-dialog-centered">
-                                                                <div class="row pt-3 pb-2 px-5 mb-2">
-                                                                    <div class="bg-white">
-                                                                        <div class="p-3 ">
-                                                                            <form method="post"
-                                                                                  action="{% url 'edit_certification' cert.id %}">
-                                                                                {% csrf_token %}
-                                                                                <div class="modal-content">
-                                                                                    <div class="modal-body">
-                                                                                        <div class="row p-3">
-                                                                                            <input required name="name"
-                                                                                                   type="text"
-                                                                                                   class="form-control rounded-3"
-                                                                                                   id="name"
-                                                                                                   aria-describedby="emailHelp"
-                                                                                                   placeholder="Certification Name..."
-                                                                                                   value="{{ cert.name }}">
-
-                                                                                        </div>
-                                                                                        <div class="row px-3 pb-3">
-                                                                                            <input required type="text"
-                                                                                                   name="company"
-                                                                                                   id="company"
-                                                                                                   class="form-control rounded-3"
-                                                                                                   placeholder="Company Name..."
-                                                                                                   value="{{ cert.company }}">
-                                                                                        </div>
-                                                                                        <div class="row px-3 pb-3">
-                                                                                            <input required type="date"
-                                                                                                   name="date" id="date"
-                                                                                                   class="form-control rounded-3"
-                                                                                                   value="{{ cert.date|date:"Y-m-d" }}">
-                                                                                        </div>
-                                                                                        <div class="row px-3 pb-3">
-                                                                                            <button class="btn text-light rounded-pill"
-                                                                                                    style="background-color: #436850"
-                                                                                                    type="submit">
-                                                                                                Save
-                                                                                            </button>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </form>
+                                                                <div class="modal-content p-2">
+                                                                    <div class="modal-header pt-3 pb-3">
+                                                                        <div class="d-flex align-items-center">
+                                                                            <div class="text-start">
+                                                                                <p class="mb-0">
+                                                                                    Edit Certification
+                                                                                </p>
+                                                                            </div>
                                                                         </div>
+                                                                        <button type="button" class="btn-close"
+                                                                                data-bs-dismiss="modal"></button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+                                                                        <form method="post"
+                                                                              action="{% url 'edit_certification' cert.id %}">
+                                                                            {% csrf_token %}
+                                                                            <div class="row p-3">
+                                                                                <input required name="name"
+                                                                                       type="text"
+                                                                                       class="form-control rounded-3"
+                                                                                       id="nameModal"
+                                                                                       aria-describedby="emailHelp"
+                                                                                       placeholder="Certification Name..."
+                                                                                       value="{{ cert.name }}">
+
+                                                                            </div>
+                                                                            <div class="row px-3 pb-3">
+                                                                                <input required type="text"
+                                                                                       name="company"
+                                                                                       id="companyModal"
+                                                                                       class="form-control rounded-3"
+                                                                                       placeholder="Company Name..."
+                                                                                       value="{{ cert.company }}">
+                                                                            </div>
+                                                                            <div class="row px-3 pb-3">
+                                                                                <input required type="date"
+                                                                                       name="date"
+                                                                                       id="dateModal"
+                                                                                       class="form-control rounded-3"
+                                                                                       value="{{ cert.date|date:"Y-m-d" }}">
+                                                                            </div>
+                                                                            <div class="row px-3 pb-3">
+                                                                                <button class="btn text-light rounded-pill"
+                                                                                        style="background-color: #436850"
+                                                                                        type="submit">
+                                                                                    Save
+                                                                                </button>
+                                                                            </div>
+                                                                        </form>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -731,8 +810,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     {% endif %}
                 {% endfor %}
             {% endif %}
