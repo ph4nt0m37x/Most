@@ -8,7 +8,7 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
-                <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
+                <a href="{% url 'applications' %}" class="pb-4 mb-1">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                          fill="none">
                         <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
@@ -30,21 +30,50 @@
                             {% csrf_token %}
                             {{ form.as_p }}
                         </form>
+                        {% if form.instance.status == 'PEND' %}
+                            <div class="row">
+                                <div class="col-2">
+                                    <a href="{% url 'accept_application' form.instance.id %}">
+                                        <button type="button"
+                                                class="btn border rounded-pill btn-light link-body-emphasis text-success">
+                                            Accept
+                                        </button>
+                                    </a>
+                                </div>
+                                <div class="col-2">
+                                    <a href="{% url 'deny_application' form.instance.id %}">
+                                        <button type="button"
+                                                class="btn border rounded-pill btn-light link-body-emphasis text-danger">
+                                            Deny
+                                        </button>
+                                    </a>
+                                </div>
+                            </div>
+                        {% else %}
+                            Status:  {% if form.instance.get_status_display == 'Accepted' %}
+                            <span class="text-success">Accepted</span> {% elif form.instance.get_status_display == 'Denied' %}
+                            <span class="text-danger">Denied</span> {% endif %}
+                        {% endif %}
                     </div>
                     <div class="col-2"></div>
                 </div>
             {% endfor %}
         {% elif form %}
             <div class="row">
-                    <div class="col-2"></div>
-                    <div class="col-8">
-                        <form>
-                            {% csrf_token %}
-                            {{ form.as_p }}
-                        </form>
-                    </div>
-                    <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-8">
+                    <form>
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                    </form>
+                    <p>Status: {% if status == 'Accepted' %}
+                        <span class="text-success">{{ status }}</span> {% elif status == 'Denied' %}
+                        <span class="text-danger">{{ status }}</span> {% else %}
+                        <span class="text-warning">{{ status }}</span>{% endif %}
+                    </p>
                 </div>
+                <div class="col-2"></div>
+            </div>
         {% else %}
             <div class="row py-3">
                 <p class="text-center">No applications.</p>

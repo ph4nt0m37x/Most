@@ -562,11 +562,27 @@ def form(request, post_id):
     post = ApplicationPost.objects.get(id=post_id)
     app_form = ApplicationForm.objects.filter(app_post_id=post_id, user=request.user).first()
     form = ApplicationFormModelForm(instance=app_form)
+    status = app_form.get_status_display()
     return render(request, 'forms.html',
            context={'forms': None,
                     'form': form,
+                    'status': status,
                     'post': post,
                     'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def accept_application(request, form_id):
+    form = ApplicationForm.objects.filter(id=form_id).first()
+    form.status = 'ACC'
+    form.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def deny_application(request, form_id):
+    form = ApplicationForm.objects.filter(id=form_id).first()
+    form.status = 'DEN'
+    form.save()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def collaborations(request):

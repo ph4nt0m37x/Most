@@ -80,6 +80,9 @@ class ApplicationForm(models.Model):
         ('MD', 'Master\'s Degree'),
         ('DD', 'Doctorate\'s Degree'),
     ]
+    STATUS_CHOICES = [('ACC', 'Accepted'),
+                      ('DEN', 'Denied'),
+                      ('PEND', 'Pending'),]
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -90,6 +93,7 @@ class ApplicationForm(models.Model):
     post_id = models.CharField(max_length=100, null=True, blank=True)
     app_post = models.ForeignKey(ApplicationPost, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
 
 class Certification(models.Model):
     name = models.TextField()

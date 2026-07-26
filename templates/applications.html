@@ -192,6 +192,14 @@
                                             {{ post.app_post.short_description }}
                                         </p>
                                     </div>
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {% if post.get_status_display == 'Accepted' %}
+                                            <span class="text-success">Accepted</span> {% elif post.get_status_display == 'Denied' %}
+                                            <span class="text-danger">Denied</span>{% else %}
+                                            <span class="text-warning">Pending</span> {% endif %}
+                                        </p>
+                                    </div>
                                     <div class="row d-flex">
                                         <div class="col-10 pb-3 ps-5 text-start">
                                             <a href="{% url 'form' post.app_post.id %}">

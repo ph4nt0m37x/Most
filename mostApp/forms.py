@@ -75,7 +75,7 @@ class ApplicationFormModelForm(forms.ModelForm):
 
     class Meta:
         model = ApplicationForm
-        exclude = ['app_post', 'post_id', 'user']
+        exclude = ['app_post', 'post_id', 'user', 'status']
 
 class ProfileEditModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):

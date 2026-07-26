@@ -62,4 +62,6 @@ urlpatterns = [
     path('post/<post_id>/delete', delete_post, name='delete_post'),
     path('post/application/<post_id>/edit', edit_app_post, name='edit_app_post'),
     path('post/application/<post_id>/delete', delete_app_post, name='delete_app_post'),
+    path('application/<form_id>/accept', accept_application, name='accept_application'),
+    path('application/<form_id>/deny', deny_application, name='deny_application'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
