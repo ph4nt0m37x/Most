@@ -333,10 +333,10 @@
 
                                 </div>
                                 <div class="col-1 pe-1">
-                                    <a href="" onclick="" class="text-decoration-none">
+                                    <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}"
+                                            type="button" onclick="copyPostLink()">
                                         <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                                    </a>
-
+                                    </button>
                                 </div>
                                 <div class="col-1 pe-4">
                                     <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">

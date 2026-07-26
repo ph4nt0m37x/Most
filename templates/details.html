@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load filters %}
 {% load static %}
 {% block content %}
 
@@ -9,73 +10,197 @@
             <div class="col-2">
             </div>
             <div class="col-8">
-                <div class="row pt-3 pb-2 px-5">
-                    <div class="border rounded-4">
-                        <div class="row pt-3">
-                            <div class="col-1 d-flex align-items-center">
-                                <a href="{% url 'browse' %}">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                         fill="none">
-                                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                                    </svg>
-                                </a>
+                {% if app_post %}
+                    <div class="row pt-3 pb-2 px-5">
+                        <div class="border rounded-4">
+                            <div class="row pt-3">
+                                <div class="col-1 d-flex align-items-center">
+                                    <a href="{% url 'browse' %}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                             viewBox="0 0 24 24"
+                                             fill="none">
+                                            <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
+                                                  stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </a>
+                                </div>
+                                <div class="col-11 d-flex flex-column mt-3">
+                                    <h2 class="text-start mb-2 fw-semibold">{{ post.title }}</h2>
+                                    <p class="small text-start mb-0"><a href="{% url 'profile' post.profile.user_id %}"
+                                                                        class="text-decoration-none text-secondary link-body-emphasis">{{ post.profile.first_name }} {{ post.profile.last_name }}</a>
+                                    </p>
+                                </div>
+                                <div class="px-5">
+                                    <hr/>
+                                </div>
                             </div>
-                            <div class="col-11 d-flex flex-column mt-3">
-                                <h2 class="text-start mb-2 fw-semibold">{{ post.title }}</h2>
-                                <p class="small text-start mb-0"><a href="{% url 'profile' post.profile.user_id %}"
-                                                                    class="text-decoration-none text-secondary link-body-emphasis">{{ post.profile.first_name }} {{ post.profile.last_name }}</a>
-                                </p>
+                            <div class="row">
+                                <div class="col-1"></div>
+                                <div class="col-10">
+                                    <p class="text-start">
+                                        {{ post.long_description }}
+                                    </p>
+                                </div>
+                                <div class="col-1"></div>
                             </div>
-                            <div class="px-5">
-                                <hr/>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-1"></div>
-                            <div class="col-10">
-                                <p class="text-start">
-                                    {{ post.long_description }}
-                                </p>
-                            </div>
-                            <div class="col-1"></div>
-                        </div>
-                        <div class="row d-flex justify-content-between px-5 mx-5 my-4 text-center">
-                            {% if exists %}
-                                <p>You have already applied to this post.</p>
-                            {% elif deadline %}
-                                <p>Deadline expired: {{ post.deadline.date }}</p>
+                            <div class="row d-flex justify-content-between px-5 mx-5 my-4 text-center">
+                                {% if exists %}
+                                    <p>You have already applied to this post.</p>
+                                {% elif deadline %}
+                                    <p>Deadline expired: {{ post.deadline.date }}</p>
 
-                                <div class="col-2 text-end">
-                            {% else %}
-                                <div class="row d-flex justify-content-between px-5 mx-5 my-4">
-                                    <div class="col-2 d-flex align-items-center justify-content-center">
-                                        <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0"
-                                           style="color: #436850"><p class="mb-0">
-                                            Cancel</p>
+                                    <div class="col-2 text-end">
+                                {% else %}
+                                    <div class="row d-flex justify-content-between px-5 mx-5 my-4">
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0"
+                                               style="color: #436850"><p class="mb-0">
+                                                Cancel</p>
+                                            </a>
+                                        </div>
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            {% if apply %}
+                                                <a href="{% url 'apply' post.id %}">
+                                                    <button class="btn text-light" style="background-color: #436850">
+                                                        Apply
+                                                    </button>
+                                                </a>
+                                            {% else %}
+                                                <button disabled="disabled" class="btn text-light"
+                                                        style="background-color: #436850">Apply
+                                                </button>
+                                            {% endif %}
+
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-2">
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row pt-3 pb-2 px-5 mx-5">
+                        <div class="border rounded-4">
+                            <div class="row pt-3">
+                                <div class="col-10 d-flex align-items-center ps-3">
+                                    <div class="px-3">
+                                        <a href="{% url 'profile' post.profile.user_id %}" class="">
+                                            <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                 class="rounded-circle" width="48" height="48" alt=""/>
                                         </a>
                                     </div>
-                                    <div class="col-2 d-flex align-items-center justify-content-center">
-                                        {% if apply %}
-                                            <a href="{% url 'apply' post.id %}">
-                                                <button class="btn text-light" style="background-color: #436850">Apply
-                                                </button>
+                                    <div class="text-start">
+                                        <p class="mb-0 mt-3">
+                                            <a href="{% url 'profile' post.profile.user_id %}"
+                                               class="text-decoration-none text-body-emphasis">
+                                                {{ post.profile.first_name }} {{ post.profile.last_name }}
                                             </a>
-                                        {% else %}
-                                            <button disabled="disabled" class="btn text-light"
-                                                    style="background-color: #436850">Apply
-                                            </button>
-                                        {% endif %}
-
+                                        </p>
+                                        <p class="mb-3 small text-secondary">{{ post.created.date }}</p>
                                     </div>
                                 </div>
-                            {% endif %}
+
+                                <div class="col-2 text-end pe-4">
+                                    {% if post.profile.user == request.user %}
+                                        <div class="dropdown">
+                                            <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                    type="button" data-bs-toggle="dropdown"
+                                                    aria-expanded="false">
+                                                <i class="bi bi-three-dots"
+                                                   style="font-size: 20px; color: black;"></i>
+                                            </button>
+                                            <ul class="dropdown-menu">
+                                                <li><a class="dropdown-item" data-bs-toggle="modal"
+                                                       data-bs-target="#editPostModal"
+                                                       href="">Edit</a>
+                                                </li>
+                                                <li>
+                                                    <hr class="dropdown-divider">
+                                                </li>
+                                                <li><a class="dropdown-item text-danger"
+                                                       href="{% url 'delete_post' post.id %}">Delete</a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="modal fade" id="editPostModal" tabindex="-1"
+                                             aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered">
+                                                <div class="modal-content p-2">
+                                                    <div class="modal-header pt-3 pb-3">
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="px-3">
+                                                                <img src="{% if post.profile.user_id|get_profile_pic_url %} {{ post.profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                                     class="rounded-circle" width="48" height="48"
+                                                                     alt=""/>
+                                                            </div>
+                                                            <div class="text-start">
+                                                                <p class="mb-0">
+                                                                    <a href="#" disabled="disabled"
+                                                                       class="text-decoration-none text-body-emphasis d-flex align-items-center">
+                                                                        {{ post.profile.first_name }} {{ post.profile.last_name }}
+                                                                    </a>
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <button type="button" class="btn-close"
+                                                                data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form method="post"
+                                                              action="{% url 'edit_post' post.id %}">
+                                                            {% csrf_token %}
+                                                            <div class="row px-3 pb-3">
+                                                                <input class="textbox form-control rounded-3"
+                                                                       id="content" name="content"
+                                                                       value="{{ post.content }}">
+
+                                                            </div>
+                                                            <div class="row px-3 pb-3">
+                                                                <button class="btn text-light rounded-pill"
+                                                                        style="background-color: #436850"
+                                                                        type="submit">
+                                                                    Save
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <p class="text-start px-5 py-2">
+                                    {{ post.content }}
+                                </p>
+                            </div>
+                            <div class="row d-flex text-end pb-3">
+                                <div class="col-10">
+
+                                </div>
+                                <div class="col-1 pe-1">
+                                    <a href="" onclick="" class="text-decoration-none">
+                                        <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
+                                    </a>
+
+                                </div>
+                                <div class="col-1 pe-4">
+                                    <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">
+                                        {% if post.id|is_bookmarked_post:request.user %}
+                                            <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
+                                        {% else %}
+                                            <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
+                                        {% endif %}
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="col-2">
-                    </div>
-                </div>
+                {% endif %}
             </div>
         </div>
     </div>

@@ -274,7 +274,7 @@ def delete_certification(request, certification_id):
 
 
 @login_required(login_url='signin')
-def post(request, post_id):
+def application_post(request, post_id):
     exists  = False
     deadline = False  # if the deadline has passed
     apply = True
@@ -293,6 +293,16 @@ def post(request, post_id):
                            'exists': exists,
                            'deadline': deadline,
                            'apply': apply,
+                           'app_post': True,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def post(request, post_id):
+    post = Post.objects.filter(id=post_id).first()
+
+    return render(request, 'details.html',
+                  context={'post': post,
+                           'app_post': False,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')

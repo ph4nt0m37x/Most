@@ -59,7 +59,7 @@
                                             </div>
                                             <div class="text-start">
                                                 <p class="mb-0 mt-3">
-                                                    <a href="{% url 'post' post.app_post.id %}"
+                                                    <a href="{% url 'application_post' post.app_post.id %}"
                                                        class="text-decoration-none text-body-emphasis">
                                                         {{ post.app_post.title }}
                                                     </a>
@@ -110,7 +110,7 @@
                                     </div>
                                     <div class="row d-flex text-end pb-3">
                                         <div class="col-10 pb-3 ps-5 text-start">
-                                            <a href="{% url 'post' post.app_post.id %}">
+                                            <a href="{% url 'application_post' post.app_post.id %}">
                                                 <button type="button"
                                                         class="btn border rounded-pill btn-light link-body-emphasis">See
                                                     more
@@ -118,9 +118,11 @@
                                             </a>
                                         </div>
                                         <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
-                                            <a onclick="" class="text-decoration-none">
+                                            <button id="share-button" class="btn btn-link"
+                                                    data-post-id="{{ post.app_post.id }}"
+                                                    type="button" onclick="copyAppPostLink()">
                                                 <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
                                             <a href="{% url 'bookmark_app_post' post.app_post.id %}" onclick=""
@@ -255,9 +257,10 @@
 
                                         </div>
                                         <div class="col-1 pe-1">
-                                            <a onclick="" class="text-decoration-none">
+                                            <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}"
+                                                    type="button" onclick="copyPostLink()">
                                                 <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
-                                            </a>
+                                            </button>
                                         </div>
                                         <div class="col-1 pe-4">
                                             <a href="{% url 'bookmark_post' post.post.id %}" onclick=""

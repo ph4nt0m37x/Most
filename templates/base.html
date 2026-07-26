@@ -40,6 +40,22 @@
             border-color: #436850;
         }
     </style>
+    <script>
+        function copyAppPostLink() {
+            const postId = document.getElementById('share-button').getAttribute('data-post-id');
+            const currentUrl = window.location.origin
+            const shareUrl = `${currentUrl}/post/details/${postId}`;
+            navigator.clipboard.writeText(shareUrl);
+            alert("Link copied to clipboard!");
+        }
+        function copyPostLink() {
+            const postId = document.getElementById('share-button').getAttribute('data-post-id');
+            const currentUrl = window.location.origin
+            const shareUrl = `${currentUrl}/post/${postId}`;
+            navigator.clipboard.writeText(shareUrl);
+            alert("Link copied to clipboard!");
+        }
+    </script>
 </head>
 <body>
 

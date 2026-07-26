@@ -20,7 +20,7 @@
                     <div class="border rounded-4">
                         <div class="row pt-3">
                             <div class="col-1 d-flex align-items-center">
-                                <a href="{% url 'post' post_id %}">
+                                <a href="{% url 'application_post' post_id %}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                      fill="none">
                                     <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
@@ -48,7 +48,7 @@
                                     {{ form.as_p }}
                                     <div class="row d-flex justify-content-between px-5 mx-5 my-4">
                                         <div class="col-2 d-flex align-items-center justify-content-center">
-                                            <a href="{% url 'post' post_id %}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">
+                                            <a href="{% url 'application_post' post_id %}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">
                                                 Cancel</p>
                                             </a>
                                         </div>
