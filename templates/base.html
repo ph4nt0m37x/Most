@@ -41,20 +41,48 @@
         }
     </style>
     <script>
-        function copyAppPostLink() {
-            const postId = document.getElementById('share-button').getAttribute('data-post-id');
-            const currentUrl = window.location.origin
-            const shareUrl = `${currentUrl}/post/details/${postId}`;
-            navigator.clipboard.writeText(shareUrl);
-            alert("Link copied to clipboard!");
-        }
-        function copyPostLink() {
-            const postId = document.getElementById('share-button').getAttribute('data-post-id');
-            const currentUrl = window.location.origin
-            const shareUrl = `${currentUrl}/post/${postId}`;
-            navigator.clipboard.writeText(shareUrl);
-            alert("Link copied to clipboard!");
-        }
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+        new bootstrap.Tooltip(el);
+    });
+});
+</script>
+    <script>
+        function copyAppPostLink(button) {
+    const postId = button.getAttribute('data-post-id');
+    const currentUrl = window.location.origin;
+    const shareUrl = `${currentUrl}/post/details/${postId}`;
+
+    navigator.clipboard.writeText(shareUrl);
+
+    const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
+    tooltip.setContent({ '.tooltip-inner': 'Copied!' });
+    tooltip.show();
+
+    setTimeout(() => {
+    button.setAttribute('data-bs-title', 'Copy link');
+    tooltip.setContent({ '.tooltip-inner': 'Copy link' });
+    tooltip.hide();
+}, 1500);
+}
+
+function copyPostLink(button) {
+    const postId = button.getAttribute('data-post-id');
+    const currentUrl = window.location.origin;
+    const shareUrl = `${currentUrl}/post/${postId}`;
+
+    navigator.clipboard.writeText(shareUrl);
+
+    const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
+    tooltip.setContent({ '.tooltip-inner': 'Copied!' });
+    tooltip.show();
+
+    setTimeout(() => {
+    button.setAttribute('data-bs-title', 'Copy link');
+    tooltip.setContent({ '.tooltip-inner': 'Copy link' });
+    tooltip.hide();
+}, 1500);
+}
     </script>
 </head>
 <body>
@@ -114,7 +142,10 @@
 <div style="height: 100px">
 
 </div>
-
+<div id="copyAlertContainer"
+     class="position-fixed top-0 end-0 p-3"
+     style="z-index: 1080;">
+</div>
 {% block content %}
 {% endblock %}
 

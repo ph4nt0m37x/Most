@@ -333,7 +333,10 @@
 
                                 </div>
                                 <div class="col-1 pe-0 d-flex align-items-center justify-content-end">
-                                    <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}" type="button" onclick="copyPostLink()">
+                                    <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="Copy link" type="button" onclick="copyPostLink(this)">
                                         <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
                                     </button>
                                 </div>

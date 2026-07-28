@@ -120,7 +120,9 @@
                                         <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
                                             <button id="share-button" class="btn btn-link"
                                                     data-post-id="{{ post.app_post.id }}"
-                                                    type="button" onclick="copyAppPostLink()">
+                                                    data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            data-bs-title="Copy link" type="button" onclick="copyAppPostLink(this)">
                                                 <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
                                             </button>
                                         </div>
@@ -258,7 +260,10 @@
                                         </div>
                                         <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
                                             <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}"
-                                                    type="button" onclick="copyPostLink()">
+                                                    data-bs-toggle="tooltip"
+                                                    data-bs-placement="top"
+                                                    data-bs-title="Copy link" type="button"
+                                                    onclick="copyPostLink(this)">
                                                 <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
                                             </button>
                                         </div>
