@@ -332,13 +332,12 @@
                                 <div class="col-10">
 
                                 </div>
-                                <div class="col-1 pe-1">
-                                    <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}"
-                                            type="button" onclick="copyPostLink()">
+                                <div class="col-1 pe-0 d-flex align-items-center justify-content-end">
+                                    <button id="share-button" class="btn btn-link" data-post-id="{{ post.id }}" type="button" onclick="copyPostLink()">
                                         <i class="bi bi-share" style="font-size: 15px; color: black;"></i>
                                     </button>
                                 </div>
-                                <div class="col-1 pe-4">
+                                <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
                                     <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">
                                         {% if post.id|is_bookmarked_post:request.user %}
                                             <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>

@@ -57,10 +57,10 @@
                                 {{ profile.bio }}
                             </a></p>
                             <p class="mb-3 small"><a href="{% url 'profile_collaborations' profile.user_id %}"
-                                                     class="text-decoration-none text-secondary link-body-emphasis">3
-                                mutual collaborators</a></p>
+                                                     class="text-decoration-none text-secondary link-body-emphasis">
+                               {{ profile.mutual_count }} mutual collaborators</a></p>
                         </div>
-                        <div class="col-4 d-flex align-items-center justify-content-center">
+                        <div class="col-4 d-flex align-items-center justify-content-end">
                             <a href="{% url 'profile' profile.user_id %}">
                             <button class="btn rounded-pill text-light" data-bs-toggle="modal"
                                     data-bs-target="#collaborationModal" style="background-color: #436850">

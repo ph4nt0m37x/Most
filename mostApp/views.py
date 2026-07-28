@@ -107,6 +107,41 @@ def index(request):
         },
     )
 
+# @login_required(login_url='signin')
+# def search(request):
+#     query = request.GET.get("query")
+#
+#     profiles_search = Profile.objects.filter(
+#         Q(first_name__icontains=query) |
+#         Q(last_name__icontains=query)
+#     )
+#
+#     my_profile = Profile.objects.get(user=request.user)
+#
+#     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+#
+#     events = []
+#
+#     for bookmark in bookmarks:
+#         if bookmark.app_post.deadline:
+#             events.append({
+#                 "title": bookmark.app_post.title,
+#                 "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+#                 "url": reverse("application_post", args=[bookmark.app_post.id]),
+#                 "color": "#436850",
+#             })
+#
+#     return render(
+#         request,
+#         "search.html",
+#         context={
+#             "profiles_search": profiles_search,
+#             "query": query,
+#             "my_profile": my_profile,
+#             "my_profile_id": my_profile_id(request),
+#             "events": json.dumps(events),
+#         },
+#     )
 @login_required(login_url='signin')
 def search(request):
     query = request.GET.get("query")
@@ -118,6 +153,22 @@ def search(request):
 
     my_profile = Profile.objects.get(user=request.user)
 
+    def get_collaborator_ids(profile):
+        return set(
+            Collaboration.objects.filter(collaborator_1=profile)
+            .values_list("collaborator_2_id", flat=True)
+        ).union(
+            Collaboration.objects.filter(collaborator_2=profile)
+            .values_list("collaborator_1_id", flat=True)
+        )
+
+    my_collaborators = get_collaborator_ids(my_profile)
+
+    for profile in profiles_search:
+        profile.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(profile))
+        )
+
     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
 
     events = []
@@ -127,7 +178,7 @@ def search(request):
             events.append({
                 "title": bookmark.app_post.title,
                 "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
-                "url": reverse("post", args=[bookmark.app_post.id]),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),  # Change this to your application post URL name if needed
                 "color": "#436850",
             })
 
@@ -386,7 +437,7 @@ def profile(request, user_id):
             events.append({
                 "title": bookmark.app_post.title,
                 "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
-                "url": reverse("post", args=[bookmark.app_post.id]),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),
                 "color": "#436850",
             })
 
@@ -652,7 +703,7 @@ def calendar(request):
             events.append({
                 "title": bookmark.app_post.title,
                 "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
-                "url": reverse("post", args=[bookmark.app_post.id]),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),
                 "color": "#436850",
             })
 
