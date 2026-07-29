@@ -6,6 +6,8 @@ import json
 from django.shortcuts import render, redirect
 from django.contrib import messages, auth
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 
 from mostApp.forms import *
 from mostApp.models import *
@@ -77,7 +79,8 @@ def about(request):
 
 @login_required(login_url='signin')
 def index(request):
-    posts = Post.objects.all().order_by('-created')
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    posts = Post.objects.filter(created__gte=thirty_days_ago).order_by('-created')
     profiles = None
 
     my_profile = Profile.objects.get(user=request.user)
@@ -476,8 +479,8 @@ def bookmark_app_post(request, post_id):
 
 @login_required(login_url='signin')
 def bookmarks(request):
-    bookmarks_post = BookmarkPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
-    bookmarks_app_post = BookmarkAppPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
+    bookmarks_post = BookmarkPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-post__created')
+    bookmarks_app_post = BookmarkAppPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-app_post__created')
     return render(request, 'bookmarks.html',
                   context={'bookmarks_post': bookmarks_post,
                            'bookmarks_app_post': bookmarks_app_post,
@@ -586,8 +589,8 @@ def deny(request, post_id):
 
 @login_required(login_url='signin')
 def applications(request):
-    posts = ApplicationPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
-    applied = ApplicationForm.objects.filter(user=request.user).distinct()
+    posts = ApplicationPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-created')
+    applied = ApplicationForm.objects.filter(user=request.user).distinct().order_by('-app_post__created')
     return render(request, 'applications.html',
                   context={'received': posts,
                            'applied': applied,
@@ -638,11 +641,11 @@ def collaborations(request):
     all_sent = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first())
     all_received = CollaborationPost.objects.filter(receiver=Profile.objects.filter(user=request.user).first())
 
-    sent_accepted = all_sent.filter(status='ACC')
-    received_accepted = all_received.filter(status='ACC')
+    sent_accepted = all_sent.filter(status='ACC').order_by('-created')
+    received_accepted = all_received.filter(status='ACC').order_by('-created')
 
-    sent = all_sent.filter(Q(status='PEND') | Q(status='DEN'))
-    received = all_received.filter(Q(status='PEND') | Q(status='DEN'))
+    sent = all_sent.filter(Q(status='PEND') | Q(status='DEN')).order_by('-created')
+    received = all_received.filter(Q(status='PEND') | Q(status='DEN')).order_by('-created')
 
     return render(request, 'collaborations.html',
                   context={'sent': sent,
