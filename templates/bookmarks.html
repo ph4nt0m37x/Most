@@ -9,11 +9,7 @@
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
                 <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                         fill="none">
-                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
+                    <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                 </a>
             </div>
             <div class="col-8"><h3 class="fw-semibold">Bookmarks</h3>
@@ -94,8 +90,13 @@
                                                         <li>
                                                             <hr class="dropdown-divider">
                                                         </li>
-                                                        <li><a class="dropdown-item text-danger"
-                                                               href="{% url 'delete_app_post' post.app_post.id %}">Delete</a>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger"
+                                                       href="#"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deleteAppPostModal{{ post.id }}">
+                                                    Delete
+                                                </a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -109,7 +110,7 @@
                                         </p>
                                     </div>
                                     <div class="row d-flex text-end pb-3">
-                                        <div class="col-10 pb-3 ps-5 text-start">
+                                        <div class="col-10 ps-5 text-start">
                                             <a href="{% url 'application_post' post.app_post.id %}">
                                                 <button type="button"
                                                         class="btn border rounded-pill btn-light link-body-emphasis">See
@@ -117,7 +118,7 @@
                                                 </button>
                                             </a>
                                         </div>
-                                        <div class="col-1 pe-1 d-flex align-items-center justify-content-end">
+                                        <div class="col-1 px-0 d-flex align-items-center justify-content-end">
                                             <button id="share-button" class="btn btn-link"
                                                     data-post-id="{{ post.app_post.id }}"
                                                     data-bs-toggle="tooltip"
@@ -138,7 +139,44 @@
                             </div>
                             <div class="col-3"></div>
                         </div>
-                    {% endfor %}
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="deleteAppPostModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered w-25">
+                                <div class="modal-content py-4">
+
+                                    <div class="modal-body text-center">
+                                        <i class="bi bi-trash3"
+                                           style="font-size: 45px; color: #c61d34;"></i>
+
+                                        <h4 class="fw-semibold mt-3">
+                                            Delete collaboration post?
+                                        </h4>
+
+                                        <p class="text-secondary">
+                                            Are you sure you want to delete this collaboration post?
+                                            This action cannot be undone.
+                                        </p>
+
+                                        <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                            <button type="button"
+                                                    class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                                    data-bs-dismiss="modal">
+                                                Cancel
+                                            </button>
+
+                                            <a href="{% url 'delete_app_post' post.app_post.id %}"
+                                               class="btn btn-danger rounded-pill px-4">
+                                                Delete
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                {% endfor %}
                 {% else %}
                     <div class="row d-flex align-items-center">
                         <div class="col-2"></div>
@@ -195,7 +233,11 @@
                                                             <hr class="dropdown-divider">
                                                         </li>
                                                         <li><a class="dropdown-item text-danger"
-                                                               href="{% url 'delete_post' post.post.id %}">Delete</a>
+                                                       href="#"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deletePostModal{{ post.id }}">
+                                                    Delete
+                                                </a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -279,6 +321,43 @@
                             </div>
                             <div class="col-3"></div>
                         </div>
+                <!-- Delete Modal -->
+                <div class="modal fade" id="deletePostModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered w-25">
+                        <div class="modal-content py-4">
+
+                            <div class="modal-body text-center">
+                                <i class="bi bi-trash3"
+                                   style="font-size: 45px; color: #c61d34;"></i>
+
+                                <h4 class="fw-semibold mt-3" >
+                                    Delete post?
+                                </h4>
+
+                                <p class="text-secondary">
+                                    Are you sure you want to delete this post?
+                                    This action cannot be undone.
+                                </p>
+
+                                <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                    <button type="button"
+                                            class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    <a href="{% url 'delete_post' post.id %}"
+                                       class="btn btn-danger rounded-pill px-4">
+                                        Delete
+                                    </a>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                     {% endfor %}
                 {% else %}
                     <div class="row d-flex align-items-center">

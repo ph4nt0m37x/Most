@@ -5,27 +5,25 @@
 
     <!--Main Content-->
 
-    <div class="container mt-5">
+    <div class="container mt-5"  style="min-height: 50vh;">
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
                 <a href="{% url 'applications' %}" class="pb-4 mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                         fill="none">
-                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
+                    <i class="bi bi-arrow-left" style="font-size: 25px; color: dimgray;"></i>
                 </a>
             </div>
-            <div class="col-8"><h6 class="fw-semibold">{{ post.title }}</h6>
+            <div class="col-8"><h3 class="fw-semibold">{{ post.title }} Applications</h3>
                 <hr/>
             </div>
             <div class="col-2"></div>
         </div>
         {% if forms %}
             {% for form in forms %}
-                <div class="row">
+                <div class="row p-2">
                     <div class="col-2"></div>
-                    <div class="col-8">
+                    <div class="col-8 border rounded-4 p-5">
+                        <h4>{{ form.instance.first_name }} {{ form.instance.last_name }}'s application </h4>
+                        <hr/>
                         <form>
                             {% csrf_token %}
                             {{ form.as_p }}
@@ -35,7 +33,7 @@
                                 <div class="col-2">
                                     <a href="{% url 'accept_application' form.instance.id %}">
                                         <button type="button"
-                                                class="btn border rounded-pill btn-light link-body-emphasis text-success">
+                                                class="btn rounded-pill btn-outline-success">
                                             Accept
                                         </button>
                                     </a>
@@ -43,7 +41,7 @@
                                 <div class="col-2">
                                     <a href="{% url 'deny_application' form.instance.id %}">
                                         <button type="button"
-                                                class="btn border rounded-pill btn-light link-body-emphasis text-danger">
+                                                class="btn rounded-pill btn-outline-danger">
                                             Deny
                                         </button>
                                     </a>

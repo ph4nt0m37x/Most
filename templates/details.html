@@ -15,13 +15,8 @@
                         <div class="border rounded-4">
                             <div class="row pt-3">
                                 <div class="col-1 d-flex align-items-center">
-                                    <a href="{% url 'browse' %}">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-                                             viewBox="0 0 24 24"
-                                             fill="none">
-                                            <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                                                  stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                                        </svg>
+                                    <a href="{{ request.META.HTTP_REFERER }}">
+                                        <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                                     </a>
                                 </div>
                                 <div class="col-11 d-flex flex-column mt-3">

@@ -226,9 +226,18 @@ def create_app_post(request):
             post = form.save(commit=False)
             post.profile = Profile.objects.filter(user=request.user).first()
             post.save()
-            return redirect('index')
 
-        print(form.errors)   # Temporary for debugging
+            return render(
+                request,
+                'create.html',
+                {
+                    'form': form,
+                    'my_profile_id': my_profile_id(request),
+                    'successful': True,
+                }
+            )
+
+        print(form.errors)
 
     else:
         form = ApplicationPostModelForm()
@@ -241,7 +250,6 @@ def create_app_post(request):
             'my_profile_id': my_profile_id(request),
         }
     )
-
 @login_required(login_url='signin')
 def edit_post(request, post_id):
     if request.method == 'POST':
@@ -254,9 +262,19 @@ def edit_post(request, post_id):
 def edit_app_post(request, post_id):
     if request.method == 'POST':
         post = AppPostEditModelForm(request.POST, request.FILES, instance=ApplicationPost.objects.filter(id=post_id).first())
+        form = ApplicationPostModelForm(request.POST, request.FILES)
         if post.is_valid():
             post.save()
-        return redirect(request.META.get('HTTP_REFERER'))
+        return render(
+            request,
+            "edit_post.html",
+            {
+                "form": form,
+                "post_id": post_id,
+                "my_profile_id": my_profile_id(request),
+                "successful": True,
+            }
+        )
     post = AppPostEditModelForm(instance=ApplicationPost.objects.filter(id=post_id).first())
     return render(request, 'edit_post.html',
                   context={'form': post,
@@ -643,16 +661,6 @@ def create_certification(request):
         Certification.objects.filter(date=date, profile=profile).update(date=date)
     Certification.objects.create(name=name, company=company, date=date, profile=profile).save()
     return redirect('profile', profile.user_id)
-
-# @login_required(login_url='signin')
-# def calendar(request):
-#     profile = Profile.objects.filter(user=request.user).first()
-#
-#     return render(request, 'calendar.html',
-#                   context={
-#                       'profile': profile,
-#                       'my_profile_id': my_profile_id(request)
-#                   })
 
 @login_required(login_url='signin')
 def calendar(request):

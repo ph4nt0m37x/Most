@@ -15,7 +15,15 @@
             <div class="col-4">
                 <form action="{% url 'browse_filter' %}">
                     <div class="row justify-content-between">
-                        <div class="col-5">
+
+                        <div class="col-2">
+                            {% if filter %}
+                            <a href="{% url 'browse' %}" class="btn link-body-emphasis">
+                                <i class="bi-x-circle"></i>
+                                {% endif %}
+                        </a></div>
+
+                        <div class="col-4">
                             <select name="filter" class="form-select">
                                 <option value="all">---</option>
                                 {% for tag in tags %}
@@ -25,15 +33,12 @@
                                 {% endfor %}
                             </select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-5">
                             <input class="form-control" type="date" name="date_filter" value="{{ date_filter }}">
                         </div>
                         <div class="col-1">
                             <button type="submit" class="btn">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-search" viewBox="0 0 16 16">
-                                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0"/>
-                                </svg>
+                                <i class="bi bi-search" style="font-size: 15px; color: black;"></i>
                             </button>
                         </div>
                     </div>
@@ -96,7 +101,11 @@
                                                 <hr class="dropdown-divider">
                                             </li>
                                             <li><a class="dropdown-item text-danger"
-                                                   href="{% url 'delete_app_post' post.id %}">Delete</a>
+                                                       href="#"
+                                                       data-bs-toggle="modal"
+                                                       data-bs-target="#deleteAppPostModal{{ post.id }}">
+                                                    Delete
+                                                </a>
                                             </li>
                                         </ul>
                                     </div>
@@ -104,7 +113,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <p class="text-start px-5 py-2">
+                            <p class="text-start px-5 py-2 text-clamp-4">
                                 {{ post.short_description }}
                             </p>
                         </div>
@@ -141,6 +150,43 @@
                                     {% endif %}
                                 </a>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            <!-- Delete Modal -->
+                <div class="modal fade" id="deleteAppPostModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered w-25">
+                        <div class="modal-content py-4">
+
+                            <div class="modal-body text-center">
+                                <i class="bi bi-trash3"
+                                   style="font-size: 45px; color: #c61d34;"></i>
+
+                                <h4 class="fw-semibold mt-3" >
+                                    Delete collaboration post?
+                                </h4>
+
+                                <p class="text-secondary">
+                                    Are you sure you want to delete this collaboration post?
+                                    This action cannot be undone.
+                                </p>
+
+                                <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                    <button type="button"
+                                            class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                            data-bs-dismiss="modal">
+                                        Cancel
+                                    </button>
+
+                                    <a href="{% url 'delete_app_post' post.id %}"
+                                       class="btn btn-danger rounded-pill px-4">
+                                        Delete
+                                    </a>
+
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>

@@ -39,6 +39,15 @@
             color: #436850;
             border-color: #436850;
         }
+
+        .text-clamp-4 {
+            display: -webkit-box;
+            -webkit-line-clamp: 4;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.5rem;
+            max-height: 6.5rem;
+        }
     </style>
     <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -119,7 +128,6 @@ function copyPostLink(button) {
                         {% if my_profile_id|get_collaborations %}
                         Collaborations
                             <span class="bg-danger p-1 m-0 rounded-circle d-inline-block">
-                                <i class="bi bi-dot"></i>
                             </span>
                         {% else %}
                         Collaborations

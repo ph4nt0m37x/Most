@@ -9,11 +9,7 @@
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
                 <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                         fill="none">
-                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
+                    <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                 </a>
             </div>
             <div class="col-8"><h3 class="fw-semibold">Collaborations</h3>
@@ -84,8 +80,13 @@
                                                            style="font-size: 20px; color: black;"></i>
                                                     </button>
                                                     <ul class="dropdown-menu">
-                                                        <li><a class="dropdown-item text-danger"
-                                                               href="{% url 'delete_collaboration' post.id %}">Delete</a>
+                                                        <li>
+                                                            <a class="dropdown-item text-danger"
+                                                               href="#"
+                                                               data-bs-toggle="modal"
+                                                               data-bs-target="#withdrawModal{{ post.id }}">
+                                                                Withdraw
+                                                            </a>
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -101,6 +102,43 @@
                                 </div>
                             </div>
                             <div class="col-3"></div>
+                        </div>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="withdrawModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered w-25">
+                                <div class="modal-content py-4">
+
+                                    <div class="modal-body text-center">
+                                        <i class="bi bi-trash3"
+                                           style="font-size: 45px; color: #c61d34;"></i>
+
+                                        <h4 class="fw-semibold mt-3" >
+                                            Withdraw collaboration request?
+                                        </h4>
+
+                                        <p class="text-secondary">
+                                            Are you sure you want to withdraw your collaboration request?
+                                            This action cannot be undone.
+                                        </p>
+
+                                        <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                            <button type="button"
+                                                    class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                                    data-bs-dismiss="modal">
+                                                Cancel
+                                            </button>
+
+                                            <a href="{% url 'delete_collaboration' post.id %}"
+                                               class="btn btn-danger rounded-pill px-4">
+                                                Withdraw
+                                            </a>
+
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
                         </div>
                     {% endfor %}
                 {% else %}
@@ -154,7 +192,7 @@
                                         <div class="col-10 pb-3 ps-5 text-start">
                                             <a href="{% url 'accept' post.sender.user_id post.id %}">
                                                 <button type="button"
-                                                        class="btn border rounded-pill btn-light link-body-emphasis">
+                                                        class="btn rounded-pill btn-outline-success">
                                                     Accept
                                                 </button>
                                             </a>
