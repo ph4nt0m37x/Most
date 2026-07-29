@@ -62,9 +62,11 @@
                             <a href="#"
                                class="text-decoration-none text-body-emphasis">{{ profile.first_name }} {{ profile.last_name }}</a>
                         </h5>
-                        <p class="mb-0 mt-2 text-secondary small">
-                            {{ profile.occupation }}
-                        </p>
+                        {% if profile.occupation != None %}
+                            <p class="mb-0 mt-2 text-secondary small">
+                                {{ profile.occupation }}
+                            </p>
+                        {% endif %}
                         <p class="mb-0 mt-2">
                             <a href="{% url 'profile_collaborations' profile.user_id %}"
                                class="text-decoration-none small text-body-emphasis">{{ collaboration_count }}
@@ -598,11 +600,8 @@
                                                 </div>
                                             </div>
                                         </div>
-                                    {% else %}
-                                        <div class="row py-3 align-center">
-                                            <p class="text-center px-5 py-2">No certifications.</p>
-                                        </div>
                                     {% endif %}
+                                {% if certifications %}
                                     {% for cert in certifications %}
                                         <div class="row pt-3 pb-2 px-5 mb-3">
                                             <div class="border rounded-4">
@@ -635,7 +634,9 @@
                                                                         <hr class="dropdown-divider">
                                                                     </li>
                                                                     <li><a class="dropdown-item text-danger"
-                                                                           href="{% url 'delete_certification' cert.id %}">Delete</a>
+                                                                           href="#"
+                                                                           data-bs-toggle="modal"
+                                                                           data-bs-target="#deleteCertModal{{ cert.id }}">Delete</a>
                                                                     </li>
                                                                 {% else %}
                                                                     <li><a class="dropdown-item"
@@ -643,6 +644,46 @@
                                                                     </li>
                                                                 {% endif %}
                                                             </ul>
+                                                            <!-- Delete Modal -->
+                                                            <div class="modal fade" id="deleteCertModal{{ cert.id }}"
+                                                                 tabindex="-1"
+                                                                 aria-hidden="true">
+                                                                <div class="modal-dialog modal-dialog-centered w-25">
+                                                                    <div class="modal-content py-4">
+
+                                                                        <div class="modal-body text-center">
+                                                                            <i class="bi bi-trash3"
+                                                                               style="font-size: 45px; color: #c61d34;"></i>
+
+                                                                            <h4 class="fw-semibold mt-3">
+                                                                                Delete certification?
+                                                                            </h4>
+
+                                                                            <p class="text-secondary">
+                                                                                Are you sure you want to delete this
+                                                                                certification?
+                                                                                This action cannot be undone.
+                                                                            </p>
+
+                                                                            <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                                                                <button type="button"
+                                                                                        class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                                                                        data-bs-dismiss="modal">
+                                                                                    Cancel
+                                                                                </button>
+
+                                                                                <a href="{% url 'delete_certification' cert.id %}"
+                                                                                   class="btn btn-danger rounded-pill px-4">
+                                                                                    Delete
+                                                                                </a>
+
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <div class="modal fade" id="editCertModal" tabindex="-1"
                                                              aria-hidden="true">
@@ -705,6 +746,11 @@
                                             </div>
                                         </div>
                                     {% endfor %}
+                                {% else %}
+                                    <div class="row py-3 align-center">
+                                        <p class="text-center px-5 py-2">No certifications.</p>
+                                    </div>
+                                {% endif %}
                                 </div>
                                 <!-- Contact -->
                                 <div class="tab-pane fade" id="nav-contact" role="tabpanel"
