@@ -45,6 +45,7 @@ urlpatterns = [
     path('collaborate/<user_id>', collaborate, name='collaborate'),
     path('collaboration/<post_id>/delete', delete_collaboration, name='delete_collaboration'),
     path('accept/<user_id>/<post_id>', accept, name='accept'),
+    path('deny/<post_id>', deny, name='deny'),
     path('profile/applications/', applications, name='applications'),
     path('profile/applications/<post_id>/forms', forms, name='forms'),
     path('profile/applications/<post_id>/form', form, name='form'),

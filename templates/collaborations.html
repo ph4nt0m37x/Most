@@ -99,6 +99,25 @@
                                             {{ post.body }}
                                         </p>
                                     </div>
+                                    <div class="row ps-3">
+                                        <div class="d-flex align-items-end border-5">
+                                            {% if post.get_status_display == 'Accepted' %}
+                                                <p class="border border-success-subtle p-2 rounded-pill"><i
+                                                        class="bi bi-check-circle pe-2"
+                                                        style="color: #436850; font-size: 15px"></i><span
+                                                        style="color: #436850;">Accepted</span></p>
+                                            {% elif post.get_status_display == 'Denied' %}
+                                                <p class="border border-danger-subtle p-2 rounded-pill"><i
+                                                        class="bi bi-x-circle pe-2"
+                                                        style="color: #c61d34; font-size: 15px"></i><span
+                                                        style="color: #c61d34;">Denied</span></p>{% else %}
+                                                <p class="border border-warning p-2 rounded-pill"><i
+                                                        class="bi bi-clock pe-2 text-warning"
+                                                        style=" font-size: 15px"></i><span
+                                                        class="text-warning">Pending</span>
+                                                </p>{% endif %}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-3"></div>
@@ -112,7 +131,7 @@
                                         <i class="bi bi-trash3"
                                            style="font-size: 45px; color: #c61d34;"></i>
 
-                                        <h4 class="fw-semibold mt-3" >
+                                        <h4 class="fw-semibold mt-3">
                                             Withdraw collaboration request?
                                         </h4>
 
@@ -190,12 +209,24 @@
                                     </div>
                                     <div class="row d-flex">
                                         <div class="col-10 pb-3 ps-5 text-start">
-                                            <a href="{% url 'accept' post.sender.user_id post.id %}">
-                                                <button type="button"
-                                                        class="btn rounded-pill btn-outline-success">
-                                                    Accept
-                                                </button>
-                                            </a>
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <a href="{% url 'accept' post.sender.user_id post.id %}">
+                                                        <button type="button"
+                                                                class="btn rounded-pill btn-outline-success">
+                                                            Accept
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                                <div class="col-2">
+                                                    <a href="{% url 'deny' post.id %}">
+                                                        <button type="button"
+                                                                class="btn rounded-pill btn-outline-danger">
+                                                            Deny
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -217,12 +248,68 @@
             </div>
             <!-- ACCEPTED -->
             <div class="tab-pane fade show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
-                {% if accepted %}
-                    {% for post in accepted %}
-                        <div class="row d-flex align-items-left">
-                            <div class="col-3"></div>
-                            <div class="col-6 pt-3 pb-2">
-                                <div class="border rounded-4 p-1">
+                {% if received_accepted %}
+                    <div class="row d-flex align-items-left">
+                        <div class="col-3"></div>
+                        <div class="col-6 pt-3 pb-2">
+                            <h5>Sent to you</h5>
+                            <hr/>
+                            {% for post in received_accepted %}
+                                <div class="border rounded-4 p-1 mb-4">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.sender.user_id %}" class="">
+                                                    <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.sender.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    Sent by: {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
+                            </div>
+                        </div>
+                        <div class="col-2"></div>
+                    </div>
+                {% endif %}
+                {% if sent_accepted %}
+                    <div class="row d-flex align-items-left">
+                        <div class="col-3"></div>
+                        <div class="col-6 pt-3 pb-2">
+                            <h5>Sent by you</h5>
+                            <hr/>
+                            {% for post in sent_accepted %}
+                                <div class="border rounded-4 p-1 mb-4">
                                     <div class="row pt-3">
                                         <div class="col-10 d-flex align-items-center ps-3">
                                             <div class="px-3">
@@ -239,7 +326,8 @@
                                                 <p class="mb-3 small text-secondary"><a
                                                         href="{% url 'profile' post.receiver.user_id %}"
                                                         class="text-decoration-none text-dark link-body-emphasis small">
-                                                    {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                    Sent
+                                                    to: {{ post.receiver.first_name }} {{ post.receiver.last_name }}
                                                 </a></p>
                                             </div>
                                         </div>
@@ -254,10 +342,10 @@
                                         </p>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-3"></div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
+                        <div class="col-3"></div>
+                    </div>
                 {% else %}
                     <div class="row d-flex align-items-center">
                         <div class="col-2"></div>

@@ -124,11 +124,15 @@ class ProfileAppliedPost(models.Model):
     form = models.ForeignKey(ApplicationForm, on_delete=models.CASCADE)
 
 class CollaborationPost(models.Model):
+    STATUS_CHOICES = [('ACC', 'Accepted'),
+                      ('DEN', 'Denied'),
+                      ('PEND', 'Pending'), ]
+
     sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sent_collaboration")
     receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="received_collaboration")
     subject = models.CharField(max_length=100)
     body = models.TextField()
-    accepted = models.BooleanField(default=False)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
 
     def __str__(self):
         return f'{Profile.objects.filter(user=self.sender).first()} sent collaboration to {self.receiver.first_name}'

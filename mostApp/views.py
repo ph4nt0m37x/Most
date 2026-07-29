@@ -397,7 +397,7 @@ def profile(request, user_id):
     else:
         profile = Profile.objects.filter(user=user).first()
 
-    if CollaborationPost.objects.filter(sender__user=request.user, receiver__user_id=user_id, accepted=False).exists():
+    if CollaborationPost.objects.filter(sender__user=request.user, receiver__user_id=user_id, status='PEND').exists():
         collaborated = True
 
     # logged-in user's profile (for calendar)
@@ -574,8 +574,14 @@ def collaborate(request, user_id):
 @login_required(login_url='signin')
 def accept(request, user_id, post_id):
     collaboration = CollaborationPost.objects.filter(id=post_id)
-    collaboration.update(accepted=True)
+    collaboration.update(status='ACC')
     Collaboration.objects.create(collaborator_1=Profile.objects.filter(user=request.user).first(),collaborator_2=Profile.objects.filter(user_id=user_id).first())
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def deny(request, post_id):
+    collaboration = CollaborationPost.objects.filter(id=post_id)
+    collaboration.update(status='DEN')
     return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
@@ -631,15 +637,18 @@ def deny_application(request, form_id):
 def collaborations(request):
     all_sent = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first())
     all_received = CollaborationPost.objects.filter(receiver=Profile.objects.filter(user=request.user).first())
-    accepted = all_sent.filter(accepted=True).union(all_received.filter(accepted=True))
 
-    sent = all_sent.filter(accepted=False)
-    received = all_received.filter(accepted=False)
+    sent_accepted = all_sent.filter(status='ACC')
+    received_accepted = all_received.filter(status='ACC')
+
+    sent = all_sent.filter(Q(status='PEND') | Q(status='DEN'))
+    received = all_received.filter(Q(status='PEND') | Q(status='DEN'))
 
     return render(request, 'collaborations.html',
                   context={'sent': sent,
                            'received': received,
-                           'accepted': accepted,
+                           'sent_accepted': sent_accepted,
+                           'received_accepted': received_accepted,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')

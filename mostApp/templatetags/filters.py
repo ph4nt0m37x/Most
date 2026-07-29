@@ -25,7 +25,7 @@ def get_profile_pic_url(user_id):
 
 @register.filter
 def get_collaborations(user_id):
-    return CollaborationPost.objects.filter(receiver__user_id=user_id, accepted=False).exists()
+    return CollaborationPost.objects.filter(receiver__user_id=user_id, status='PEN').exists()
 
 @register.filter
 def is_bookmarked_post(post_id, user_id):
