@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 
 from mostApp.models import *
 
@@ -41,6 +42,13 @@ class ApplicationPostModelForm(forms.ModelForm):
             ),
         }
 
+class CustomCvWidget(forms.Widget):
+    def render(self, name, value, attrs=None, renderer=None):
+        if value:
+            file = value.name.split('/')[-1]
+            return mark_safe(f'<a href="{value.url}">{file}</a>')
+        return mark_safe('<span>No file.</span>')
+
 class ApplicationFormModelForm(forms.ModelForm):
     education = forms.ChoiceField(
         choices=ApplicationForm.EDUCATION_CHOICES,
@@ -72,6 +80,9 @@ class ApplicationFormModelForm(forms.ModelForm):
 
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = field.widget.attrs.get('class', 'form-control')
+
+        self.fields['cv'].widget = CustomCvWidget()
+        self.fields['cv'].label = 'CV'
 
     class Meta:
         model = ApplicationForm
