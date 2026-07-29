@@ -130,7 +130,13 @@
                                         <div class="col-1 d-flex align-items-center justify-content-end">
                                             <a href="{% url 'bookmark_app_post' post.id %}" onclick=""
                                                class="text-decoration-none">
-                                                <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
+                                                {% if post.id|is_bookmarked_app_post:request.user %}
+                                                    <i class="bi bi-bookmark-fill"
+                                                       style="font-size: 15px; color: black;"></i>
+                                                {% else %}
+                                                    <i class="bi bi-bookmark"
+                                                       style="font-size: 15px; color: black;"></i>
+                                                {% endif %}
                                             </a>
                                         </div>
                                     </div>
@@ -262,7 +268,13 @@
                                         <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
                                             <a href="{% url 'bookmark_app_post' post.app_post.id %}" onclick=""
                                                class="text-decoration-none">
-                                                <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
+                                                {% if post.app_post.id|is_bookmarked_app_post:request.user %}
+                                                    <i class="bi bi-bookmark-fill"
+                                                       style="font-size: 15px; color: black;"></i>
+                                                {% else %}
+                                                    <i class="bi bi-bookmark"
+                                                       style="font-size: 15px; color: black;"></i>
+                                                {% endif %}
                                             </a>
                                         </div>
                                     </div>
