@@ -213,7 +213,7 @@ def browse_filter(request):
 @login_required(login_url='signin')
 def create_post(request):
     content = request.POST.get('content')
-    image = request.POST.get('image')
+    image = request.FILES.get("file")
     location = request.POST.get('location')
     post = Post.objects.create(content=content, image=image,
                                location=location, profile=Profile.objects.get(user=request.user))

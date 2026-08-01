@@ -15,7 +15,7 @@
                         <div class="border rounded-4">
                             <div class="row pt-3">
                                 <div class="col-1 d-flex align-items-center">
-                                    <a href="{{ request.META.HTTP_REFERER }}">
+                                    <a href="javascript:history.back()">
                                         <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                                     </a>
                                 </div>
@@ -48,7 +48,7 @@
                                 {% else %}
                                     <div class="row d-flex justify-content-between px-5 mx-5 my-4">
                                         <div class="col-2 d-flex align-items-center justify-content-center">
-                                            <a href="{{ request.META.HTTP_REFERER }}" class="text-decoration-none mb-0"
+                                            <a href="javascript:history.back()" class="text-decoration-none mb-0"
                                                style="color: #436850"><p class="mb-0">
                                                 Cancel</p>
                                             </a>
@@ -169,10 +169,17 @@
                             </div>
 
                             <div class="row">
-                                <p class="text-start px-5 py-2">
+                                <p class="text-start px-5 py-2 text-break">
                                     {{ post.content }}
                                 </p>
                             </div>
+                            {% if post.image %}
+                            <div class="row">
+
+                            <img src="{{ post.image.url }}" class="img-fluid rounded" alt=""  style="width: 100%; max-height: 40vh; object-fit: contain;">
+
+                            </div>
+                            {% endif %}
                             <div class="row d-flex text-end pb-3">
                                 <div class="col-10">
 

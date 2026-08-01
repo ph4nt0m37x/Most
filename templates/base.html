@@ -196,7 +196,39 @@ function copyPostLink(button) {
 
     </div>
 </footer>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const fileInput = document.getElementById("fileElem");
+    const preview = document.getElementById("preview");
+    const removeImage = document.getElementById("removeImage");
+
+    fileInput.addEventListener("change", function () {
+
+        const file = this.files[0];
+
+        if (file) {
+            preview.src = URL.createObjectURL(file);
+
+            preview.classList.remove("d-none");
+            removeImage.classList.remove("d-none");
+        }
+
+    });
 
 
+    removeImage.addEventListener("click", function () {
+
+        fileInput.value = "";
+
+        preview.src = "";
+        preview.classList.add("d-none");
+
+        removeImage.classList.add("d-none");
+
+    });
+
+});
+</script>
 </body>
 </html>
