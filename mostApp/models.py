@@ -1,7 +1,9 @@
 from cProfile import label
+from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
+
 
 # Create your models here.
 
@@ -133,7 +135,7 @@ class CollaborationPost(models.Model):
     subject = models.CharField(max_length=100)
     body = models.TextField()
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return f'{Profile.objects.filter(user=self.sender).first()} sent collaboration to {self.receiver.first_name}'
