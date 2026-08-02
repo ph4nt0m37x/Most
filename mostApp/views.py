@@ -613,7 +613,7 @@ def forms(request, post_id):
 def form(request, post_id):
     post = ApplicationPost.objects.get(id=post_id)
     app_form = ApplicationForm.objects.filter(app_post_id=post_id, user=request.user).first()
-    form = ApplicationFormModelForm(instance=app_form)
+    form = ApplicationFormModelForm(instance=app_form, apply=False)
     status = app_form.get_status_display()
     return render(request, 'forms.html',
            context={'forms': None,

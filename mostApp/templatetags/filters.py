@@ -18,10 +18,19 @@ def get_post_profile(post_id):
 
 @register.filter
 def get_profile_pic_url(user_id):
-    if Profile.objects.filter(user_id=user_id).first().profile_pic:
-        return Profile.objects.filter(user_id=user_id).first().profile_pic.url
+    picture = Profile.objects.filter(user_id=user_id).first().profile_pic
+    if picture:
+        if picture.url.find('https%3A') != -1:
+            return picture.url.removeprefix('/media/').replace('https%3A', 'https:/')
+        return picture.url
     else:
         return False
+
+@register.filter
+def format_image(image):
+    if image.find('https%3A') != -1:
+        return image.removeprefix('/media/').replace('https%3A', 'https:/')
+    return image
 
 @register.filter
 def get_collaborations(user_id):

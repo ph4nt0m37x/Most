@@ -1,4 +1,3 @@
-from cProfile import label
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -32,7 +31,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return f'{self.profile.first_name} {self.profile.last_name} {self.content}'
@@ -42,7 +41,7 @@ class ApplicationPost(models.Model):
     short_description = models.TextField()
     long_description = models.TextField()  # see more section
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.now)
     deadline = models.DateTimeField(null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
