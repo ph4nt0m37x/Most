@@ -601,7 +601,7 @@ def forms(request, post_id):
     all_forms = ApplicationForm.objects.filter(app_post_id=post_id)
     forms = []
     for form in all_forms:
-        forms.append(ApplicationFormModelForm(instance=form))
+        forms.append(ApplicationFormModelForm(instance=form, apply=False))
     post = ApplicationPost.objects.get(id=post_id)
     return render(request, 'forms.html',
                   context={'forms': forms,

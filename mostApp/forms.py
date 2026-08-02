@@ -72,6 +72,7 @@ class ApplicationFormModelForm(forms.ModelForm):
     )
 
     def __init__(self, *args, **kwargs):
+        apply = kwargs.pop('apply', True)
         super(ApplicationFormModelForm, self).__init__(*args, **kwargs)
 
         if self.instance and self.instance.pk:
@@ -81,8 +82,9 @@ class ApplicationFormModelForm(forms.ModelForm):
         for field_name, field in self.fields.items():
             field.widget.attrs['class'] = field.widget.attrs.get('class', 'form-control')
 
-        self.fields['cv'].widget = CustomCvWidget()
-        self.fields['cv'].label = 'CV'
+        if not apply:
+            self.fields['cv'].widget = CustomCvWidget()
+            self.fields['cv'].label = 'CV'
 
     class Meta:
         model = ApplicationForm
