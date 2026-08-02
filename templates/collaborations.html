@@ -247,12 +247,13 @@
             </div>
             <!-- ACCEPTED -->
             <div class="tab-pane fade show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
-                {% if received_accepted %}
-                    <div class="row d-flex align-items-left">
-                        <div class="col-3"></div>
-                        <div class="col-6 pt-3 pb-2">
-                            <h5>Sent to you</h5>
-                            <hr/>
+
+                <div class="row d-flex align-items-left">
+                    <div class="col-3"></div>
+                    <div class="col-6 pt-3 pb-2">
+                        <h5>Sent to you</h5>
+                        <hr/>
+                        {% if received_accepted %}
                             {% for post in received_accepted %}
                                 <div class="border rounded-4 p-1 mb-4">
                                     <div class="row pt-3">
@@ -287,26 +288,22 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        </div>
-                        <div class="col-3"></div>
-                    </div>
-                {% else %}
-                    <div class="row d-flex align-items-center">
-                        <div class="col-2"></div>
-                        <div class="col-8">
+                        {% else %}
                             <div class="row pt-3 d-flex align-items-center justify-content-center ">
                                 <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
                             </div>
-                        </div>
-                        <div class="col-2"></div>
+                        {% endif %}
                     </div>
-                {% endif %}
-                {% if sent_accepted %}
-                    <div class="row d-flex align-items-left">
-                        <div class="col-3"></div>
-                        <div class="col-6 pt-3 pb-2">
-                            <h5>Sent by you</h5>
-                            <hr/>
+                    <div class="col-3"></div>
+                </div>
+
+
+                <div class="row d-flex align-items-left">
+                    <div class="col-3"></div>
+                    <div class="col-6 pt-3 pb-2">
+                        <h5>Sent by you</h5>
+                        <hr/>
+                        {% if sent_accepted %}
                             {% for post in sent_accepted %}
                                 <div class="border rounded-4 p-1 mb-4">
                                     <div class="row pt-3">
@@ -342,20 +339,14 @@
                                     </div>
                                 </div>
                             {% endfor %}
-                        </div>
-                        <div class="col-3"></div>
-                    </div>
-                {% else %}
-                    <div class="row d-flex align-items-center">
-                        <div class="col-2"></div>
-                        <div class="col-8">
+                        {% else %}
                             <div class="row pt-3 d-flex align-items-center justify-content-center ">
                                 <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
                             </div>
-                        </div>
-                        <div class="col-2"></div>
+                        {% endif %}
                     </div>
-                {% endif %}
+                    <div class="col-3"></div>
+                </div>
             </div>
         </div>
     </div>
