@@ -1,7 +1,8 @@
-from cProfile import label
+from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.db import models
+
 
 # Create your models here.
 
@@ -30,7 +31,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return f'{self.profile.first_name} {self.profile.last_name} {self.content}'
@@ -40,7 +41,7 @@ class ApplicationPost(models.Model):
     short_description = models.TextField()
     long_description = models.TextField()  # see more section
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(auto_now_add=True)
+    created = models.DateTimeField(default=datetime.now)
     deadline = models.DateTimeField(null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
@@ -80,6 +81,9 @@ class ApplicationForm(models.Model):
         ('MD', 'Master\'s Degree'),
         ('DD', 'Doctorate\'s Degree'),
     ]
+    STATUS_CHOICES = [('ACC', 'Accepted'),
+                      ('DEN', 'Denied'),
+                      ('PEND', 'Pending'),]
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -90,6 +94,7 @@ class ApplicationForm(models.Model):
     post_id = models.CharField(max_length=100, null=True, blank=True)
     app_post = models.ForeignKey(ApplicationPost, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
 
 class Certification(models.Model):
     name = models.TextField()
@@ -120,11 +125,16 @@ class ProfileAppliedPost(models.Model):
     form = models.ForeignKey(ApplicationForm, on_delete=models.CASCADE)
 
 class CollaborationPost(models.Model):
+    STATUS_CHOICES = [('ACC', 'Accepted'),
+                      ('DEN', 'Denied'),
+                      ('PEND', 'Pending'), ]
+
     sender = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="sent_collaboration")
     receiver = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name="received_collaboration")
     subject = models.CharField(max_length=100)
     body = models.TextField()
-    accepted = models.BooleanField(default=False)
+    status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
+    created = models.DateTimeField(default=datetime.now)
 
     def __str__(self):
         return f'{Profile.objects.filter(user=self.sender).first()} sent collaboration to {self.receiver.first_name}'

@@ -20,12 +20,8 @@
                     <div class="border rounded-4">
                         <div class="row pt-3">
                             <div class="col-1 d-flex align-items-center">
-                                <a href="{% url 'post' post_id %}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                                     fill="none">
-                                    <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                                          stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                                </svg>
+                                <a href="javascript:history.back()">
+                                <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                                 </a>
                             </div>
                             <div class="col-11 d-flex flex-column mt-3">
@@ -48,16 +44,12 @@
                                     {{ form.as_p }}
                                     <div class="row d-flex justify-content-between px-5 mx-5 my-4">
                                         <div class="col-2 d-flex align-items-center justify-content-center">
-                                            <a href="{% url 'post' post_id %}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">
+                                            <a href="{% url 'application_post' post_id %}" class="text-decoration-none mb-0" style="color: #436850"><p class="mb-0">
                                                 Cancel</p>
                                             </a>
                                         </div>
                                         <div class="col-2 text-end">
-                                            {% if apply %}
                                             <button class="btn text-light" style="background-color: #436850">Apply</button>
-                                            {% else %}
-                                            <button disabled class="btn text-light" style="background-color: #436850">Apply</button>
-                                            {% endif %}
                                         </div>
                                     </div>
                                 </form>
@@ -72,13 +64,7 @@
                             <div class="modal-dialog modal-dialog-centered w-25">
                                 <div class="modal-content py-4 mx-0">
                                     <div class="row">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="45" height="45"
-                                             viewBox="0 0 45 45" fill="none">
-                                            <circle cx="22.5" cy="22.5" r="16.875" stroke="#436850"
-                                                    stroke-width="3"></circle>
-                                            <path d="M15 22.5L20.625 28.125L30 16.875" stroke="#436850"
-                                                  stroke-width="3"></path>
-                                        </svg>
+                                        <i class="bi bi-check-circle ps-1 text-center" style="font-size: 50px; color: #436850;"></i>
                                     </div>
                                     <div class="row">
                                         <h2 class="text-center fw-semibold" style="color: #436850">Success!</h2>
@@ -87,10 +73,13 @@
                                         <p class="text-center text-secondary">Your application has been sent.</p>
                                     </div>
                                     <div class="row d-flex align-items-center justify-content-center">
-                                        <button type="submit" class="btn text-light text-center w-25"
-                                                onclick="window.location.href='/browse/'"
-                                                style="background-color: #436850">OK
-                                        </button>
+                                        <a href="javascript:history.go(-3)"
+                                           class="row justify-content-center text-decoration-none">
+                                            <button type="submit" class="btn text-light text-center w-25"
+                                                    onclick=""
+                                                    style="background-color: #436850">OK
+                                            </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>

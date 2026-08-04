@@ -8,12 +8,8 @@
     <div class="container mt-5" style="min-height: 50vh;">
         <div class="row">
             <div class="col-2 d-flex align-items-center justify-content-end">
-                <a href="{{ request.META.HTTP_REFERER }}" class="pb-4 mb-1">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-                         fill="none">
-                        <path d="M10.6662 19L3.99951 12M3.99951 12L10.6662 5M3.99951 12L19.9995 12"
-                              stroke="black" stroke-linecap="round" stroke-linejoin="round"></path>
-                    </svg>
+                <a href="javascript:history.back()" class="pb-4 mb-1">
+                    <i class="bi bi-arrow-left ps-1" style="font-size: 22px; color: dimgray;"></i>
                 </a>
             </div>
             <div class="col-8"><h3 class="fw-semibold">Collaborations</h3>
@@ -49,48 +45,120 @@
             <!-- SENT -->
             <div class="tab-pane fade active show" id="nav-sent" role="tabpanel" aria-labelledby="nav-sent-tab">
                 {% if sent %}
-                {% for post in sent %}
-                    <div class="row d-flex align-items-left">
-                        <div class="col-3"></div>
-                        <div class="col-6 pt-3 pb-2">
-                            <div class="border rounded-4 p-1">
-                                <div class="row pt-3">
-                                    <div class="col-10 d-flex align-items-center ps-3">
-                                        <div class="ps-4 pe-3">
-                                            <a href="{% url 'profile' post.receiver.user_id %}" class="">
-                                                <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                            </a>
+                    {% for post in sent %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                                    <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3 text-truncate">
+                                                    {{ post.subject }}
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.receiver.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                </a></p>
+                                            </div>
                                         </div>
-                                        <div class="text-start">
-                                            <p class="mb-0 mt-3">
-                                                <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                     {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                                 </a>
-                                            </p>
+                                        <div class="col-2 d-flex justify-content-center">
+                                            {% if post.sender.user == request.user %}
+                                                <div class="dropdown d-flex">
+                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                            type="button" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                        <i class="bi bi-three-dots"
+                                                           style="font-size: 20px; color: black;"></i>
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li>
+                                                            <a class="dropdown-item text-danger"
+                                                               href="#"
+                                                               data-bs-toggle="modal"
+                                                               data-bs-target="#withdrawModal{{ post.id }}">
+                                                                Withdraw
+                                                            </a>
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            {% endif %}
                                         </div>
                                     </div>
 
-                                    <div class="col-2 text-end pe-4">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                             fill="#000000">
-                                            <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                        </svg>
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
+                                    </div>
+                                    <div class="row ps-3">
+                                        <div class="d-flex align-items-end border-5">
+                                            {% if post.get_status_display == 'Accepted' %}
+                                                <p class="border border-success-subtle p-2 rounded-pill"><i
+                                                        class="bi bi-check-circle pe-2"
+                                                        style="color: #436850; font-size: 15px"></i><span
+                                                        style="color: #436850;">Accepted</span></p>
+                                            {% elif post.get_status_display == 'Denied' %}
+                                                <p class="border border-danger-subtle p-2 rounded-pill"><i
+                                                        class="bi bi-x-circle pe-2"
+                                                        style="color: #c61d34; font-size: 15px"></i><span
+                                                        style="color: #c61d34;">Denied</span></p>{% else %}
+                                                <p class="border border-warning p-2 rounded-pill"><i
+                                                        class="bi bi-clock pe-2 text-warning"
+                                                        style=" font-size: 15px"></i><span
+                                                        class="text-warning">Pending</span>
+                                                </p>{% endif %}
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div class="col-3"></div>
+                        </div>
+                        <!-- Delete Modal -->
+                        <div class="modal fade" id="withdrawModal{{ post.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered w-25">
+                                <div class="modal-content py-4">
 
-                                <div class="row">
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.subject}}}
-                                    </p>
-                                    <p class="text-start px-5 py-2">
-                                        {{ post.body}}
-                                    </p>
+                                    <div class="modal-body text-center">
+                                        <i class="bi bi-trash3"
+                                           style="font-size: 45px; color: #c61d34;"></i>
+
+                                        <h4 class="fw-semibold mt-3">
+                                            Withdraw collaboration request?
+                                        </h4>
+
+                                        <p class="text-secondary">
+                                            Are you sure you want to withdraw your collaboration request?
+                                            This action cannot be undone.
+                                        </p>
+
+                                        <div class="d-flex justify-content-center gap-3 mt-4">
+
+                                            <button type="button"
+                                                    class="btn btn-link rounded-pill px-4 text-decoration-none text-reset"
+                                                    data-bs-dismiss="modal">
+                                                Cancel
+                                            </button>
+
+                                            <a href="{% url 'delete_collaboration' post.id %}"
+                                               class="btn btn-danger rounded-pill px-4">
+                                                Withdraw
+                                            </a>
+
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
-                        <div class="col-3"></div>
-                    </div>
-                {% endfor %}
+                    {% endfor %}
                 {% else %}
                     <div class="row d-flex align-items-center">
                         <div class="col-2"></div>
@@ -102,125 +170,183 @@
                         <div class="col-2"></div>
                     </div>
                 {% endif %}
-                </div>
+            </div>
             <!-- RECEIVED -->
             <div class="tab-pane fade show" id="nav-received" role="tabpanel" aria-labelledby="nav-received-tab">
-            {% if received %}
-            {% for post in received %}
-                <div class="row d-flex align-items-left">
-                    <div class="col-3"></div>
-                    <div class="col-6 pt-3 pb-2">
-                        <div class="border rounded-4 p-1">
-                            <div class="row pt-3">
-                                <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="ps-4 pe-3">
-                                        <a href="{% url 'profile' post.sender.user_id %}" class="">
-                                            <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                        </a>
+                {% if received %}
+                    {% for post in received %}
+                        <div class="row d-flex align-items-left">
+                            <div class="col-3"></div>
+                            <div class="col-6 pt-3 pb-2">
+                                <div class="border rounded-4 p-1">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.sender.user_id %}" class="">
+                                                    <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.sender.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
                                     </div>
-                                    <div class="text-start">
-                                        <p class="mb-0 mt-3">
-                                            <a href="{% url 'profile' post.sender.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                 {{ post.sender.first_name }} {{ post.sender.last_name }}
-                                             </a>
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
                                         </p>
                                     </div>
-                                </div>
-
-                                <div class="col-2 text-end pe-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                         fill="#000000">
-                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                    </svg>
+                                    <div class="row d-flex">
+                                        <div class="col-10 pb-3 ps-5 text-start">
+                                            <div class="row">
+                                                <div class="col-2">
+                                                    <a href="{% url 'accept' post.sender.user_id post.id %}">
+                                                        <button type="button"
+                                                                class="btn rounded-pill btn-outline-success">
+                                                            Accept
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                                <div class="col-2">
+                                                    <a href="{% url 'deny' post.id %}">
+                                                        <button type="button"
+                                                                class="btn rounded-pill btn-outline-danger">
+                                                            Deny
+                                                        </button>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div class="row">
-                                <p class="text-start px-5 py-2">
-                                    {{ post.subject}}}
-                                </p>
-                                <p class="text-start px-5 py-2">
-                                    {{ post.body}}
-                                </p>
-                            </div>
-                            <div class="row d-flex">
-                                <div class="col-10 pb-3 ps-5 text-start">
-                                    <a href="{% url 'accept' post.sender.user_id post.id %}"><button type="button" class="btn border rounded-pill btn-light link-body-emphasis">Accept</button></a>
-                                </div>
+                            <div class="col-3"></div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="row d-flex align-items-center">
+                        <div class="col-2"></div>
+                        <div class="col-8">
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No collaboration requests.</p>
                             </div>
                         </div>
+                        <div class="col-2"></div>
                     </div>
-                    <div class="col-3"></div>
-                </div>
-            {% endfor %}
-            {% else %}
-                <div class="row d-flex align-items-center">
-                    <div class="col-2"></div>
-                    <div class="col-8">
-                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                            <p class="text-center opacity-75 p-5">No collaboration requests.</p>
-                        </div>
-                    </div>
-                    <div class="col-2"></div>
-                </div>
-            {% endif %}
+                {% endif %}
             </div>
             <!-- ACCEPTED -->
             <div class="tab-pane fade show" id="nav-accepted" role="tabpanel" aria-labelledby="nav-accepted-tab">
-            {% if accepted %}
-            {% for post in accepted %}
+
                 <div class="row d-flex align-items-left">
                     <div class="col-3"></div>
                     <div class="col-6 pt-3 pb-2">
-                        <div class="border rounded-4 p-1">
-                            <div class="row pt-3">
-                                <div class="col-10 d-flex align-items-center ps-3">
-                                    <div class="ps-4 pe-3">
-                                        <a href="{% url 'profile' post.receiver.user_id %}" class="">
-                                            <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>
-                                        </a>
+                        <h5>Sent to you</h5>
+                        <hr/>
+                        {% if received_accepted %}
+                            {% for post in received_accepted %}
+                                <div class="border rounded-4 p-1 mb-4">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.sender.user_id %}" class="">
+                                                    <img src="{% if post.sender.user_id|get_profile_pic_url %} {{ post.sender.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.sender.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    Sent by: {{ post.sender.first_name }} {{ post.sender.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
                                     </div>
-                                    <div class="text-start">
-                                        <p class="mb-0 mt-3">
-                                            <a href="{% url 'profile' post.receiver.user_id %}" class="text-decoration-none text-dark link-body-emphasis small">
-                                                 {{ post.receiver.first_name }} {{ post.receiver.last_name }}
-                                             </a>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
                                         </p>
                                     </div>
                                 </div>
-
-                                <div class="col-2 text-end pe-4">
-                                    <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px"
-                                         fill="#000000">
-                                        <path d="M240-400q-33 0-56.5-23.5T160-480q0-33 23.5-56.5T240-560q33 0 56.5 23.5T320-480q0 33-23.5 56.5T240-400Zm240 0q-33 0-56.5-23.5T400-480q0-33 23.5-56.5T480-560q33 0 56.5 23.5T560-480q0 33-23.5 56.5T480-400Zm240 0q-33 0-56.5-23.5T640-480q0-33 23.5-56.5T720-560q33 0 56.5 23.5T800-480q0 33-23.5 56.5T720-400Z"></path>
-                                    </svg>
-                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
                             </div>
-
-                            <div class="row">
-                                <p class="text-start px-5 py-2">
-                                    {{ post.subject}}}
-                                </p>
-                                <p class="text-start px-5 py-2">
-                                    {{ post.body}}
-                                </p>
-                            </div>
-                        </div>
+                        {% endif %}
                     </div>
                     <div class="col-3"></div>
                 </div>
-            {% endfor %}
-            {% else %}
-                <div class="row d-flex align-items-center">
-                    <div class="col-2"></div>
-                    <div class="col-8">
-                        <div class="row pt-3 d-flex align-items-center justify-content-center ">
-                            <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
-                        </div>
+
+
+                <div class="row d-flex align-items-left">
+                    <div class="col-3"></div>
+                    <div class="col-6 pt-3 pb-2">
+                        <h5>Sent by you</h5>
+                        <hr/>
+                        {% if sent_accepted %}
+                            {% for post in sent_accepted %}
+                                <div class="border rounded-4 p-1 mb-4">
+                                    <div class="row pt-3">
+                                        <div class="col-10 d-flex align-items-center ps-3">
+                                            <div class="px-3">
+                                                <a href="{% url 'profile' post.receiver.user_id %}" class="">
+                                                    <img src="{% if post.receiver.user_id|get_profile_pic_url %} {{ post.receiver.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                                         class="rounded-circle" width="48" height="48" alt=""/>
+                                                </a>
+                                            </div>
+                                            <div class="text-start">
+                                                <h6 class="mb-0 mt-3">
+                                                    {{ post.subject }}
+
+                                                </h6>
+                                                <p class="mb-3 small text-secondary"><a
+                                                        href="{% url 'profile' post.receiver.user_id %}"
+                                                        class="text-decoration-none text-dark link-body-emphasis small">
+                                                    Sent
+                                                    to: {{ post.receiver.first_name }} {{ post.receiver.last_name }}
+                                                </a></p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-2 text-end pe-4">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <p class="text-start px-5 py-2">
+                                            {{ post.body }}
+                                        </p>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <div class="row pt-3 d-flex align-items-center justify-content-center ">
+                                <p class="text-center opacity-75 p-5">No posts have been accepted yet.</p>
+                            </div>
+                        {% endif %}
                     </div>
-                    <div class="col-2"></div>
+                    <div class="col-3"></div>
                 </div>
-            {% endif %}
             </div>
         </div>
     </div>

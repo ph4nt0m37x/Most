@@ -2,9 +2,12 @@ from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.api import success
 from django.db.models import Q
+import json
 from django.shortcuts import render, redirect
 from django.contrib import messages, auth
 from django.urls import reverse
+from django.utils import timezone
+from datetime import timedelta
 
 from mostApp.forms import *
 from mostApp.models import *
@@ -76,38 +79,87 @@ def about(request):
 
 @login_required(login_url='signin')
 def index(request):
-    posts = Post.objects.all().order_by('-created')
+    thirty_days_ago = timezone.now() - timedelta(days=30)
+    posts = Post.objects.filter(created__gte=thirty_days_ago).order_by('-created')
     profiles = None
 
     my_profile = Profile.objects.get(user=request.user)
-    return render(request, 'index.html',
-                  context={'posts': posts,
-                           'my_profile': my_profile,
-                           'profiles': profiles,
-                           'my_profile_id': my_profile_id(request)})
 
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "index.html",
+        context={
+            "posts": posts,
+            "my_profile": my_profile,
+            "profiles": profiles,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )
 @login_required(login_url='signin')
 def search(request):
-    query = request.GET.get('query')
-    profiles_search = Profile.objects.filter(Q(first_name__icontains=query) | Q(last_name__icontains=query))
-    my_collaborations = CollaborationPost.objects.filter(user=request.user)
-    collaborations = (
-        CollaborationPost.objects.filter(collaborator__in=my_collaborations.values_list('receiver'))).values_list(
-        'receiver')
-    mutual_collaborations = Profile.objects.filter(id__in=collaborations)
-    profiles = Profile.objects.exclude(user__in=mutual_collaborations.values_list('user')).exclude(user=request.user)[
-               :3]
-    mutual = False
-    if mutual_collaborations.count() > 0:
-        mutual = True
-    return render(request, 'search.html',
-                  context={'profiles': profiles,
-                           'profiles_search': profiles_search,
-                           'query': query,
-                           'mutuals': mutual_collaborations[:3],
-                           'mutual': mutual,
-                           'my_profile_id': my_profile_id(request)})
+    query = request.GET.get("query")
 
+    profiles_search = Profile.objects.filter(
+        Q(first_name__icontains=query) |
+        Q(last_name__icontains=query)
+    )
+
+    my_profile = Profile.objects.get(user=request.user)
+
+    def get_collaborator_ids(profile):
+        return set(
+            Collaboration.objects.filter(collaborator_1=profile)
+            .values_list("collaborator_2_id", flat=True)
+        ).union(
+            Collaboration.objects.filter(collaborator_2=profile)
+            .values_list("collaborator_1_id", flat=True)
+        )
+
+    my_collaborators = get_collaborator_ids(my_profile)
+
+    for profile in profiles_search:
+        profile.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(profile))
+        )
+
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),  # Change this to your application post URL name if needed
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "search.html",
+        context={
+            "profiles_search": profiles_search,
+            "query": query,
+            "my_profile": my_profile,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )
 @login_required(login_url='signin')
 def browse(request):
     posts = ApplicationPost.objects.all().order_by('-created')
@@ -161,7 +213,7 @@ def browse_filter(request):
 @login_required(login_url='signin')
 def create_post(request):
     content = request.POST.get('content')
-    image = request.POST.get('image')
+    image = request.FILES.get("file")
     location = request.POST.get('location')
     post = Post.objects.create(content=content, image=image,
                                location=location, profile=Profile.objects.get(user=request.user))
@@ -172,23 +224,101 @@ def create_post(request):
 def create_app_post(request):
     if request.method == 'POST':
         form = ApplicationPostModelForm(request.POST, request.FILES)
+
         if form.is_valid():
             post = form.save(commit=False)
             post.profile = Profile.objects.filter(user=request.user).first()
             post.save()
-        return redirect('index')
 
-    form = ApplicationPostModelForm()
-    return render(request, 'create.html',
-                  context={'form': form,
+            return render(
+                request,
+                'create.html',
+                {
+                    'form': form,
+                    'my_profile_id': my_profile_id(request),
+                    'successful': True,
+                }
+            )
+
+        print(form.errors)
+
+    else:
+        form = ApplicationPostModelForm()
+
+    return render(
+        request,
+        'create.html',
+        {
+            'form': form,
+            'my_profile_id': my_profile_id(request),
+        }
+    )
+@login_required(login_url='signin')
+def edit_post(request, post_id):
+    if request.method == 'POST':
+        post = PostEditModelForm(request.POST, request.FILES, instance=Post.objects.filter(id=post_id).first())
+        if post.is_valid():
+            post.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def edit_app_post(request, post_id):
+    if request.method == 'POST':
+        post = AppPostEditModelForm(request.POST, request.FILES, instance=ApplicationPost.objects.filter(id=post_id).first())
+        form = ApplicationPostModelForm(request.POST, request.FILES)
+        if post.is_valid():
+            post.save()
+        return render(
+            request,
+            "edit_post.html",
+            {
+                "form": form,
+                "post_id": post_id,
+                "my_profile_id": my_profile_id(request),
+                "successful": True,
+            }
+        )
+    post = AppPostEditModelForm(instance=ApplicationPost.objects.filter(id=post_id).first())
+    return render(request, 'edit_post.html',
+                  context={'form': post,
+                           'post_id': post_id,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
-def post(request, post_id):
+def delete_post(request, post_id):
+    Post.objects.get(id=post_id, profile__user=request.user).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def delete_app_post(request, post_id):
+    ApplicationPost.objects.filter(id=post_id, profile__user=request.user).first().delete()
+    ApplicationForm.objects.filter(post_id=post_id).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def edit_certification(request, certification_id):
+    if request.method == 'POST':
+        certification = CertificationEditModelForm(request.POST, request.FILES, instance=Certification.objects.filter(id=certification_id).first())
+        if certification.is_valid():
+            certification.save()
+        return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def delete_certification(request, certification_id):
+    Certification.objects.get(id=certification_id, profile__user=request.user).delete()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+
+@login_required(login_url='signin')
+def application_post(request, post_id):
     exists  = False
     deadline = False  # if the deadline has passed
+    apply = True
     post = ApplicationPost.objects.filter(id=post_id).first()
     post_deadline = post.deadline
+
+    if post.profile == Profile.objects.get(user=request.user):
+        apply = False
     if post_deadline is not None:
         if post_deadline.date().__lt__(datetime.today().date()):
             deadline = True
@@ -198,56 +328,117 @@ def post(request, post_id):
                   context={'post': post,
                            'exists': exists,
                            'deadline': deadline,
+                           'apply': apply,
+                           'app_post': True,
+                           'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def post(request, post_id):
+    post = Post.objects.filter(id=post_id).first()
+
+    return render(request, 'details.html',
+                  context={'post': post,
+                           'app_post': False,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
 def apply(request, post_id):
-    apply_post = True # if the user tries to apply to their own post
     profile = Profile.objects.filter(user=request.user).first()
-    if ApplicationPost.objects.filter(id=post_id).first().profile == profile:
-        apply_post = False
-    if request.method == 'POST':
-        form = ApplicationFormModelForm(request.POST, request.FILES)
-        if form.is_valid():
-            form = form.save(commit=False)
-            form.app_post = ApplicationPost.objects.filter(id=post_id).first()
-            form.user = request.user
-            form.save()
-            return render(request, 'apply.html',
-                  context={'form': ApplicationFormModelForm(),
-                           'post_id': post_id,
-                           'apply': apply_post,
-                           'my_profile_id': my_profile_id(request),
-                           'successful': True})
-    form = ApplicationFormModelForm()
-    return render(request, 'apply.html',
-                  context={'form': form,
-                           'post_id': post_id,
-                           'apply': apply_post,
-                           'my_profile_id': my_profile_id(request)})
 
+    initial_data = {
+        "first_name": profile.first_name,
+        "last_name": profile.last_name,
+        "email": request.user.email,
+    }
+
+    if request.method == 'POST':
+        form = ApplicationFormModelForm(
+            request.POST,
+            request.FILES,
+            initial=initial_data
+        )
+
+        if form.is_valid():
+            application = form.save(commit=False)
+            application.app_post = ApplicationPost.objects.filter(id=post_id).first()
+            application.user = request.user
+            application.save()
+
+            return render(
+                request,
+                'apply.html',
+                context={
+                    'form': ApplicationFormModelForm(initial=initial_data),
+                    'post_id': post_id,
+                    'my_profile_id': my_profile_id(request),
+                    'successful': True
+                }
+            )
+
+    form = ApplicationFormModelForm(initial=initial_data)
+
+    return render(
+        request,
+        'apply.html',
+        context={
+            'form': form,
+            'post_id': post_id,
+            'my_profile_id': my_profile_id(request)
+        }
+    )
 @login_required(login_url='signin')
 def profile(request, user_id):
     successful = False
     edit = False
+    collaborated = False
+
     user = User.objects.filter(id=user_id).first()
-    if request.user == user:  # currently signed-in user
+
+    if request.user == user:
         profile = Profile.objects.filter(user=request.user).first()
         edit = True
     else:
         profile = Profile.objects.filter(user=user).first()
+
+    if CollaborationPost.objects.filter(sender__user=request.user, receiver__user_id=user_id, status='PEND').exists():
+        collaborated = True
+
+    # logged-in user's profile (for calendar)
+    my_profile = Profile.objects.get(user=request.user)
+
     posts = Post.objects.filter(profile=profile).order_by('-created')
     certifications = Certification.objects.filter(profile=profile).order_by('-date')
-    profiles = None
-    return render(request, 'profile.html',
-                  context={'profile': profile,
-                           'profiles': profiles,
-                           'posts': posts,
-                           'certifications': certifications,
-                           'edit': edit,
-                           'successful': successful,
-                           'my_profile_id': my_profile_id(request)})
 
+    collaboration_count = Collaboration.objects.filter(
+        Q(collaborator_1=profile) | Q(collaborator_2=profile)
+    ).count()
+
+    events = []
+
+    bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(request, 'profile.html',
+                  context={
+                      'profile': profile,
+                      'profiles': None,
+                      'posts': posts,
+                      'certifications': certifications,
+                      'collaboration_count': collaboration_count,
+                      'edit': edit,
+                      'collaborated': collaborated,
+                      'successful': successful,
+                      'my_profile_id': my_profile_id(request),
+                      'events': json.dumps(events),
+                  })
 @login_required(login_url='signin')
 def edit_profile(request):
     if request.method == 'POST':
@@ -288,8 +479,8 @@ def bookmark_app_post(request, post_id):
 
 @login_required(login_url='signin')
 def bookmarks(request):
-    bookmarks_post = BookmarkPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
-    bookmarks_app_post = BookmarkAppPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
+    bookmarks_post = BookmarkPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-post__created')
+    bookmarks_app_post = BookmarkAppPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-app_post__created')
     return render(request, 'bookmarks.html',
                   context={'bookmarks_post': bookmarks_post,
                            'bookmarks_app_post': bookmarks_app_post,
@@ -300,65 +491,121 @@ def profile_collaborations(request, user_id):
     user_profile = Profile.objects.get(user_id=user_id)
     request_user_profile = Profile.objects.get(user=request.user)
 
-    collab1_ids = Collaboration.objects.filter(collaborator_1=user_profile).values_list('collaborator_2_id', flat=True).distinct()
-    collab2_ids = Collaboration.objects.filter(collaborator_2=user_profile).values_list('collaborator_1_id', flat=True).distinct()
+    def get_collaborator_ids(profile):
+        return set(
+            Collaboration.objects.filter(collaborator_1=profile)
+            .values_list('collaborator_2_id', flat=True)
+        ).union(
+            Collaboration.objects.filter(collaborator_2=profile)
+            .values_list('collaborator_1_id', flat=True)
+        )
 
-    all_collaborations = Profile.objects.filter(id__in=collab1_ids.union(collab2_ids))
+    # Get profile's collaborators
+    collab1_ids = Collaboration.objects.filter(
+        collaborator_1=user_profile
+    ).values_list('collaborator_2_id', flat=True).distinct()
+
+    collab2_ids = Collaboration.objects.filter(
+        collaborator_2=user_profile
+    ).values_list('collaborator_1_id', flat=True).distinct()
+
+    all_collaborations = Profile.objects.filter(
+        id__in=collab1_ids.union(collab2_ids)
+    )
+
+    # Calculate mutual collaborators with logged-in user
+    my_collaborators = get_collaborator_ids(request_user_profile)
+
+    for collab in all_collaborations:
+        collab.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(collab))
+        )
 
     mutual_collaborations = None
 
     if request.user.id != user_id:
         user_collaborations = Profile.objects.filter(
-            id__in=Collaboration.objects.filter(collaborator_1=request_user_profile).values_list('collaborator_2_id', flat=True).distinct().
-            union(Collaboration.objects.filter(collaborator_2=request_user_profile).values_list('collaborator_1_id', flat=True).distinct()))
+            id__in=
+            Collaboration.objects.filter(
+                collaborator_1=request_user_profile
+            ).values_list('collaborator_2_id', flat=True).distinct()
+            .union(
+                Collaboration.objects.filter(
+                    collaborator_2=request_user_profile
+                ).values_list('collaborator_1_id', flat=True).distinct()
+            )
+        )
 
         mutual_collaborations = all_collaborations.intersection(user_collaborations)
 
-    return render(request, 'profile_collabs.html',
-                  context={'all_collaborations': all_collaborations,
-                           'mutual_collaborations': mutual_collaborations,
-                           'user_id': user_id,
-                           'my_profile_id': my_profile_id(request)})
+        # Add mutual count here too
+        for collab in mutual_collaborations:
+            collab.mutual_count = len(
+                my_collaborators.intersection(get_collaborator_ids(collab))
+            )
+
+    return render(
+        request,
+        'profile_collabs.html',
+        context={
+            'all_collaborations': all_collaborations,
+            'mutual_collaborations': mutual_collaborations,
+            'user_id': user_id,
+            'my_profile_id': my_profile_id(request)
+        }
+    )
 
 @login_required(login_url='signin')
 def collaborate(request, user_id):
+    sender = Profile.objects.filter(user=request.user).first()
+    receiver = Profile.objects.filter(user_id=user_id).first()
+
     subject = request.POST['subject']
     body = request.POST['body']
-    collaboration = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first(),
-                                                     receiver=Profile.objects.filter(user_id=user_id).first())
-    if collaboration.exists():
-        collaboration.update(subject=subject, body=body)
-    else:
-        CollaborationPost.objects.create(sender=Profile.objects.filter(user=request.user).first(),
-                                         receiver=Profile.objects.filter(user_id=user_id).first(),
-                                         subject=subject, body=body)
-    return redirect(profile, user_id)
+
+    CollaborationPost.objects.create(
+        sender=sender,
+        receiver=receiver,
+        subject=subject,
+        body=body
+    )
+
+    messages.success(request, "Your application has been sent.")
+
+    return redirect('profile', user_id)
 
 @login_required(login_url='signin')
 def accept(request, user_id, post_id):
     collaboration = CollaborationPost.objects.filter(id=post_id)
-    collaboration.update(accepted=True)
+    collaboration.update(status='ACC')
     Collaboration.objects.create(collaborator_1=Profile.objects.filter(user=request.user).first(),collaborator_2=Profile.objects.filter(user_id=user_id).first())
-    return redirect(profile, user_id)
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def deny(request, post_id):
+    collaboration = CollaborationPost.objects.filter(id=post_id)
+    collaboration.update(status='DEN')
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def applications(request):
-    posts = ApplicationPost.objects.filter(profile=Profile.objects.filter(user=request.user).first())
-    applied = ApplicationForm.objects.filter(user=request.user).distinct()
+    posts = ApplicationPost.objects.filter(profile=Profile.objects.filter(user=request.user).first()).order_by('-created')
+    applied = ApplicationForm.objects.filter(user=request.user).distinct().order_by('-app_post__created')
     return render(request, 'applications.html',
                   context={'received': posts,
                            'applied': applied,
                            'my_profile_id': my_profile_id(request)})
 
 @login_required(login_url='signin')
-def application(request, post_id):
+def forms(request, post_id):
     all_forms = ApplicationForm.objects.filter(app_post_id=post_id)
     forms = []
     for form in all_forms:
-        forms.append(ApplicationFormModelForm(instance=form))
+        forms.append(ApplicationFormModelForm(instance=form, apply=False))
     post = ApplicationPost.objects.get(id=post_id)
-    return render(request, 'applications.html',
+    return render(request, 'forms.html',
                   context={'forms': forms,
+                           'form': None,
                            'post': post,
                            'my_profile_id': my_profile_id(request)})
 
@@ -366,26 +613,51 @@ def application(request, post_id):
 def form(request, post_id):
     post = ApplicationPost.objects.get(id=post_id)
     app_form = ApplicationForm.objects.filter(app_post_id=post_id, user=request.user).first()
-    form = ApplicationFormModelForm(instance=app_form)
-    return render(request, 'applications.html',
-                  context={'form': form,
-                           'post': post,
-                           'my_profile_id': my_profile_id(request)})
+    form = ApplicationFormModelForm(instance=app_form, apply=False)
+    status = app_form.get_status_display()
+    return render(request, 'forms.html',
+           context={'forms': None,
+                    'form': form,
+                    'status': status,
+                    'post': post,
+                    'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def accept_application(request, form_id):
+    form = ApplicationForm.objects.filter(id=form_id).first()
+    form.status = 'ACC'
+    form.save()
+    return redirect(request.META.get('HTTP_REFERER'))
+
+@login_required(login_url='signin')
+def deny_application(request, form_id):
+    form = ApplicationForm.objects.filter(id=form_id).first()
+    form.status = 'DEN'
+    form.save()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def collaborations(request):
     all_sent = CollaborationPost.objects.filter(sender=Profile.objects.filter(user=request.user).first())
     all_received = CollaborationPost.objects.filter(receiver=Profile.objects.filter(user=request.user).first())
-    accepted = all_sent.filter(accepted=True).union(all_received.filter(accepted=True))
 
-    sent = all_sent.filter(accepted=False)
-    received = all_received.filter(accepted=False)
+    sent_accepted = all_sent.filter(status='ACC').order_by('-created')
+    received_accepted = all_received.filter(status='ACC').order_by('-created')
+
+    sent = all_sent.filter(Q(status='PEND') | Q(status='DEN')).order_by('-created')
+    received = all_received.filter(Q(status='PEND') | Q(status='DEN')).order_by('-created')
 
     return render(request, 'collaborations.html',
                   context={'sent': sent,
                            'received': received,
-                           'accepted': accepted,
+                           'sent_accepted': sent_accepted,
+                           'received_accepted': received_accepted,
                            'my_profile_id': my_profile_id(request)})
+
+@login_required(login_url='signin')
+def delete_collaboration(request, post_id):
+    CollaborationPost.objects.filter(id=post_id).first().delete()
+    return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')
 def create_certification(request):
@@ -406,8 +678,25 @@ def create_certification(request):
 def calendar(request):
     profile = Profile.objects.filter(user=request.user).first()
 
-    return render(request, 'calendar.html',
-                  context={
-                      'profile': profile,
-                      'my_profile_id': my_profile_id(request)
-                  })
+    bookmarks = BookmarkAppPost.objects.filter(profile=profile)
+
+    events = []
+
+    for bookmark in bookmarks:
+        if bookmark.app_post.deadline:
+            events.append({
+                "title": bookmark.app_post.title,
+                "start": bookmark.app_post.deadline.strftime("%Y-%m-%d"),
+                "url": reverse("application_post", args=[bookmark.app_post.id]),
+                "color": "#436850",
+            })
+
+    return render(
+        request,
+        "calendar.html",
+        {
+            "profile": profile,
+            "my_profile_id": my_profile_id(request),
+            "events": json.dumps(events),
+        },
+    )

@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+
+    <div class="container m-auto">
+        <div class="row">
+            <div class="col-2">
+            </div>
+            <div class="col-8">
+                <div class="row pt-3 pb-2 px-5">
+                    <div class="border rounded-4">
+                        <div class="row pt-3">
+                            <div class="col-1 d-flex align-items-end justify-content-center">
+                                <a href="javascript:history.back()">
+                                    <i class="bi bi-arrow-left" style="font-size: 25px; color: dimgray;"></i>
+                                </a>
+                            </div>
+                            <div class="col-11 d-flex flex-column mt-3">
+                                <h2 class="text-start mb-0 fw-semibold">Edit Collaboration Post</h2>
+                            </div>
+                            <div class="px-5">
+                                <hr/>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-1"></div>
+                            <div class="col-10">
+                                <form method="post" action="{% url 'edit_app_post' post_id %}">
+                                    {% csrf_token %}
+                                    {{ form.as_p }}
+                                    <div class="row d-flex justify-content-between px-5 mx-5 my-4">
+                                        <div class="col-2 d-flex align-items-center justify-content-center">
+                                            <a href="javascript:history.back()" class="text-decoration-none mb-0"
+                                               style="color: #436850"><p class="mb-0">
+                                                Cancel</p>
+                                            </a>
+                                        </div>
+                                        <div class="col-2 text-end">
+                                            <button type="submit" class="btn text-light" data-bs-toggle="modal"
+                                                    data-bs-target="#successModal" style="background-color: #436850">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-1"></div>
+                        </div>
+{% if successful %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const modal = new bootstrap.Modal(document.getElementById('successModal'));
+    modal.show();
+});
+</script>
+{% endif %}
+                            <!-- Success Modal -->
+                            <div class="modal fade"  id="successModal" tabindex="-1"
+                                 aria-labelledby="successModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered w-25">
+                                    <div class="modal-content py-4 mx-0">
+                                        <div class="row">
+                                            <i class="bi bi-check-circle ps-1 text-center" style="font-size: 50px; color: #436850;"></i>
+                                        </div>
+                                        <div class="row">
+                                            <h2 class="text-center fw-semibold" style="color: #436850">Success!</h2>
+                                        </div>
+                                        <div class="row">
+                                            <p class="text-center text-secondary">Your collaboration post has been updated.</p>
+                                        </div>
+                                        <div class="row d-flex align-items-center justify-content-center">
+                                            <a href="javascript:history.go(-2)"
+                                               class="row justify-content-center text-decoration-none">
+                                                <button type="submit" class="btn text-light text-center w-25"
+                                                        onclick=""
+                                                        style="background-color: #436850">OK
+                                                </button>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="col-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

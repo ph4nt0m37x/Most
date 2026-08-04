@@ -18,19 +18,23 @@
             </div>
             <hr/>
             <div class="mb-1 p-2">
-                <input name="first_name" type="text" class="form-control rounded-3" placeholder="First Name" aria-label="First Name">
+                <input name="first_name" type="text" required class="form-control rounded-3" placeholder="First Name"
+                       aria-label="First Name" minlength="2" maxlength="20">
             </div>
             <div class="mb-1 p-2">
-                <input name="last_name" type="text" class="form-control rounded-3" placeholder="Last Name" aria-label="Last Name">
+                <input name="last_name" type="text" required class="form-control rounded-3" placeholder="Last Name"
+                       aria-label="Last Name" minlength="2" maxlength="20">
             </div>
             <div class="mb-1 p-2">
-                <input name="email" type="email" class="form-control rounded-3" placeholder="Email" aria-label="Email">
+                <input name="email" type="email" required class="form-control rounded-3" placeholder="Email" aria-label="Email">
             </div>
             <div class="mb-1 p-2">
-                <input name="password" type="password" class="form-control rounded-3" placeholder="Password" aria-label="Password">
+                <input name="password" type="password" required class="form-control rounded-3" placeholder="Password"
+                       aria-label="Password" minlength="8">
             </div>
             <div class="mb-3 p-2">
-                <input name="password_confirm" type="password" class="form-control rounded-3" placeholder="Confirm Password" aria-label="Confirm Password">
+                <input name="password_confirm" type="password" required class="form-control rounded-3"
+                       placeholder="Confirm Password" aria-label="Confirm Password"  minlength="8">
             </div>
             <div>
                 <button class="btn rounded-pill w-100 mb-3 p-2 text-light" style="background-color: #436850">Sign up</button>

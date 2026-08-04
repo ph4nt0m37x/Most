@@ -1,5 +1,6 @@
 from django import template
-from mostApp.models import Profile, Post, ApplicationPost
+from mostApp.models import Profile, Post, ApplicationPost, Collaboration, CollaborationPost, BookmarkPost, \
+    BookmarkAppPost
 
 register = template.Library()
 
@@ -17,7 +18,28 @@ def get_post_profile(post_id):
 
 @register.filter
 def get_profile_pic_url(user_id):
-    if Profile.objects.filter(user_id=user_id).first().profile_pic:
-        return Profile.objects.filter(user_id=user_id).first().profile_pic.url
+    picture = Profile.objects.filter(user_id=user_id).first().profile_pic
+    if picture:
+        if picture.url.find('https%3A') != -1:
+            return picture.url.removeprefix('/media/').replace('https%3A', 'https:/')
+        return picture.url
     else:
         return False
+
+@register.filter
+def format_image(image):
+    if image.find('https%3A') != -1:
+        return image.removeprefix('/media/').replace('https%3A', 'https:/')
+    return image
+
+@register.filter
+def get_collaborations(user_id):
+    return CollaborationPost.objects.filter(receiver__user_id=user_id, status='PEND').exists()
+
+@register.filter
+def is_bookmarked_post(post_id, user_id):
+    return BookmarkPost.objects.filter(post_id=post_id, profile__user_id=user_id).exists()
+
+@register.filter
+def is_bookmarked_app_post(post_id, user_id):
+    return BookmarkAppPost.objects.filter(app_post_id=post_id, profile__user_id=user_id).exists()
