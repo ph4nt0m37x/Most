@@ -576,9 +576,16 @@ def collaborate(request, user_id):
 
 @login_required(login_url='signin')
 def accept(request, user_id, post_id):
+    sender = Profile.objects.filter(user=request.user).first()
+    receiver = Profile.objects.filter(user_id=user_id).first()
+
     collaboration = CollaborationPost.objects.filter(id=post_id)
     collaboration.update(status='ACC')
-    Collaboration.objects.create(collaborator_1=Profile.objects.filter(user=request.user).first(),collaborator_2=Profile.objects.filter(user_id=user_id).first())
+
+    if not Collaboration.objects.filter(Q(collaborator_1=sender, collaborator_2=receiver)
+                                        | Q(collaborator_1=receiver,collaborator_2=sender)).exists():
+        Collaboration.objects.create(collaborator_1=sender, collaborator_2=receiver)
+
     return redirect(request.META.get('HTTP_REFERER'))
 
 @login_required(login_url='signin')

@@ -209,23 +209,31 @@
                                     <div class="row d-flex">
                                         <div class="col-10 pb-3 ps-5 text-start">
                                             <div class="row">
-                                                <div class="col-2">
-                                                    <a href="{% url 'accept' post.sender.user_id post.id %}">
-                                                        <button type="button"
-                                                                class="btn rounded-pill btn-outline-success">
-                                                            Accept
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                                <div class="col-2">
-                                                    <a href="{% url 'deny' post.id %}">
-                                                        <button type="button"
-                                                                class="btn rounded-pill btn-outline-danger">
-                                                            Deny
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                                {% if post.get_status_display == 'Denied' %}
+                                                    <div class="col-3">
+                                                        <p class="border border-danger-subtle p-2 rounded-pill"><i
+                                                                class="bi bi-x-circle pe-2"
+                                                                style="color: #c61d34; font-size: 15px"></i><span
+                                                                style="color: #c61d34;">Denied</span></p>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-2">
+                                                        <a href="{% url 'accept' post.sender.user_id post.id %}">
+                                                            <button type="button"
+                                                                    class="btn rounded-pill btn-outline-success">
+                                                                Accept
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <a href="{% url 'deny' post.id %}">
+                                                            <button type="button"
+                                                                    class="btn rounded-pill btn-outline-danger">
+                                                                Deny
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
                                         </div>
                                     </div>
                                 </div>
