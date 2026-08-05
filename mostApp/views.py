@@ -1,6 +1,6 @@
-from datetime import datetime
+import random
+import networkx as nx
 from django.contrib.auth.decorators import login_required
-from django.contrib.messages.api import success
 from django.db.models import Q
 import json
 from django.shortcuts import render, redirect
@@ -11,9 +11,39 @@ from datetime import timedelta
 
 from mostApp.forms import *
 from mostApp.models import *
+from mostApp.recommendations import recommend_by_influence
 
 
 # Create your views here.
+
+def get_collaborator_ids(profile):
+    return set(
+        Collaboration.objects.filter(collaborator_1=profile)
+        .values_list('collaborator_2_id', flat=True)
+    ).union(
+        Collaboration.objects.filter(collaborator_2=profile)
+        .values_list('collaborator_1_id', flat=True)
+    )
+
+def get_people_you_may_know(request, user_id):
+    graph = nx.Graph()
+    graph.add_nodes_from(list(Profile.objects.all().values_list('id', flat=True)))
+    graph.add_edges_from(list(Collaboration.objects.all().values_list('collaborator_1', 'collaborator_2')))
+
+    people = recommend_by_influence(graph, user_id)
+
+    friends = Collaboration.objects.filter(collaborator_1__id=user_id).values_list('collaborator_2', flat=True).union(
+        Collaboration.objects.filter(collaborator_2__id=user_id).values_list('collaborator_1', flat=True)
+    )
+
+    if len(people) < 3:
+        allowed_numbers = [i for i in range(1, Profile.objects.all().count() + 1) if
+                           i not in friends and i != user_id and i not in people]
+        for i in range(0, 3-len(people)):
+            result = random.sample(allowed_numbers, 3)
+            people.append(Profile.objects.filter(pk=result[i]).first().id)
+
+    request.session['people'] = people
 
 def my_profile_id(request):
     return request.user.id
@@ -39,6 +69,7 @@ def signup(request):
                 user_model = User.objects.filter(email=email).first()
                 new_profile = Profile.objects.create(user=user_model, first_name=first_name, last_name=last_name)
                 new_profile.save()
+                get_people_you_may_know(request, new_profile.id)
                 return redirect('tutorial')
         else:
             messages.info(request, 'Passwords Not Matching')
@@ -53,6 +84,7 @@ def signin(request):
         user = auth.authenticate(username=email, password=password)
         if user is not None:
             auth.login(request, user)
+            get_people_you_may_know(request, Profile.objects.filter(email=email).first().id)
             return redirect('/')
         else:
             messages.info(request, 'Invalid Credentials')
@@ -81,9 +113,20 @@ def about(request):
 def index(request):
     thirty_days_ago = timezone.now() - timedelta(days=30)
     posts = Post.objects.filter(created__gte=thirty_days_ago).order_by('-created')
-    profiles = None
+
+    people_ids = request.session['people']
+    people = []
+    for user_id in people_ids:
+        people.append(Profile.objects.filter(id=user_id).first())
 
     my_profile = Profile.objects.get(user=request.user)
+
+    my_collaborators = get_collaborator_ids(my_profile)
+
+    for person in people:
+        person.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(person))
+        )
 
     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
 
@@ -104,7 +147,7 @@ def index(request):
         context={
             "posts": posts,
             "my_profile": my_profile,
-            "profiles": profiles,
+            "people": people,
             "my_profile_id": my_profile_id(request),
             "events": json.dumps(events),
         },
@@ -118,22 +161,23 @@ def search(request):
         Q(last_name__icontains=query)
     )
 
-    my_profile = Profile.objects.get(user=request.user)
+    people_ids = request.session['people']
+    people = []
+    for user_id in people_ids:
+        people.append(Profile.objects.filter(id=user_id).first())
 
-    def get_collaborator_ids(profile):
-        return set(
-            Collaboration.objects.filter(collaborator_1=profile)
-            .values_list("collaborator_2_id", flat=True)
-        ).union(
-            Collaboration.objects.filter(collaborator_2=profile)
-            .values_list("collaborator_1_id", flat=True)
-        )
+    my_profile = Profile.objects.get(user=request.user)
 
     my_collaborators = get_collaborator_ids(my_profile)
 
     for profile in profiles_search:
         profile.mutual_count = len(
             my_collaborators.intersection(get_collaborator_ids(profile))
+        )
+
+    for person in people:
+        person.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(person))
         )
 
     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
@@ -155,6 +199,7 @@ def search(request):
         context={
             "profiles_search": profiles_search,
             "query": query,
+            "people": people,
             "my_profile": my_profile,
             "my_profile_id": my_profile_id(request),
             "events": json.dumps(events),
@@ -394,6 +439,11 @@ def profile(request, user_id):
 
     user = User.objects.filter(id=user_id).first()
 
+    people_ids = request.session['people']
+    people=[]
+    for user_id in people_ids:
+        people.append(Profile.objects.filter(id=user_id).first())
+
     if request.user == user:
         profile = Profile.objects.filter(user=request.user).first()
         edit = True
@@ -413,6 +463,13 @@ def profile(request, user_id):
         Q(collaborator_1=profile) | Q(collaborator_2=profile)
     ).count()
 
+    my_collaborators = get_collaborator_ids(profile)
+
+    for person in people:
+        person.mutual_count = len(
+            my_collaborators.intersection(get_collaborator_ids(person))
+        )
+
     events = []
 
     bookmarks = BookmarkAppPost.objects.filter(profile=my_profile)
@@ -429,7 +486,7 @@ def profile(request, user_id):
     return render(request, 'profile.html',
                   context={
                       'profile': profile,
-                      'profiles': None,
+                      'people': people,
                       'posts': posts,
                       'certifications': certifications,
                       'collaboration_count': collaboration_count,
@@ -491,15 +548,6 @@ def profile_collaborations(request, user_id):
     user_profile = Profile.objects.get(user_id=user_id)
     request_user_profile = Profile.objects.get(user=request.user)
 
-    def get_collaborator_ids(profile):
-        return set(
-            Collaboration.objects.filter(collaborator_1=profile)
-            .values_list('collaborator_2_id', flat=True)
-        ).union(
-            Collaboration.objects.filter(collaborator_2=profile)
-            .values_list('collaborator_1_id', flat=True)
-        )
-
     # Get profile's collaborators
     collab1_ids = Collaboration.objects.filter(
         collaborator_1=user_profile
@@ -550,7 +598,7 @@ def profile_collaborations(request, user_id):
         context={
             'all_collaborations': all_collaborations,
             'mutual_collaborations': mutual_collaborations,
-            'user_id': user_id,
+            'my_profile': request_user_profile == user_profile,
             'my_profile_id': my_profile_id(request)
         }
     )
@@ -585,6 +633,7 @@ def accept(request, user_id, post_id):
     if not Collaboration.objects.filter(Q(collaborator_1=sender, collaborator_2=receiver)
                                         | Q(collaborator_1=receiver,collaborator_2=sender)).exists():
         Collaboration.objects.create(collaborator_1=sender, collaborator_2=receiver)
+        get_people_you_may_know(request, sender.id)
 
     return redirect(request.META.get('HTTP_REFERER'))
 

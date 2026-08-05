@@ -344,7 +344,7 @@
                 <div class="row position-sticky" style="top: 6.5rem;" id="recommendations">
 
                     <h5 class="py-2">People you may know</h5>
-                    {% for profile in profiles %}
+                    {% for profile in people %}
                         <br>
                         <div class="border rounded-4 mb-2 row">
                             <div class="col-2 d-flex align-items-center">
@@ -361,9 +361,9 @@
                                     </a>
                                 </p>
                                 <p class="mb-3 small">
-                                    <a href="{% url 'collaborations' profile.user_id %}"
+                                    <a href="{% url 'profile_collaborations' profile.user_id %}"
                                        class="text-decoration-none text-secondary link-body-emphasis">
-                                        0 mutual collaborators
+                                        {{ profile.mutual_count }} mutual collaborators
                                     </a>
                                 </p>
                             </div>
