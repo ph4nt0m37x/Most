@@ -94,7 +94,7 @@ def signin(request):
         user = auth.authenticate(username=email, password=password)
         if user is not None:
             auth.login(request, user)
-            get_people_you_may_know(request, Profile.objects.filter(email=email).first().id)
+            get_people_you_may_know(request, Profile.objects.filter(user=user).first().id)
             return redirect('/')
         else:
             messages.info(request, 'Invalid Credentials')
