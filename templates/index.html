@@ -287,13 +287,14 @@
                                     </button>
                                 </div>
                                 <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
-                                    <a href="{% url 'bookmark_post' post.id %}" onclick="" class="text-decoration-none">
+                                    <a href="javascript:void(0);" class="bookmark-link text-decoration-none" data-post-id="{{ post.id }}">
                                         {% if post.id|is_bookmarked_post:request.user %}
                                             <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
                                         {% else %}
                                             <i class="bi bi-bookmark" style="font-size: 15px; color: black;"></i>
                                         {% endif %}
                                     </a>
+
                                 </div>
                             </div>
                         </div>

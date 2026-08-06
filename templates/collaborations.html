@@ -69,26 +69,29 @@
                                                 </a></p>
                                             </div>
                                         </div>
+
                                         <div class="col-2 d-flex justify-content-center">
                                             {% if post.sender.user == request.user %}
-                                                <div class="dropdown d-flex">
-                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
-                                                            type="button" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                        <i class="bi bi-three-dots"
-                                                           style="font-size: 20px; color: black;"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item text-danger"
-                                                               href="#"
-                                                               data-bs-toggle="modal"
-                                                               data-bs-target="#withdrawModal{{ post.id }}">
-                                                                Withdraw
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                                {% if post.get_status_display != 'Denied' %}
+                                                    <div class="dropdown">
+                                                        <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                                type="button" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                            <i class="bi bi-three-dots"
+                                                               style="font-size: 20px; color: black;"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item text-danger"
+                                                                   href="#"
+                                                                   data-bs-toggle="modal"
+                                                                   data-bs-target="#withdrawModal{{ post.id }}">
+                                                                    Withdraw
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
@@ -357,5 +360,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}
