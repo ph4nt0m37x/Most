@@ -43,12 +43,26 @@ def get_people_you_may_know(request, user_id):
         Collaboration.objects.filter(collaborator_2__id=user_id).values_list('collaborator_1', flat=True)
     )
 
+    profiles = Profile.objects.all().values_list('id', flat=True)
+
     if len(people) < 3:
-        allowed_numbers = [i for i in range(1, Profile.objects.all().count() + 1) if
-                           i not in friends and i != user_id and i not in people]
-        for i in range(0, 3-len(people)):
-            result = random.sample(allowed_numbers, 3)
-            people.append(Profile.objects.filter(pk=result[i]).first().id)
+        if len(profiles) > 3:
+            allowed_numbers = [i for i in range(1, len(profiles) + 1) if
+                               i not in friends and i != user_id and i not in people]
+            if len(allowed_numbers) >= 3:
+                result = random.sample(allowed_numbers, 3)
+                for i in range(0, 3 - len(people)):
+                    people.append(Profile.objects.filter(pk=result[i]).first().id)
+            else:
+                for i in range(0, len(allowed_numbers)):
+                    people.append(Profile.objects.filter(pk=allowed_numbers[i]).first().id)
+        else:
+            for i in range(0, len(profiles)):
+                if i not in friends and i != user_id and i not in people:
+                    people.append(Profile.objects.filter(pk=profiles[i]).first().id)
+
+    if len(people) > 3:
+        people = people[:3]
 
     request.session['people'] = people
 
