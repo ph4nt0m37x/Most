@@ -12,7 +12,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages, auth
 from django.urls import reverse
 from django.utils import timezone
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 from mostApp.forms import *
 from mostApp.models import *
@@ -145,8 +145,8 @@ def index(request):
 
     people_ids = request.session['people']
     people = []
-    for user_id in people_ids:
-        people.append(Profile.objects.filter(id=user_id).first())
+    for id in people_ids:
+        people.append(Profile.objects.filter(id=id).first())
 
     my_profile = Profile.objects.get(user=request.user)
 
@@ -194,8 +194,8 @@ def search(request):
 
     people_ids = request.session['people']
     people = []
-    for user_id in people_ids:
-        people.append(Profile.objects.filter(id=user_id).first())
+    for id in people_ids:
+        people.append(Profile.objects.filter(id=id).first())
 
     my_profile = Profile.objects.get(user=request.user)
 
@@ -500,8 +500,8 @@ def profile(request, user_id):
 
     people_ids = request.session['people']
     people=[]
-    for user_id in people_ids:
-        people.append(Profile.objects.filter(id=user_id).first())
+    for id in people_ids:
+        people.append(Profile.objects.filter(id=id).first())
 
     if request.user == user:
         profile = Profile.objects.filter(user=request.user).first()

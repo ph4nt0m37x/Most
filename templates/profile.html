@@ -568,6 +568,7 @@
                                                             Issued {{ cert.date.year }}</p>
                                                     </div>
                                                     <div class="col-2 text-end pe-0">
+                                                        {% if edit %}
                                                         <div class="dropdown">
                                                             <button class="btn pe-3 border-0 bg-transparent shadow-none"
                                                                     type="button" data-bs-toggle="dropdown"
@@ -576,7 +577,6 @@
                                                                    style="font-size: 20px; color: black;"></i>
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                {% if edit %}
                                                                     <li><a class="dropdown-item" data-bs-toggle="modal"
                                                                            data-bs-target="#editCertModal"
                                                                            href="">Edit</a>
@@ -589,11 +589,6 @@
                                                                            data-bs-toggle="modal"
                                                                            data-bs-target="#deleteCertModal{{ cert.id }}">Delete</a>
                                                                     </li>
-                                                                {% else %}
-                                                                    <li><a class="dropdown-item"
-                                                                           href="#">Report</a>
-                                                                    </li>
-                                                                {% endif %}
                                                             </ul>
                                                             <!-- Delete Modal -->
                                                             <div class="modal fade" id="deleteCertModal{{ cert.id }}"
@@ -636,6 +631,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {% endif %}
                                                         <div class="modal fade" id="editCertModal" tabindex="-1"
                                                              aria-hidden="true">
                                                             <div class="modal-dialog modal-dialog-centered">

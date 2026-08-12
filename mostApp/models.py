@@ -1,4 +1,4 @@
-from datetime import datetime
+from django.utils import timezone
 
 from django.contrib.auth.models import User
 from django.db import models
@@ -31,7 +31,7 @@ class Post(models.Model):
     image = models.ImageField(upload_to='posts/', null=True, blank=True)
     location = models.TextField(null=True, blank=True)
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{self.profile.first_name} {self.profile.last_name} {self.content}'
@@ -41,7 +41,7 @@ class ApplicationPost(models.Model):
     short_description = models.TextField()
     long_description = models.TextField()  # see more section
     profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=timezone.now)
     deadline = models.DateTimeField(null=True, blank=True)
     tag = models.ForeignKey(Tag, on_delete=models.CASCADE)
 
@@ -134,7 +134,7 @@ class CollaborationPost(models.Model):
     subject = models.CharField(max_length=100)
     body = models.TextField()
     status = models.CharField(max_length=4, choices=STATUS_CHOICES, default='PEND')
-    created = models.DateTimeField(default=datetime.now)
+    created = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return f'{Profile.objects.filter(user=self.sender).first()} sent collaboration to {self.receiver.first_name}'
