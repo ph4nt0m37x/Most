@@ -67,3 +67,5 @@ urlpatterns = [
     path('application/<form_id>/accept', accept_application, name='accept_application'),
     path('application/<form_id>/deny', deny_application, name='deny_application'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'mostApp.views.custom_404_view'
