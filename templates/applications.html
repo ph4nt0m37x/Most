@@ -128,8 +128,7 @@
                                             </button>
                                         </div>
                                         <div class="col-1 d-flex align-items-center justify-content-end">
-                                            <a href="{% url 'bookmark_app_post' post.id %}" onclick=""
-                                               class="text-decoration-none">
+                                            <a href="javascript:void(0);" class="bookmark-app-link text-decoration-none" data-post-id="{{ post.id }}">
                                                 {% if post.id|is_bookmarked_app_post:request.user %}
                                                     <i class="bi bi-bookmark-fill"
                                                        style="font-size: 15px; color: black;"></i>
@@ -266,8 +265,7 @@
                                             </button>
                                         </div>
                                         <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
-                                            <a href="{% url 'bookmark_app_post' post.app_post.id %}" onclick=""
-                                               class="text-decoration-none">
+                                            <a href="javascript:void(0);" class="bookmark-app-link text-decoration-none" data-post-id="{{ post.app_post.id }}">
                                                 {% if post.app_post.id|is_bookmarked_app_post:request.user %}
                                                     <i class="bi bi-bookmark-fill"
                                                        style="font-size: 15px; color: black;"></i>

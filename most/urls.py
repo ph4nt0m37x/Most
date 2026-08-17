@@ -34,8 +34,8 @@ urlpatterns = [
     path('create/post/', create_post, name='create_post'),
     path('create/post/apply', create_app_post, name='create_app_post'),
     path('post/apply/<post_id>', apply, name='apply'),
-    path('post/details/<post_id>', application_post, name='application_post'),
-    path('post/<post_id>', post, name='post'),
+    path('post/apply/details/<post_id>', application_post, name='application_post'),
+    path('post/details/<post_id>', post, name='post'),
     path('profile/edit', edit_profile, name='edit_profile'),
     path('profile/<user_id>', profile, name='profile'),
     path('profile/<user_id>/collaborations/', profile_collaborations, name='profile_collaborations'),
@@ -67,3 +67,5 @@ urlpatterns = [
     path('application/<form_id>/accept', accept_application, name='accept_application'),
     path('application/<form_id>/deny', deny_application, name='deny_application'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+handler404 = 'mostApp.views.custom_404_view'

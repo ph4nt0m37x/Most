@@ -12,7 +12,7 @@
                     <i class="bi bi-arrow-left" style="font-size: 25px; color: dimgray;"></i>
                 </a>
             </div>
-            <div class="col-8"><h3 class="fw-semibold">{{ post.title }} Applications</h3>
+            <div class="col-8"><h3 class="fw-semibold">{{ post.title }}</h3>
                 <hr/>
             </div>
             <div class="col-2"></div>
@@ -57,9 +57,9 @@
                 </div>
             {% endfor %}
         {% elif form %}
-            <div class="row">
+            <div class="row p-2">
                 <div class="col-2"></div>
-                <div class="col-8">
+                <div class="col-8 border rounded-4 p-5">
                     <form>
                         {% csrf_token %}
                         {{ form.as_p }}
