@@ -6,24 +6,22 @@
     <div class="container mt-5" style="min-height: 50vh;">
 
         <div class="row m-3">
-            <div class="col-8">
+            <div class="col-6">
                 <form action="{% url 'browse_search' %}" class="col-12 col-lg-auto me-lg-auto mb-3 mb-lg-0 me-lg-3"
                       style="width: 400px" role="search">
                     <input name="query" type="search" class="form-control" placeholder="Search..." aria-label="Search">
                 </form>
             </div>
-            <div class="col-4">
+            <div class="col-6">
                 <form action="{% url 'browse_filter' %}">
-                    <div class="row justify-content-between">
-
-                        <div class="col-2">
-                            {% if filter %}
+                    <div class="row justify-content-around">
+                        <div class="col-1">
+                            {% if clear %}
                             <a href="{% url 'browse' %}" class="btn link-body-emphasis">
-                                <i class="bi-x-circle"></i>
-                                {% endif %}
+                                <i class="bi-x"></i>
+                            {% endif %}
                         </a></div>
-
-                        <div class="col-4">
+                        <div class="col-5">
                             <select name="filter" class="form-select">
                                 <option value="all">---</option>
                                 {% for tag in tags %}
@@ -142,7 +140,7 @@
                                 </button>
                             </div>
                             <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
-                                <a href="{% url 'bookmark_app_post' post.id %}" class="text-decoration-none">
+                                <a href="javascript:void(0);" class="bookmark-app-link text-decoration-none" data-post-id="{{ post.id }}">
                                     {% if post.id|is_bookmarked_app_post:request.user %}
                                         <i class="bi bi-bookmark-fill" style="font-size: 15px; color: black;"></i>
                                     {% else %}

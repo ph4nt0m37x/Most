@@ -463,8 +463,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="col-1 pe-4 d-flex align-items-center justify-content-end">
-                                                        <a href="{% url 'bookmark_post' post.id %}" onclick=""
-                                                           class="text-decoration-none">
+                                                        <a href="javascript:void(0);" class="bookmark-link text-decoration-none" data-post-id="{{ post.id }}">
                                                             {% if post.id|is_bookmarked_post:request.user %}
                                                                 <i class="bi bi-bookmark-fill"
                                                                    style="font-size: 15px; color: black;"></i>
@@ -569,6 +568,7 @@
                                                             Issued {{ cert.date.year }}</p>
                                                     </div>
                                                     <div class="col-2 text-end pe-0">
+                                                        {% if edit %}
                                                         <div class="dropdown">
                                                             <button class="btn pe-3 border-0 bg-transparent shadow-none"
                                                                     type="button" data-bs-toggle="dropdown"
@@ -577,7 +577,6 @@
                                                                    style="font-size: 20px; color: black;"></i>
                                                             </button>
                                                             <ul class="dropdown-menu">
-                                                                {% if edit %}
                                                                     <li><a class="dropdown-item" data-bs-toggle="modal"
                                                                            data-bs-target="#editCertModal"
                                                                            href="">Edit</a>
@@ -590,11 +589,6 @@
                                                                            data-bs-toggle="modal"
                                                                            data-bs-target="#deleteCertModal{{ cert.id }}">Delete</a>
                                                                     </li>
-                                                                {% else %}
-                                                                    <li><a class="dropdown-item"
-                                                                           href="#">Report</a>
-                                                                    </li>
-                                                                {% endif %}
                                                             </ul>
                                                             <!-- Delete Modal -->
                                                             <div class="modal fade" id="deleteCertModal{{ cert.id }}"
@@ -637,6 +631,7 @@
                                                                 </div>
                                                             </div>
                                                         </div>
+                                                        {% endif %}
                                                         <div class="modal fade" id="editCertModal" tabindex="-1"
                                                              aria-hidden="true">
                                                             <div class="modal-dialog modal-dialog-centered">
@@ -762,51 +757,26 @@
 
             <div class="col-3 text-start">
                 <div class="row position-sticky" style="top: 6.5rem;" id="recommendations">
-                    {#                    {% if mutual %}#}
-                    {#                        <h5 class="py-2">Mutual collaborators</h5>#}
-                    {#                        {% for collab in mutuals %}#}
-                    {#                        <br>#}
-                    {#                        <div class="border rounded-4 mb-2 row">#}
-                    {#                            <div class="col-2 d-flex align-items-center">#}
-                    {#                                <a href="{% url 'profile' collab.user_id %}" class="">#}
-                    {#                                    <img src="{% if collab.user_id|get_profile_pic_url %} {{ collab.user_id|get_profile_pic_url}} {% else %} /static/profiles/default.png {% endif %}" class="rounded-circle" width="48" height="48" alt=""/>#}
-                    {#                                </a>#}
-                    {#                            </div>#}
-                    {#                            <div class="col-10 px-4 gap-0">#}
-                    {#                                <p class="mb-0 mt-3">#}
-                    {#                                    <a href="{% url 'profile' collab.user_id %}" class="text-decoration-none text-body-emphasis">#}
-                    {#                                        {{ collab.first_name }} {{ collab.last_name }}#}
-                    {#                                    </a>#}
-                    {#                                </p>#}
-                    {#                                <p class="mb-3 small">#}
-                    {#                                    <a href="{% url 'collaborations' collab.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">#}
-                    {#                                        3 mutual collaborators#}
-                    {#                                    </a>#}
-                    {#                                </p>#}
-                    {#                            </div>#}
-                    {#                        </div>#}
-                    {#                        {% endfor %}#}
-                    {#                    {% else %}#}
                     <h5 class="py-2">People you may know</h5>
-                    {% for profile in profiles %}
+                    {% for person in people %}
                         <br>
                         <div class="border rounded-4 mb-2 row">
                             <div class="col-2 d-flex align-items-center">
-                                <a href="{% url 'profile' profile.user_id %}" class="">
-                                    <img src="{% if profile.user_id|get_profile_pic_url %} {{ profile.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
+                                <a href="{% url 'profile' person.user_id %}" class="">
+                                    <img src="{% if person.user_id|get_profile_pic_url %} {{ person.user_id|get_profile_pic_url }} {% else %} /static/profiles/default.png {% endif %}"
                                          class="rounded-circle" width="48" height="48" alt=""/>
                                 </a>
                             </div>
                             <div class="col-10 px-4 gap-0">
                                 <p class="mb-0 mt-3">
-                                    <a href="{% url 'profile' profile.user_id %}"
+                                    <a href="{% url 'profile' person.user_id %}"
                                        class="text-decoration-none text-body-emphasis">
-                                        {{ profile.first_name }} {{ profile.last_name }}
+                                        {{ person.first_name }} {{ person.last_name }}
                                     </a>
                                 </p>
                                 <p class="mb-3 small">
-                                    <a href="" class="text-decoration-none text-secondary link-body-emphasis">
-                                        0 mutual collaborators
+                                    <a href="{% url 'profile_collaborations' person.user_id %}" class="text-decoration-none text-secondary link-body-emphasis">
+                                        {{ person.mutual_count }} mutual collaborators
                                     </a>
                                 </p>
                             </div>

@@ -69,26 +69,29 @@
                                                 </a></p>
                                             </div>
                                         </div>
+
                                         <div class="col-2 d-flex justify-content-center">
                                             {% if post.sender.user == request.user %}
-                                                <div class="dropdown d-flex">
-                                                    <button class="btn pe-1 border-0 bg-transparent shadow-none"
-                                                            type="button" data-bs-toggle="dropdown"
-                                                            aria-expanded="false">
-                                                        <i class="bi bi-three-dots"
-                                                           style="font-size: 20px; color: black;"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu">
-                                                        <li>
-                                                            <a class="dropdown-item text-danger"
-                                                               href="#"
-                                                               data-bs-toggle="modal"
-                                                               data-bs-target="#withdrawModal{{ post.id }}">
-                                                                Withdraw
-                                                            </a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                                {% if post.get_status_display != 'Denied' %}
+                                                    <div class="dropdown">
+                                                        <button class="btn pe-1 border-0 bg-transparent shadow-none"
+                                                                type="button" data-bs-toggle="dropdown"
+                                                                aria-expanded="false">
+                                                            <i class="bi bi-three-dots"
+                                                               style="font-size: 20px; color: black;"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu">
+                                                            <li>
+                                                                <a class="dropdown-item text-danger"
+                                                                   href="#"
+                                                                   data-bs-toggle="modal"
+                                                                   data-bs-target="#withdrawModal{{ post.id }}">
+                                                                    Withdraw
+                                                                </a>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                {% endif %}
                                             {% endif %}
                                         </div>
                                     </div>
@@ -209,23 +212,31 @@
                                     <div class="row d-flex">
                                         <div class="col-10 pb-3 ps-5 text-start">
                                             <div class="row">
-                                                <div class="col-2">
-                                                    <a href="{% url 'accept' post.sender.user_id post.id %}">
-                                                        <button type="button"
-                                                                class="btn rounded-pill btn-outline-success">
-                                                            Accept
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                                <div class="col-2">
-                                                    <a href="{% url 'deny' post.id %}">
-                                                        <button type="button"
-                                                                class="btn rounded-pill btn-outline-danger">
-                                                            Deny
-                                                        </button>
-                                                    </a>
-                                                </div>
-                                            </div>
+                                                {% if post.get_status_display == 'Denied' %}
+                                                    <div class="col-3">
+                                                        <p class="border border-danger-subtle p-2 rounded-pill"><i
+                                                                class="bi bi-x-circle pe-2"
+                                                                style="color: #c61d34; font-size: 15px"></i><span
+                                                                style="color: #c61d34;">Denied</span></p>
+                                                    </div>
+                                                {% else %}
+                                                    <div class="col-2">
+                                                        <a href="{% url 'accept' post.sender.user_id post.id %}">
+                                                            <button type="button"
+                                                                    class="btn rounded-pill btn-outline-success">
+                                                                Accept
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                    <div class="col-2">
+                                                        <a href="{% url 'deny' post.id %}">
+                                                            <button type="button"
+                                                                    class="btn rounded-pill btn-outline-danger">
+                                                                Deny
+                                                            </button>
+                                                        </a>
+                                                    </div>
+                                                {% endif %}
                                         </div>
                                     </div>
                                 </div>
@@ -349,5 +360,6 @@
                 </div>
             </div>
         </div>
+    </div>
     </div>
 {% endblock %}

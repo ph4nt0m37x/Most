@@ -50,48 +50,136 @@
         }
     </style>
     <script>
-document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
-        new bootstrap.Tooltip(el);
-    });
-});
-</script>
+        document.addEventListener("DOMContentLoaded", function () {
+            document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => {
+                new bootstrap.Tooltip(el);
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.bookmark-link').forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const postId = this.getAttribute('data-post-id');
+                    bookmarkPost(postId, this);
+                });
+            });
+             document.querySelectorAll('.bookmark-app-link').forEach(link => {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    const postId = this.getAttribute('data-post-id');
+                    bookmarkAppPost(postId, this);
+                });
+            });
+        });
+
+    </script>
     <script>
         function copyAppPostLink(button) {
-    const postId = button.getAttribute('data-post-id');
-    const currentUrl = window.location.origin;
-    const shareUrl = `${currentUrl}/post/details/${postId}`;
+            const postId = button.getAttribute('data-post-id');
+            const currentUrl = window.location.origin;
+            const shareUrl = `${currentUrl}/post/apply/details/${postId}`;
 
-    navigator.clipboard.writeText(shareUrl);
+            navigator.clipboard.writeText(shareUrl);
 
-    const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
-    tooltip.setContent({ '.tooltip-inner': 'Copied!' });
-    tooltip.show();
+            const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
+            tooltip.setContent({'.tooltip-inner': 'Copied!'});
+            tooltip.show();
 
-    setTimeout(() => {
-    button.setAttribute('data-bs-title', 'Copy link');
-    tooltip.setContent({ '.tooltip-inner': 'Copy link' });
-    tooltip.hide();
-}, 1500);
-}
+            setTimeout(() => {
+                button.setAttribute('data-bs-title', 'Copy link');
+                tooltip.setContent({'.tooltip-inner': 'Copy link'});
+                tooltip.hide();
+            }, 1500);
+        }
 
-function copyPostLink(button) {
-    const postId = button.getAttribute('data-post-id');
-    const currentUrl = window.location.origin;
-    const shareUrl = `${currentUrl}/post/${postId}`;
+        function copyPostLink(button) {
+            const postId = button.getAttribute('data-post-id');
+            const currentUrl = window.location.origin;
+            const shareUrl = `${currentUrl}/post/details/${postId}`;
 
-    navigator.clipboard.writeText(shareUrl);
+            navigator.clipboard.writeText(shareUrl);
 
-    const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
-    tooltip.setContent({ '.tooltip-inner': 'Copied!' });
-    tooltip.show();
+            const tooltip = bootstrap.Tooltip.getOrCreateInstance(button);
+            tooltip.setContent({'.tooltip-inner': 'Copied!'});
+            tooltip.show();
 
-    setTimeout(() => {
-    button.setAttribute('data-bs-title', 'Copy link');
-    tooltip.setContent({ '.tooltip-inner': 'Copy link' });
-    tooltip.hide();
-}, 1500);
-}
+            setTimeout(() => {
+                button.setAttribute('data-bs-title', 'Copy link');
+                tooltip.setContent({'.tooltip-inner': 'Copy link'});
+                tooltip.hide();
+            }, 1500);
+        }
+
+        function bookmarkPost(postId, linkElement) {
+            fetch(`/bookmark/post/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const icon = linkElement.querySelector('i');
+
+                    if (data.bookmarked) {
+                        icon.classList.remove('bi-bookmark');
+                        icon.classList.add('bi-bookmark-fill');
+                    } else {
+                        icon.classList.remove('bi-bookmark-fill');
+                        icon.classList.add('bi-bookmark');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function bookmarkAppPost(postId, linkElement) {
+            fetch(`/bookmark/post/apply/${postId}`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const icon = linkElement.querySelector('i');
+
+                    if (data.bookmarked) {
+                        icon.classList.remove('bi-bookmark');
+                        icon.classList.add('bi-bookmark-fill');
+                    } else {
+                        icon.classList.remove('bi-bookmark-fill');
+                        icon.classList.add('bi-bookmark');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
     </script>
 </head>
 <body>
@@ -114,7 +202,6 @@ function copyPostLink(button) {
                 <li><a href="#" class="nav-link px-2 link-body-emphasis"> </a></li>
             </ul>
             <ul class="nav text-end">
-                <li><a href="#" class="nav-link px-2 link-body-emphasis">MK</a></li>
                 <li><a href="#" class="nav-link px-2 link-body-emphasis"> </a></li>
             </ul>
             <div class="dropdown text-end">
@@ -135,7 +222,6 @@ function copyPostLink(button) {
                     </a></li>
                     <li><a class="dropdown-item" href="{% url 'applications' %}">Applications</a></li>
                     <li><a class="dropdown-item" href="{% url 'bookmarks' %}">Bookmarks</a></li>
-                    <li><a class="dropdown-item" href="#">Settings</a></li>
                     <li><a class="dropdown-item" href="{% url 'help_page' %}">Help</a></li>
                     <li>
                         <hr class="dropdown-divider">
